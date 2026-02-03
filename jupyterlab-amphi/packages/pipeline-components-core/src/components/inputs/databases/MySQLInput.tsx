@@ -88,11 +88,17 @@ export class MySQLInput extends BaseCoreComponent {
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
     deps.push('pymysql');
+    deps.push('sqlalchemy');
     return deps;
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
+    return [
+      "import pandas as pd",
+      "import sqlalchemy",
+      "import pymysql",
+      "import sys"
+    ];
   }
 
   public generateDatabaseConnectionCode({ config, connectionName }): string {
@@ -107,9 +113,31 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}")
 public generateComponentCode({ config, outputName }): string {
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
 
-    const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
-        ? config.sqlQuery
-        : `SELECT * FROM ${config.tableName.value}`;
+    const getSqlFromConfig = (): string => {
+      if (config.queryMethod === 'query') {
+        const raw = config.sqlQuery;
+        if (typeof raw === 'string') {
+          const str = raw.trim();
+          if (str) {
+            if ((str.startsWith('{') && str.endsWith('}')) || (str.startsWith('[') && str.endsWith(']'))) {
+              try {
+                const obj = JSON.parse(str);
+                if (obj && typeof obj.code === 'string' && obj.code.trim()) {
+                  return obj.code.trim();
+                }
+              } catch (_) {}
+            }
+            return str;
+          }
+        }
+        if (raw && typeof raw === 'object' && typeof raw.code === 'string' && raw.code.trim()) {
+          return raw.code.trim();
+        }
+      }
+      const table = typeof config.tableName === 'string' ? config.tableName : (config.tableName?.value ?? '');
+      return `SELECT * FROM ${table}`;
+    };
+    const sqlQuery = getSqlFromConfig();
 
     const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
 
@@ -119,11 +147,12 @@ ${connectionCode}
 # Execute SQL statement
 try:
     with ${uniqueEngineName}.connect() as conn:
+        print("执行SQL语句:")
+        print(\"\"\"\n${sqlQuery}\n\"\"\")
+        sys.stdout.flush()
         ${outputName} = pd.read_sql(
-            """
-            ${sqlQuery}
-            """,
-            con=conn.connection
+            sqlalchemy.text(\"\"\"\n${sqlQuery}\n\"\"\"),
+            con=conn
         ).convert_dtypes()
 finally:
     ${uniqueEngineName}.dispose()
