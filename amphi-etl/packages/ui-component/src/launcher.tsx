@@ -148,6 +148,13 @@ export class Launcher extends JupyterlabLauncher {
       this.myCommands.execute('pipeline-editor:create-new');
     };
 
+    const bundle = (this as any).translator?.load ? (this as any).translator.load('amphi-ui') : { __: (s: string) => s };
+    const isZh = typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().startsWith('zh');
+    const t = (en: string, zh: string) => {
+      const translated = bundle.__(en);
+      return translated !== en ? translated : (isZh ? zh : en);
+    };
+
     const handleUploadFiles = () => {
       this.myCommands.execute('ui-components:file-upload');
     };
@@ -205,7 +212,7 @@ export class Launcher extends JupyterlabLauncher {
           <div className="launcher-grid">
             <div className="launcher-card">
               <div className="launcher-card-header">
-                <h3>Start</h3>
+                <h3>{t('Start','开始')}</h3>
               </div>
 
               <ul className="launcher-card-list">
@@ -215,15 +222,15 @@ export class Launcher extends JupyterlabLauncher {
                       <pipelineIcon.react fill="#5A8F7B" />
                     </div>
                     <div>
-                      <strong>New pipeline</strong>
-                      <p>Open a new untitled pipeline and drag and drop components to design and develop your data flow.</p>
+                      <strong>{t('New pipeline','新建 Pipeline')}</strong>
+                      <p>{t('Open a new untitled pipeline and drag and drop components to design and develop your data flow.','打开一个新的未命名 Pipeline，并通过拖拽组件来设计和开发你的数据流程。')}</p>
                     </div>
                   </a>
                 </li>
               </ul>
             </div>
 
-            <div className="launcher-card">
+            {/* <div className="launcher-card">
               <div className="launcher-card-header">
                 <h3>Resources</h3>
               </div>
@@ -253,7 +260,7 @@ export class Launcher extends JupyterlabLauncher {
                 </li>
 
               </ul>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

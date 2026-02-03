@@ -90,3 +90,14 @@ before-build-python = ["jlpm clean:all"]
 
 [tool.check-wheel-contents]
 ignore = ["W002"]
+
+
+[project.optional-dependencies]
+mysql = [
+  "pymysql>=1.1.0",
+  "sqlalchemy>=2.0"
+]
+i18n = [
+  "jupyterlab-language-pack-zh-CN"
+]
+
