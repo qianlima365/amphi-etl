@@ -50,6 +50,25 @@ include = [
 # Let hatch_jupyter_builder run: `yarn install` + `yarn run build` at repo root.
 # Our root package.json forwards `build` to the package, so no extra kwargs needed.
 
+[tool.hatch.build.hooks.jupyter-builder]
+dependencies = ["hatch-jupyter-builder>=0.9"]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = [
+    "amphi/pipeline-scheduler/static/style.js",
+    "amphi/pipeline-scheduler/package.json",
+]
+skip-if-exists = ["amphi/pipeline-scheduler/static/style.js"]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+build_cmd = "build:prod"
+npm = ["jlpm"]
+
+[tool.hatch.build.hooks.jupyter-builder.editable-build-kwargs]
+build_cmd = "build:prod"
+npm = ["jlpm"]
+source_dir = "packages/pipeline-scheduler"
+build_dir = "amphi/pipeline-scheduler"
+
 [tool.hatch.build.targets.wheel.shared-data]
 "amphi/pipeline-scheduler" = "share/jupyter/labextensions/@amphi/pipeline-scheduler"
 "packages/pipeline-scheduler/install.json" = "share/jupyter/labextensions/@amphi/pipeline-scheduler/install.json"

@@ -3,7 +3,9 @@ requires = ["hatchling>=1.9.0", "jupyterlab>=4.0.0,<5", "hatch-nodejs-version>=0
 build-backend = "hatchling.build"
 
 [tool.hatch.version]
+source = "regex"
 path = "amphi/_version.py"
+pattern = "^__version__\\s*=\\s*(?:VERSION\\s*=\\s*)?['\\\"](?P<version>[^'\\\"]+)['\\\"]"
 
 [project]
 name = "amphi-etl"

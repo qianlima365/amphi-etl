@@ -12,7 +12,8 @@ export class MySQLOutput extends BaseCoreComponent {
       username: "",
       password: "",
       ifTableExists: "fail",
-      mode: "insert"
+      mode: "insert",
+      connectionParams: ""
     };
     const form = {
       idPrefix: "component__form",
@@ -30,6 +31,14 @@ export class MySQLOutput extends BaseCoreComponent {
           label: "Port",
           id: "port",
           placeholder: "Enter database port",
+          connection: "Mysql",
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "Connection Parameters",
+          id: "connectionParams",
+          placeholder: "e.g. connect_timeout=5&charset=utf8mb4",
           connection: "Mysql",
           advanced: true
         },
@@ -136,10 +145,13 @@ export class MySQLOutput extends BaseCoreComponent {
   }
 
   public generateDatabaseConnectionCode({ config, connectionName }): string {
+    const rawParams = (config.connectionParams || '').trim();
+    const paramsPart = rawParams ? (rawParams.startsWith('?') ? rawParams : `?${rawParams}`) : '';
+    const connectionString = `mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}${paramsPart}`;
     return `
 # Connect to the MySQL database
 ${connectionName} = sqlalchemy.create_engine(
-  "mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}"
+  "${connectionString}"
 )
 `;
   }
