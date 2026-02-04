@@ -29,6 +29,12 @@ export const SelectFromSQLQuery: React.FC<SelectFromSQLQueryProps> = ({
   nodeId,
   advanced,
 }) => {
+  // Early return if field is undefined to prevent errors
+  if (!field) {
+    console.error('SelectFromSQLQuery: field prop is undefined');
+    return null;
+  }
+
   const findOptionByValue = (value: any) => {
     if (value === undefined) {
       return {};
@@ -103,40 +109,63 @@ export const SelectFromSQLQuery: React.FC<SelectFromSQLQueryProps> = ({
             <Space style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 2px 4px' }}>
               <Button
                 type="primary"
-                onClick={(event) =>
-                  RequestService.retrieveTableList(
-                    event,
-                    `${data.schema ?? 'public'}`,
-                    field.query,
-                    context,
-                    componentService,
-                    setItems,
-                    setLoadings,
-                    nodeId
-                  )
-                }
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (!field?.query) {
+                    console.error('SelectFromSQLQuery: field.query is undefined');
+                    return;
+                  }
+                  
+                  // Set a timeout to reset loading state if request takes too long (30 seconds)
+                  const timeoutId = setTimeout(() => {
+                    setLoadings(false);
+                    console.warn('SelectFromSQLQuery: Request timed out after 30 seconds');
+                  }, 15000);
+                  
+                  try {
+                    RequestService.retrieveTableList(
+                      event,
+                      `${data.schema ?? 'public'}`,
+                      field.query,
+                      context,
+                      componentService,
+                      setItems,
+                      (loading: boolean) => {
+                        // Clear timeout when loading state changes
+                        if (!loading) {
+                          clearTimeout(timeoutId);
+                        }
+                        setLoadings(loading);
+                      },
+                      nodeId
+                    );
+                  } catch (error) {
+                    clearTimeout(timeoutId);
+                    setLoadings(false);
+                    console.error('SelectFromSQLQuery: Error retrieving table list', error);
+                  }
+                }}
                 loading={loadings}
               >
                 Retrieve
               </Button>
             </Space>
-            {advanced && (
-              <>
-                <Divider style={{ margin: '8px 0' }} />
-                <Space style={{ padding: '0 8px 4px' }}>
-                  <Input
-                    placeholder="Custom"
-                    ref={inputRef}
-                    value={name}
-                    onChange={onNameChange}
-                    onKeyDown={(e: any) => e.stopPropagation()}
-                  />
-                  <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
-                    Add
-                  </Button>
-                </Space>
-              </>
-            )}
+            <>
+              <Divider style={{ margin: '8px 0' }} />
+              <Space style={{ padding: '0 8px 4px' }}>
+                <Input
+                  placeholder="Custom"
+                  ref={inputRef}
+                  value={name}
+                  onChange={onNameChange}
+                  onKeyDown={(e: any) => e.stopPropagation()}
+                />
+                <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
+                  Add
+                </Button>
+              </Space>
+            </>
           </>
         )}
         options={items.map((item: Option) => ({

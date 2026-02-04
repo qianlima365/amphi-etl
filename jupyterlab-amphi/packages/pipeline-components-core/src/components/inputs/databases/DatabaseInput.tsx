@@ -87,4 +87,14 @@ export class DatabaseInput extends BaseCoreComponent {
       default: return "";
     }
   }
+
+  public generateDatabaseConnectionCode({ config, connectionName }): string {
+    switch (config.provider) {
+      case "mysql": return new MySQLInput().generateDatabaseConnectionCode({ config, connectionName });
+      case "postgres": return new PostgresInput().generateDatabaseConnectionCode({ config, connectionName });
+      case "sqlserver": return new SqlServerInput().generateDatabaseConnectionCode({ config, connectionName });
+      case "snowflake": return new SnowflakeInput().generateDatabaseConnectionCode({ config, connectionName });
+      default: return `# Unsupported database provider: ${config.provider}\n`;
+    }
+  }
 }

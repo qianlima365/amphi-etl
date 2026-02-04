@@ -62,7 +62,7 @@ export class MySQLInput extends BaseCoreComponent {
         {
           type: "table",
           label: "Table Name",
-          query: `SHOW TABLES;`,
+          query: `SHOW FULL TABLES WHERE Table_type = 'BASE TABLE';`,
           id: "tableName",
           placeholder: "Enter table name",
           condition: { queryMethod: "table" }
@@ -134,8 +134,13 @@ public generateComponentCode({ config, outputName }): string {
           return raw.code.trim();
         }
       }
-      const table = typeof config.tableName === 'string' ? config.tableName : (config.tableName?.value ?? '');
-      return `SELECT * FROM ${table}`;
+      const rawTable = typeof config.tableName === 'string' ? config.tableName : (config.tableName?.value ?? '');
+      const table = (rawTable || '').trim();
+      if (!table) {
+        return '';
+      }
+      const safeTable = table.includes('`') ? table : `\`${table}\``;
+      return `SELECT * FROM ${safeTable}`;
     };
     const sqlQuery = getSqlFromConfig();
 
@@ -144,14 +149,18 @@ public generateComponentCode({ config, outputName }): string {
     const code = `
 ${connectionCode}
 
-# Execute SQL statement
+import sys
+sql_query = """${sqlQuery}""".strip()
+if not sql_query or sql_query == "SELECT * FROM":
+    print("MySQL Input: table name is empty.", file=sys.stderr)
+    raise ValueError("MySQL Input: table name is empty.")
 try:
     with ${uniqueEngineName}.connect() as conn:
         print("执行SQL语句:")
-        print(\"\"\"\n${sqlQuery}\n\"\"\")
+        print(sql_query)
         sys.stdout.flush()
         ${outputName} = pd.read_sql(
-            sqlalchemy.text(\"\"\"\n${sqlQuery}\n\"\"\"),
+            sqlalchemy.text(sql_query),
             con=conn
         ).convert_dtypes()
 finally:

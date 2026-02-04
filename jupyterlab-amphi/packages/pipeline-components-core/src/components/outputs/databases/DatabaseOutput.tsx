@@ -87,4 +87,15 @@ export class DatabaseOutput extends BaseCoreComponent {
       default: return "";
     }
   }
+
+  public generateDatabaseConnectionCode({ config, connectionName }): string {
+    switch (config.provider) {
+      case "mysql": return new MySQLOutput().generateDatabaseConnectionCode({ config, connectionName });
+      case "postgres": return new PostgresOutput().generateDatabaseConnectionCode({ config, connectionName });
+      case "sqlserver": return new SqlServerOutput().generateDatabaseConnectionCode({ config, connectionName });
+      case "snowflake": return new SnowflakeOutput().generateDatabaseConnectionCode({ config, connectionName });
+      case "oracle": return new OracleOutput().generateDatabaseConnectionCode({ config, connectionName });
+      default: return `# Unsupported database provider: ${config.provider}\n`;
+    }
+  }
 }

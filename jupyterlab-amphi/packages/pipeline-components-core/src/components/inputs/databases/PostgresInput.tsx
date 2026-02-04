@@ -68,7 +68,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "table",
           label: "Table Name",
-          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';`,
+          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{schema}}' AND table_type = 'BASE TABLE' ORDER BY table_name;`,
           id: "tableName",
           placeholder: "Enter table name",
           condition: { queryMethod: "table" }

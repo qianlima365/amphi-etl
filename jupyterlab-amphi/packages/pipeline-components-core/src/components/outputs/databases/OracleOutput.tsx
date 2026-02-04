@@ -174,6 +174,22 @@ export class OracleOutput extends BaseCoreComponent {
     return imports;
   }
 
+  public generateDatabaseConnectionCode({ config, connectionName }): string {
+    const dbapi = config.dbapi;
+
+    // Initialize the Oracle client if oracleClient is provided
+    const oracleClientInitialization = config.oracleClient && config.oracleClient.trim()
+      ? `${dbapi}.init_oracle_client(lib_dir="${config.oracleClient}")\n`
+      : "";
+
+    let connectionString = `oracle+${dbapi}://${config.username}:${config.password}@${config.host}:${config.port}/?service_name=${config.databaseName}`;
+    const connectionCode = `
+# Connect to the Oracle database
+${oracleClientInitialization}${connectionName} = sqlalchemy.create_engine("${connectionString}")
+`;
+    return connectionCode;
+  }
+
   public generateComponentCode({ config, inputName }): string {
     const dbapi = config.dbapi;
     const uniqueEngineName = `${inputName}_Engine`;

@@ -328,8 +328,12 @@ export class RequestService {
   ): any {
     setLoadings(true);
 
-    // Escape and replace schema in the query
-    let escapedQuery = query.replace(/"/g, '\\"');
+    const baseQuery = typeof query === 'string' ? query : '';
+    if (!baseQuery.trim()) {
+      setLoadings(false);
+      return;
+    }
+    let escapedQuery = baseQuery.replace(/"/g, '\\"');
     escapedQuery = escapedQuery.replace(/{{schema}}/g, schemaName);
 
     // Get environment and connection code
@@ -345,9 +349,16 @@ export class RequestService {
       return;
     }
 
+    // Check if component has the required method
+    if (typeof component.generateDatabaseConnectionCode !== 'function') {
+      console.error(`Component ${component._name || component.constructor?.name || 'unknown'} does not have generateDatabaseConnectionCode method`);
+      setLoadings(false);
+      return;
+    }
+
     // Get the dependencies and imports from the component
-    const dependencies = component.provideDependencies(data);
-    const imports = component.provideImports(data);
+    const dependencies = component.provideDependencies({ config: data });
+    const imports = component.provideImports({ config: data });
 
     // Generate the dependencies string
     const dependencyString = dependencies.join(' ');
@@ -355,26 +366,35 @@ export class RequestService {
     // Generate the import statements string (one per line)
     const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
 
+    // Generate database connection code
+    const dbConnectionCode = component.generateDatabaseConnectionCode({ config: data, connectionName: "engine" });
+    console.log(`[retrieveTableList] Component: ${component._name || 'unknown'}`);
+    console.log(`[retrieveTableList] Database connection code:`, dbConnectionCode);
+
     // Build the Python code string
     let code = `
 !pip install --quiet ${dependencyString} --disable-pip-version-check
 ${importStatements}
+import sys
 ${envVariableCode}
 ${connectionCode}
 
 query = """
 ${escapedQuery}
 """
-${component.generateDatabaseConnectionCode({ config: data, connectionName: "engine" })}
+print("Query:", query, file=sys.stderr)
+${dbConnectionCode}
 
 tables = pd.read_sql(query, con=engine)
 tables.iloc[:, 0] = tables.iloc[:, 0].str.strip()  # Strip leading/trailing spaces
+print(f"Tables count: {len(tables.index)}", file=sys.stderr)
 formatted_output = ", ".join(tables.iloc[:, 0].tolist())
 print(formatted_output)
 `;
 
     // Format any remaining variables in the code
     code = CodeGenerator.formatVariables(code);
+    console.log(`[retrieveTableList] Final code to execute:`, code);
 
     const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
 
@@ -424,6 +444,9 @@ print(formatted_output)
         console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
       }
     };
+    future.onDone = () => {
+      setLoadings(false);
+    };
   };
 
   static retrieveTableColumns(
@@ -465,6 +488,13 @@ print(formatted_output)
 
     if (!component) {
       console.error('Component or data not found.');
+      setLoadings(false);
+      return;
+    }
+
+    // Check if component has the required method
+    if (typeof component.generateDatabaseConnectionCode !== 'function') {
+      console.error(`Component ${component._name || component.constructor?.name || 'unknown'} does not have generateDatabaseConnectionCode method`);
       setLoadings(false);
       return;
     }
@@ -785,6 +815,13 @@ print(formatted_output)
 
     if (!component) {
       console.error("Component or data not found.");
+      setLoadings(false);
+      return;
+    }
+
+    // Check if component has the required method
+    if (typeof component.generateDatabaseConnectionCode !== 'function') {
+      console.error(`Component ${component._name || component.constructor?.name || 'unknown'} does not have generateDatabaseConnectionCode method`);
       setLoadings(false);
       return;
     }

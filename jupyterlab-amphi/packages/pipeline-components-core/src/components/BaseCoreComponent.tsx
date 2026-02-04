@@ -18,6 +18,21 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
     this._form = form;
   }
 
+  /**
+   * Generate database connection code for SQL-based components.
+   * This method should be overridden by database input/output components
+   * that use the "table" form field type.
+   * 
+   * @param config - Component configuration containing connection details
+   * @param connectionName - Name for the connection variable (e.g., "engine", "client")
+   * @returns Python code string for establishing database connection
+   */
+  public generateDatabaseConnectionCode({ config, connectionName }: { config: any; connectionName: string }): string {
+    console.warn(`Component "${this._name}" does not implement generateDatabaseConnectionCode. This method is required for database components using the "table" form field.`);
+    // Return code that raises a clear error in Python instead of causing undefined variable error
+    return `raise NotImplementedError("Component '${this._name}' does not implement generateDatabaseConnectionCode method. Please ensure the component properly implements this method for database operations.")\n`;
+  }
+
   public static ConfigForm = ({
     nodeId,
     data,
