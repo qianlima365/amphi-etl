@@ -274,19 +274,51 @@ export const DataMapping: React.FC<DataMappingProps> = ({
             size="small"
             style={{ marginBottom: 16 }}
             onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              
+              // Validate required fields
+              const tableName = data.tableName?.value || data.tableName;
+              if (!tableName) {
+                console.error('dataMapping: tableName is not set');
+                return;
+              }
+              if (!field?.query) {
+                console.error('dataMapping: field.query is not defined');
+                return;
+              }
+              
               setDataSource([]);
-              RequestService.retrieveTableColumns(
-                event,
-                `${data.schema ?? 'public'}`,
-                `${data.tableName.value}`,
-                `${field.query}`,
-                `${field.pythonExtraction}`,
-                context,
-                componentService,
-                setDataSource,
-                setLoadingsOutput,
-                nodeId
-              );
+              
+              // Set a timeout to reset loading state if request takes too long (30 seconds)
+              const timeoutId = setTimeout(() => {
+                setLoadingsOutput(false);
+                console.warn('dataMapping: Request timed out after 30 seconds');
+              }, 30000);
+              
+              try {
+                RequestService.retrieveTableColumns(
+                  event,
+                  `${data.schema ?? 'public'}`,
+                  `${tableName}`,
+                  `${field.query}`,
+                  `${field.pythonExtraction}`,
+                  context,
+                  componentService,
+                  setDataSource,
+                  (loading: boolean) => {
+                    if (!loading) {
+                      clearTimeout(timeoutId);
+                    }
+                    setLoadingsOutput(loading);
+                  },
+                  nodeId
+                );
+              } catch (error) {
+                clearTimeout(timeoutId);
+                setLoadingsOutput(false);
+                console.error('dataMapping: Error retrieving table columns', error);
+              }
             }}
             loading={loadingsOutput}
           >

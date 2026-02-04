@@ -463,8 +463,23 @@ print(formatted_output)
   ): any {
     setLoadings(true);
 
+    // Check if query is valid
+    const baseQuery = typeof query === 'string' ? query : '';
+    if (!baseQuery.trim()) {
+      console.error('retrieveTableColumns: query is empty or undefined');
+      setLoadings(false);
+      return;
+    }
+
+    // Check if tableName is valid
+    if (!tableName || tableName === 'undefined') {
+      console.error('retrieveTableColumns: tableName is empty or undefined');
+      setLoadings(false);
+      return;
+    }
+
     // Escape and replace schema and table in the query
-    let escapedQuery = query.replace(/"/g, '\\"');
+    let escapedQuery = baseQuery.replace(/"/g, '\\"');
     escapedQuery = escapedQuery
       .replace(/{{schema}}/g, schemaName)
       .replace(/{{table}}/g, tableName);
@@ -509,6 +524,12 @@ print(formatted_output)
     // Generate the import statements string (one per line)
     const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
 
+    // Generate database connection code
+    const dbConnectionCode = component.generateDatabaseConnectionCode({ config: data, connectionName: 'engine' });
+    console.log(`[retrieveTableColumns] Component: ${component._name || 'unknown'}`);
+    console.log(`[retrieveTableColumns] Table: ${tableName}, Schema: ${schemaName}`);
+    console.log(`[retrieveTableColumns] Database connection code:`, dbConnectionCode);
+
     // Build the Python code string
     let code = `
 !pip install --quiet ${dependencyString} --disable-pip-version-check
@@ -519,11 +540,12 @@ ${connectionCode}
 query = """
 ${escapedQuery}
 """
-${component.generateDatabaseConnectionCode({ config: data, connectionName: 'engine' })}
+${dbConnectionCode}
 schema = pd.read_sql(query, con=engine)
 
 ${pythonExtraction}
 `;
+    console.log(`[retrieveTableColumns] Final code to execute:`, code);
 
 
     // Format any remaining variables in the code
@@ -581,6 +603,10 @@ ${pythonExtraction}
         const errorOutput = errorMsg.content;
         console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
       }
+    };
+
+    future.onDone = () => {
+      setLoadings(false);
     };
   }
 
