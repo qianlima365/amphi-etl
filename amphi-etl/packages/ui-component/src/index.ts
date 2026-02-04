@@ -18,7 +18,7 @@ export { showBrowseFileDialog } from './BrowseFileDialog';
 import '../style/index.css';
 
 /**
- * The main application icon.
+ * The main application logo/title.
  */
 const logo: JupyterFrontEndPlugin<void> = {
   id: '@amphi/ui-component:logo',
@@ -31,13 +31,27 @@ const logo: JupyterFrontEndPlugin<void> = {
     let logo: Widget | null = null;
     if (labShell) {
       logo = new Widget();
-      asteriskIcon.element({
-        container: logo.node,
-        elementPosition: 'center',
-        margin: '2px 2px 2px 16px',
-        height: '16px',
-        width: '16px'
-      });
+      // Set container styles
+      logo.node.style.cssText = `
+        display: flex;
+        align-items: center;
+        height: 100%;
+        min-width: 120px;
+        overflow: visible;
+        z-index: 100;
+      `;
+      // Create a title text element instead of icon
+      const titleElement = document.createElement('span');
+      titleElement.textContent = 'Pipeline Build';
+      titleElement.style.cssText = `
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        padding-left: 12px;
+        white-space: nowrap;
+        display: inline-block;
+      `;
+      logo.node.appendChild(titleElement);
     }
     if (logo) {
       logo.id = 'jp-MainLogo';
