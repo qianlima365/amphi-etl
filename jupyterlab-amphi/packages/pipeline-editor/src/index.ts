@@ -29,6 +29,7 @@ import { viewData } from './ViewData'
 import { ComponentManager, CodeGenerator, CodeGeneratorDagster, PipelineService } from '@amphi/pipeline-components-manager';
 import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon, gridAltIcon } from './icons';
 import { PipelineEditorFactory, commandIDs } from './PipelineEditorWidget';
+import { mountAIAssistant } from './ai';
 import posthog from 'posthog-js'
 
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -832,6 +833,14 @@ ${code}
         args: widget => ({ path: widget.context.path, factory: PIPELINE_FACTORY }),
         name: widget => widget.context.path
       });
+    }
+
+    // Mount AI Assistant floating button
+    try {
+      mountAIAssistant();
+      console.log('AI Assistant mounted successfully');
+    } catch (e) {
+      console.error('Failed to mount AI Assistant:', e);
     }
 
     return pipelineEditortracker;
