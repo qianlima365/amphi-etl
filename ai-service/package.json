@@ -32,7 +32,8 @@
     "@llamaindex/anthropic": "^0.1.0",
     "@llamaindex/ollama": "^0.1.0",
     "@llamaindex/deepseek": "0.0.40",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "neo4j-driver": "^5.25.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

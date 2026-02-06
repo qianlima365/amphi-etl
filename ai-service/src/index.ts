@@ -45,6 +45,26 @@ import {
   previewHandler
 } from './handlers/agentHandlers';
 import { chatHandler } from './handlers/chatHandler';
+import {
+  healthHandler as ontologyHealthHandler,
+  listComponentsHandler,
+  getComponentHandler,
+  createComponentHandler,
+  updateComponentHandler,
+  deleteComponentHandler,
+  listParametersHandler,
+  createParameterHandler,
+  updateParameterHandler,
+  deleteParameterHandler,
+  listRelationshipsHandler,
+  createRelationshipHandler,
+  updateRelationshipHandler,
+  deleteRelationshipHandler,
+  getGraphHandler,
+  searchHandler,
+  getComponentsByInputOutputHandler,
+  importHandler as ontologyImportHandler,
+} from './handlers/ontologyHandlers';
 
 // Load environment variables
 dotenv.config();
@@ -152,6 +172,26 @@ app.get('/agent/nodes', nodesHandler);
 app.get('/agent/nodes/:id', nodeDetailHandler);
 app.post('/agent/preview', previewHandler);
 
+// Ontology API (Neo4j-backed); 503 when Neo4j not configured
+app.get('/ontology/health', ontologyHealthHandler);
+app.get('/ontology/components', listComponentsHandler);
+app.get('/ontology/components/:id', getComponentHandler);
+app.post('/ontology/components', createComponentHandler);
+app.put('/ontology/components/:id', updateComponentHandler);
+app.delete('/ontology/components/:id', deleteComponentHandler);
+app.get('/ontology/parameters', listParametersHandler);
+app.post('/ontology/parameters', createParameterHandler);
+app.put('/ontology/parameters/:id', updateParameterHandler);
+app.delete('/ontology/parameters/:id', deleteParameterHandler);
+app.get('/ontology/relationships', listRelationshipsHandler);
+app.post('/ontology/relationships', createRelationshipHandler);
+app.put('/ontology/relationships', updateRelationshipHandler);
+app.delete('/ontology/relationships', deleteRelationshipHandler);
+app.get('/ontology/graph', getGraphHandler);
+app.get('/ontology/search', searchHandler);
+app.get('/ontology/ai/components-by-io', getComponentsByInputOutputHandler);
+app.post('/ontology/import', ontologyImportHandler);
+
 // Error handler
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Unhandled error:', err);
@@ -180,6 +220,8 @@ app.listen(PORT, () => {
   console.log('   - POST /agent/validate  Pipeline 验证');
   console.log('   - GET  /agent/templates 模板列表');
   console.log('   - GET  /agent/nodes     节点库');
+  console.log('   - GET  /ontology/health 本体服务状态');
+  console.log('   - GET  /ontology/graph   图数据(可视化)');
 });
 
 export default app;

@@ -1,0 +1,51 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+#root { min-height: 100vh; }
+
+/* 节点名称：16 号字、加粗 */
+.react-flow__node { font-size: 16px; font-weight: 700; }
+/* 组件节点：长方形、蓝底白字 */
+.react-flow__node.Component {
+  background: #1890ff !important;
+  border-color: #096dd9;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px 14px;
+  border-radius: 4px;
+}
+.react-flow__node.Component .react-flow__node-label { color: #fff; }
+/* 属性节点：椭圆形、绿底白字 */
+.react-flow__node.Parameter {
+  background: #52c41a !important;
+  border-color: #389e0d;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6px 14px;
+  border-radius: 50%;
+}
+.react-flow__node.Parameter .react-flow__node-label { color: #fff; }
+.react-flow__node.DataType { background: #fff7e6; border-color: #fa8c16; }
+.react-flow__node.Category { background: #f9f0ff; border-color: #722ed1; }
+/* 周围节点跟随中心移动时用短过渡，更自然飘逸 */
+.react-flow__node.node--flow-follow { transition: transform 0.14s ease-out; }
+
+/* 连线名称（边标签）：16 号字、加粗，颜色由各边 labelStyle 控制 */
+.react-flow__edge-text { font-size: 16px; font-weight: 700; }
+.react-flow__edge-textwrapper { font-size: 16px; font-weight: 700; }
+
+/* 虚线流动动效 */
+.react-flow__edge.edge--dash-flow path {
+  stroke-dashoffset: 0;
+  animation: edgeDashFlow 0.6s linear infinite;
+}
+@keyframes edgeDashFlow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
