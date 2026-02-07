@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useRef, useCallback, type MouseEvent as ReactMouseEvent } from 'react';
-import { Layout, Card, Table, Alert, Input, Tabs, Spin, message, Drawer, Form, Button, Switch, Select, Space, Divider, Modal } from 'antd';
+import { Layout, Card, Table, Alert, Input, Spin, message, Drawer, Form, Button, Switch, Select, Space, Divider, Modal, Menu } from 'antd';
 import { PlusOutlined, DeleteOutlined, AppstoreOutlined, FormOutlined } from '@ant-design/icons';
 import ReactFlow, {
   Node,
@@ -1606,10 +1606,24 @@ export default function App() {
     ontologyApi.health().then(setHealth).catch(() => setHealth({ available: false, timestamp: '' }));
   }, []);
 
+  const navItems = [
+    { key: 'graph', label: '组件可视化' },
+    { key: 'components', label: '组件列表' },
+    { key: 'search', label: '搜索' },
+  ];
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ display: 'flex', alignItems: 'center', color: '#fff' }}>
-        <span style={{ marginRight: 24, fontSize: 18 }}>ETL 本体管理</span>
+      <Header style={{ display: 'flex', alignItems: 'center', padding: '0 24px', color: '#fff' }}>
+        <span style={{ marginRight: 32, fontSize: 18, fontWeight: 600 }}>ETL 本体管理</span>
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          selectedKeys={[activeTab]}
+          items={navItems}
+          onClick={({ key }) => setActiveTab(key)}
+          style={{ flex: 1, minWidth: 0, border: 'none', background: 'transparent' }}
+        />
         {health && (
           <Alert
             type={health.available ? 'success' : 'warning'}
@@ -1620,35 +1634,17 @@ export default function App() {
         )}
       </Header>
       <Content style={{ padding: 24 }}>
-        <Tabs
-          activeKey={activeTab}
-          onChange={setActiveTab}
-          items={[
-            {
-              key: 'graph',
-              label: '组件可视化',
-              children: (
-                <Card title="ETL组件本体图（组件与参数及其他组件关系）">
-                  <GraphView />
-                </Card>
-              ),
-            },
-            {
-              key: 'components',
-              label: '组件列表',
-              children: (
-                <Card title="组件列表">
-                  <ComponentsList />
-                </Card>
-              ),
-            },
-            {
-              key: 'search',
-              label: '搜索',
-              children: <SearchView />,
-            },
-          ]}
-        />
+        {activeTab === 'graph' && (
+          <Card title="ETL组件本体图（组件与参数及其他组件关系）">
+            <GraphView />
+          </Card>
+        )}
+        {activeTab === 'components' && (
+          <Card title="组件列表">
+            <ComponentsList />
+          </Card>
+        )}
+        {activeTab === 'search' && <SearchView />}
       </Content>
     </Layout>
   );
