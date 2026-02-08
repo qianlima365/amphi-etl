@@ -38,7 +38,7 @@ setup(
     packages=find_packages(include=['amphi', 'amphi.theme-light', 'amphi.ui-component', 'config', 'packages']),  # Custom package discovery.
     include_package_data=True,  # Include non-Python files specified in MANIFEST.in
     package_data={
-        'amphi': ['theme-light/*', 'ui-component/*'],  # Include built extensions
+        'amphi': ['theme-light/*', 'theme-neon-future/*', 'ui-component/*'],  # Include built extensions
     },
     data_files=data_files,
     entry_points={

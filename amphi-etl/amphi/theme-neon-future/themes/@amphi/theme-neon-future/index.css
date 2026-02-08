@@ -1,0 +1,1025 @@
+/*
+ * Neon Future Theme Variables
+ * Dark enterprise-style theme optimized to match reference design
+ * Deep indigo backgrounds, vibrant blue accents, clean enterprise aesthetic
+ */
+
+:root {
+  /* ============================================
+     BASE COLORS - Deep Indigo/Blue hierarchy (aligned with reference)
+     ============================================ */
+  
+  /* Background hierarchy - deep enterprise dark */
+  --neon-bg-primary: #0f1117;       /* Deepest background */
+  --neon-bg-secondary: #1a1d29;     /* Sidebar, panels */
+  --neon-bg-tertiary: #252a3c;      /* Cards, inputs */
+  --neon-bg-elevated: #2d3347;      /* Elevated surfaces */
+  --neon-bg-input: #1e2230;         /* Input fields */
+  --neon-bg-overlay: rgba(15, 17, 23, 0.95);
+  
+  /* Text colors - clean white to gray */
+  --neon-text-primary: #ffffff;
+  --neon-text-secondary: #e2e4ea;
+  --neon-text-tertiary: #9ca3af;
+  --neon-text-muted: #6b7280;
+  --neon-text-inverse: #0f1117;
+  
+  /* ============================================
+     ACCENT COLORS - Vibrant Blue Primary (matching reference)
+     ============================================ */
+  
+  /* Blue - Primary brand / selected / interactive (vibrant blue from reference) */
+  --neon-blue-400: #3b82f6;         /* Primary blue - selected items */
+  --neon-blue-500: #2563eb;         /* Hover/active blue */
+  --neon-blue-600: #1d4ed8;         /* Pressed blue */
+  --neon-blue-glow: rgba(59, 130, 246, 0.3);
+  
+  /* Cyan - Secondary accent */
+  --neon-cyan-400: #60a5fa;
+  --neon-cyan-500: #3b82f6;
+  --neon-cyan-600: #2563eb;
+  --neon-cyan-glow: rgba(96, 165, 250, 0.3);
+  
+  /* Link blue */
+  --neon-link: #60a5fa;
+  
+  /* Purple-Blue - Subtle accents */
+  --neon-purple-400: #4c506c;
+  --neon-purple-500: #3f4359;
+  --neon-purple-600: #353952;
+  --neon-purple-glow: rgba(76, 80, 108, 0.3);
+  
+  /* Orange - Warning */
+  --neon-orange-400: #f59e0b;
+  --neon-orange-500: #d97706;
+  --neon-orange-600: #b45309;
+  --neon-orange-glow: rgba(245, 158, 11, 0.3);
+  
+  /* Green - Success / Save button (teal-green like reference) */
+  --neon-lime-400: #10b981;
+  --neon-lime-500: #059669;
+  --neon-lime-600: #047857;
+  --neon-lime-glow: rgba(16, 185, 129, 0.3);
+  
+  /* Pink-Magenta - Rare highlight */
+  --neon-pink-400: #60a5fa;
+  --neon-pink-500: #3b82f6;
+  --neon-pink-600: #2563eb;
+  --neon-pink-glow: rgba(96, 165, 250, 0.3);
+  
+  /* ============================================
+     MATERIAL EFFECTS - Subtle & Clean
+     ============================================ */
+  
+  /* Glass / overlay - neutral dark */
+  --neon-glass-bg: rgba(26, 29, 41, 0.98);
+  --neon-glass-border: rgba(255, 255, 255, 0.06);
+  --neon-glass-blur: blur(12px);
+  
+  /* Noise texture overlay - very subtle */
+  --neon-noise-opacity: 0.015;
+  
+  /* Glow - subtle */
+  --neon-glow-sm: 0 0 6px;
+  --neon-glow-md: 0 0 12px;
+  --neon-glow-lg: 0 0 20px;
+  --neon-glow-xl: 0 0 28px;
+  
+  /* Subtle reflection */
+  --neon-reflection: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  
+  /* ============================================
+     JUPYTERLAB THEME VARIABLES
+     ============================================ */
+  
+  /* Borders */
+  --jp-border-width: 1px;
+  --jp-border-radius: 6px;
+  --jp-border-color0: var(--neon-bg-elevated);
+  --jp-border-color1: rgba(255, 255, 255, 0.08);
+  --jp-border-color2: rgba(255, 255, 255, 0.05);
+  --jp-border-color3: var(--neon-bg-tertiary);
+  --jp-border-focus: var(--neon-blue-400);
+  
+  /* Typography */
+  --jp-ui-font-scale-factor: 1.2;
+  --jp-ui-font-size0: 0.75rem;
+  --jp-ui-font-size1: 13px;
+  --jp-ui-font-size2: 1rem;
+  --jp-ui-font-size3: 1.25rem;
+  --jp-ui-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  --jp-content-font-size1: 14px;
+  --jp-content-line-height: 1.6;
+  --jp-content-font-family: var(--jp-ui-font-family);
+  --jp-content-font-color1: var(--neon-text-primary);
+  
+  --jp-code-font-size: 13px;
+  --jp-code-font-family: 'JetBrains Mono', 'Fira Code', 'IBM Plex Mono', monospace;
+  --jp-code-line-height: 1.5;
+  
+  /* Layout colors */
+  --jp-layout-background: var(--neon-bg-primary);
+  --jp-layout-color0: var(--neon-bg-primary);
+  --jp-layout-color1: var(--neon-bg-secondary);
+  --jp-layout-color2: var(--neon-bg-tertiary);
+  --jp-layout-color3: var(--neon-bg-elevated);
+  --jp-layout-color4: var(--neon-text-muted);
+  
+  /* UI colors */
+  --jp-ui-font-color0: var(--neon-text-primary);
+  --jp-ui-font-color1: var(--neon-text-secondary);
+  --jp-ui-font-color2: var(--neon-text-tertiary);
+  --jp-ui-font-color3: var(--neon-text-muted);
+  --jp-ui-inverse-font-color0: var(--neon-text-inverse);
+  
+  /* Brand colors - Blue primary */
+  --jp-brand-color0: var(--neon-blue-600);
+  --jp-brand-color1: var(--neon-blue-500);
+  --jp-brand-color2: var(--neon-blue-400);
+  --jp-brand-color3: var(--neon-blue-glow);
+  
+  /* Accent colors */
+  --jp-accent-color0: var(--neon-purple-500);
+  --jp-accent-color1: var(--neon-purple-400);
+  --jp-accent-color2: var(--neon-lime-400);
+  --jp-accent-color3: var(--neon-orange-400);
+  
+  /* State colors */
+  --jp-warn-color0: var(--neon-orange-600);
+  --jp-warn-color1: var(--neon-orange-500);
+  --jp-warn-color2: var(--neon-orange-400);
+  --jp-warn-color3: rgba(245, 158, 11, 0.2);
+  
+  --jp-error-color0: #2d0a0a;
+  --jp-error-color1: #ef4444;
+  --jp-error-color2: #f87171;
+  --jp-error-color3: rgba(239, 68, 68, 0.2);
+  
+  --jp-success-color0: var(--neon-lime-600);
+  --jp-success-color1: var(--neon-lime-500);
+  --jp-success-color2: var(--neon-lime-400);
+  --jp-success-color3: rgba(16, 185, 129, 0.2);
+  
+  --jp-info-color0: var(--neon-purple-600);
+  --jp-info-color1: var(--neon-blue-500);
+  --jp-info-color2: var(--neon-blue-400);
+  --jp-info-color3: rgba(59, 130, 246, 0.2);
+  
+  /* Interactive elements */
+  --jp-input-background: var(--neon-bg-tertiary);
+  --jp-input-active-background: var(--neon-bg-elevated);
+  --jp-input-border-color: var(--jp-border-color1);
+  --jp-input-active-border-color: var(--neon-blue-400);
+  
+  --jp-cell-editor-background: var(--neon-bg-tertiary);
+  --jp-cell-editor-active-background: var(--neon-bg-elevated);
+  --jp-cell-editor-border-color: var(--jp-border-color1);
+  --jp-cell-editor-active-border-color: var(--neon-blue-400);
+  
+  /* Scrollbar */
+  --jp-scrollbar-bg: transparent;
+  --jp-scrollbar-color: var(--neon-text-muted);
+  --jp-scrollbar-hover-color: var(--neon-blue-500);
+  
+  /* Shadows - softer, more professional */
+  --jp-shadow-base-lightness: 0;
+  --jp-shadow-umbra-color: rgba(0, 0, 0, 0.4);
+  --jp-shadow-penumbra-color: rgba(0, 0, 0, 0.3);
+  --jp-shadow-ambient-color: rgba(0, 0, 0, 0.2);
+  
+  --jp-elevation-z0: none;
+  --jp-elevation-z1: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --jp-elevation-z2: 0 4px 6px rgba(0, 0, 0, 0.35);
+  --jp-elevation-z4: 0 10px 15px rgba(0, 0, 0, 0.4);
+  --jp-elevation-z6: 0 20px 25px rgba(0, 0, 0, 0.45);
+  
+  /* Selection */
+  --jp-editor-selected-background: rgba(59, 130, 246, 0.15);
+  --jp-editor-selected-focused-background: rgba(59, 130, 246, 0.25);
+  --jp-editor-cursor-color: var(--neon-blue-400);
+  
+  /* ============================================
+     AMPHI-SPECIFIC VARIABLES
+     ============================================ */
+  
+  /* Interactive elements */
+  --amphi-interactive-01: var(--neon-blue-500);
+  --amphi-interactive-02: var(--neon-purple-500);
+  --amphi-interactive-03: var(--neon-orange-500);
+  --amphi-interactive-04: var(--neon-lime-500);
+  
+  /* Background layers */
+  --amphi-ui-background: var(--neon-bg-primary);
+  --amphi-ui-01: var(--neon-bg-secondary);
+  --amphi-ui-02: var(--neon-bg-tertiary);
+  --amphi-ui-03: var(--neon-bg-elevated);
+  --amphi-ui-04: rgba(255, 255, 255, 0.08);
+  --amphi-ui-05: var(--neon-text-primary);
+  --amphi-ui-06: var(--neon-bg-secondary);
+  
+  /* Text */
+  --amphi-text-01: var(--neon-text-primary);
+  --amphi-text-02: var(--neon-text-secondary);
+  --amphi-text-03: var(--neon-text-tertiary);
+  --amphi-text-04: var(--neon-text-inverse);
+  --amphi-text-05: var(--neon-text-muted);
+  
+  /* Icons */
+  --amphi-icon-01: var(--neon-text-primary);
+  --amphi-icon-02: var(--neon-text-secondary);
+  --amphi-icon-03: var(--neon-text-inverse);
+  
+  /* Links */
+  --amphi-link-01: var(--neon-blue-400);
+  --amphi-link-02: var(--neon-link);
+  --amphi-inverse-link: var(--neon-blue-400);
+  
+  /* Fields */
+  --amphi-field-01: var(--neon-bg-tertiary);
+  --amphi-field-02: var(--neon-bg-elevated);
+  
+  /* Support colors */
+  --amphi-support-01: var(--neon-orange-500);
+  --amphi-support-02: var(--neon-lime-500);
+  --amphi-support-03: var(--neon-orange-400);
+  --amphi-support-04: var(--neon-blue-500);
+  
+  /* Danger */
+  --amphi-danger-01: #ef4444;
+  --amphi-danger-02: #f87171;
+  
+  /* Focus */
+  --amphi-focus: var(--neon-blue-400);
+  
+  /* Hover states */
+  --amphi-hover-primary: var(--neon-blue-400);
+  --amphi-hover-secondary: var(--neon-link);
+  --amphi-hover-ui: rgba(59, 130, 246, 0.1);
+  
+  /* Active states */
+  --amphi-active-primary: var(--neon-blue-600);
+  --amphi-active-secondary: var(--neon-purple-500);
+  
+  /* Borders */
+  --amphi-border-subtle: rgba(255, 255, 255, 0.05);
+  --amphi-border-strong: rgba(255, 255, 255, 0.1);
+  --amphi-border-interactive: var(--neon-blue-400);
+  
+  /* Skeleton/Loading */
+  --amphi-skeleton-01: var(--neon-bg-tertiary);
+  --amphi-skeleton-02: var(--neon-bg-elevated);
+  
+  /* Overlay */
+  --amphi-overlay-01: rgba(15, 17, 23, 0.95);
+  
+  /* Brand */
+  --amphi-brand-01: var(--neon-blue-500);
+  --amphi-brand-02: var(--neon-blue-400);
+  --amphi-brand-03: var(--neon-link);
+  
+  /* ============================================
+     SIZING & SPACING
+     ============================================ */
+  
+  --jp-private-menubar-height: 48px;
+  --jp-private-menu-item-height: 36px;
+  --jp-private-toolbar-height: 48px;
+  --jp-private-horizontal-tab-height: 36px;
+  --jp-private-sidebar-tab-width: 52px;
+  --jp-private-sidebar-tab-height: 52px;
+  --jp-private-input-height: 40px;
+  --jp-private-split-panel-color: var(--neon-bg-elevated);
+  
+  --jp-cell-padding: 12px;
+  --jp-cell-collapser-width: 8px;
+  --jp-cell-prompt-width: 72px;
+  
+  --jp-notebook-padding: 16px;
+  --jp-console-padding: 16px;
+  
+  --jp-toolbar-micro-height: 8px;
+  --jp-sidebar-min-width: 320px;
+  --jp-statusbar-height: 28px;
+  
+  /* Bottom panel */
+  --bottom-statusbar-height: 28px;
+  --footer-height: 100px;
+  --bottom-panel-height: calc(var(--bottom-statusbar-height) + var(--footer-height));
+  --header-panel-height: 48px;
+  --shell-header-height: 48px;
+}
+
+/*-----------------------------------------------------------------------------
+|  Neon Future Theme for Amphi ETL
+|  Optimized enterprise dark theme - clean, professional, blue-accented
+|  Aligned with reference design: deep indigo backgrounds, vibrant blue highlights
+|----------------------------------------------------------------------------*/
+
+/* ============================================
+   NOISE TEXTURE OVERLAY - Very subtle
+   ============================================ */
+
+/* Global noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: var(--neon-noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url%28%23noise%29%27/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+body {
+  background-color: var(--neon-bg-primary);
+  color: var(--neon-text-primary);
+  font-family: var(--jp-ui-font-family);
+  scrollbar-color: var(--neon-bg-input) transparent;
+  scrollbar-width: thin;
+}
+
+/* Custom scrollbar styling - minimal */
+body ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+body ::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+body ::-webkit-scrollbar-thumb {
+  background: var(--neon-bg-elevated);
+  border-radius: 3px;
+}
+
+body ::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-blue-500);
+}
+
+body ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ============================================
+   HEADER & MENU
+   ============================================ */
+
+#jp-top-panel {
+  background: var(--neon-bg-secondary);
+  border-bottom: 1px solid var(--jp-border-color1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 10;
+}
+
+/* Menu bar styling */
+.lm-MenuBar {
+  background: transparent;
+  padding: 0 8px;
+}
+
+.lm-MenuBar-item {
+  padding: 0 16px;
+  background: transparent;
+  transition: all 0.2s ease;
+  line-height: 46px;
+  position: relative;
+  color: var(--neon-text-secondary);
+  border-radius: 4px;
+  margin: 0 2px;
+}
+
+.lm-MenuBar-item:hover {
+  color: var(--neon-text-primary);
+  background: var(--neon-bg-tertiary);
+}
+
+.lm-MenuBar-item.lm-mod-active {
+  background: var(--neon-bg-tertiary);
+  color: var(--neon-text-primary);
+}
+
+/* Dropdown menu styling - clean dark */
+.lm-Menu {
+  background: var(--neon-glass-bg);
+  backdrop-filter: var(--neon-glass-blur);
+  border: 1px solid var(--neon-glass-border);
+  border-radius: var(--jp-border-radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  padding: 6px 0;
+}
+
+.lm-Menu-item {
+  padding: 8px 20px;
+  color: var(--neon-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.lm-Menu-item:not(.lm-mod-disabled):hover {
+  background: var(--neon-blue-500);
+  color: var(--neon-text-primary);
+}
+
+.lm-Menu-item[data-type='separator'] > div {
+  height: 1px;
+  background: var(--jp-border-color1);
+  margin: 6px 0;
+}
+
+/* ============================================
+   SIDEBAR - Reference style with blue selection
+   ============================================ */
+
+.jp-SideBar.lm-TabBar {
+  background: var(--neon-bg-secondary);
+  border-right: 1px solid var(--jp-border-color1);
+}
+
+.jp-SideBar .lm-TabBar-tab {
+  min-height: var(--jp-private-sidebar-tab-height);
+  margin: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neon-text-secondary);
+  transition: all 0.2s ease;
+  position: relative;
+  border-radius: 8px;
+  width: 36px;
+  height: var(--jp-private-sidebar-tab-height);
+}
+
+/* 未选中Tab的图标颜色 - 确保可见 */
+.jp-SideBar .lm-TabBar-tab svg {
+  fill: var(--neon-text-secondary) !important;
+  color: var(--neon-text-secondary) !important;
+}
+
+.jp-SideBar .lm-TabBar-tab:hover svg {
+  fill: var(--neon-text-primary) !important;
+  color: var(--neon-text-primary) !important;
+}
+
+/* 选中Tab的图标颜色 */
+.jp-SideBar .lm-TabBar-tab.lm-mod-current svg {
+  fill: var(--neon-text-primary) !important;
+  color: var(--neon-text-primary) !important;
+}
+
+.jp-SideBar .lm-TabBar-tab:hover {
+  color: var(--neon-text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Selected state - vibrant blue background like reference */
+.jp-SideBar .lm-TabBar-tab.lm-mod-current {
+  background: var(--neon-blue-500);
+  color: var(--neon-text-primary);
+}
+
+.jp-SideBar .lm-TabBar-tab.lm-mod-current:hover {
+  background: var(--neon-blue-500);
+}
+
+/* Icon container - ensure centered */
+.jp-SideBar .lm-TabBar-tab .lm-TabBar-tabIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Icon image/svg inside */
+.jp-SideBar .lm-TabBar-tab .lm-TabBar-tabIcon img,
+.jp-SideBar .lm-TabBar-tab .lm-TabBar-tabIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ============================================
+   MAIN DOCK PANEL & TABS
+   ============================================ */
+
+#jp-main-dock-panel {
+  background: var(--neon-bg-primary);
+}
+
+.lm-DockPanel-tabBar {
+  background: transparent;
+  border-bottom: 1px solid var(--neon-bg-elevated);
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab {
+  background: var(--neon-bg-tertiary);
+  margin-left: 2px;
+  margin-right: 2px;
+  border-radius: var(--jp-border-radius) var(--jp-border-radius) 0 0;
+  color: var(--neon-text-tertiary);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab:hover {
+  background: var(--neon-bg-elevated);
+  color: var(--neon-text-secondary);
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab.lm-mod-current {
+  background: var(--neon-bg-elevated);
+  color: var(--neon-text-primary);
+  border-top: 2px solid var(--neon-blue-400);
+}
+
+/* Tab close button */
+.lm-TabBar-tabCloseIcon {
+  color: var(--neon-text-muted);
+  transition: all 0.2s ease;
+}
+
+.lm-TabBar-tabCloseIcon:hover {
+  color: var(--neon-orange-400);
+}
+
+/* ============================================
+   TOOLBAR - Clean enterprise style
+   ============================================ */
+
+.jp-Toolbar {
+  background: var(--neon-bg-secondary);
+  border-bottom: 1px solid var(--jp-border-color1);
+  min-height: var(--jp-private-toolbar-height);
+  padding: 0 12px;
+}
+
+/* Toolbar buttons - clean style */
+.jp-ToolbarButtonComponent {
+  background: var(--neon-bg-tertiary) !important;
+  border: 1px solid var(--jp-border-color1) !important;
+  border-radius: var(--jp-border-radius) !important;
+  color: var(--neon-text-secondary) !important;
+  font-size: 13px !important;
+  height: 32px !important;
+  padding: 0 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+.jp-ToolbarButtonComponent:hover {
+  background: var(--neon-bg-elevated) !important;
+  border-color: var(--neon-blue-400) !important;
+  color: var(--neon-text-primary) !important;
+}
+
+.jp-ToolbarButtonComponent:active {
+  background: var(--neon-bg-elevated) !important;
+  transform: translateY(1px);
+}
+
+/* Primary action button - vibrant blue */
+.jp-FileBrowser-toolbar .jp-ToolbarButtonComponent[data-command='launcher:create'] {
+  background: var(--neon-blue-500) !important;
+  border: none !important;
+  color: var(--neon-text-primary) !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+}
+
+.jp-FileBrowser-toolbar .jp-ToolbarButtonComponent[data-command='launcher:create']:hover {
+  background: var(--neon-blue-400) !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+}
+
+/* ============================================
+   FILE BROWSER
+   ============================================ */
+
+.jp-FileBrowser {
+  background: var(--neon-bg-secondary);
+  padding: 16px;
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar {
+  background: transparent;
+  border: none;
+}
+
+/* Breadcrumbs */
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs {
+  margin: 12px 0;
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item,
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home {
+  color: var(--neon-text-tertiary);
+  transition: all 0.2s ease;
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item:hover,
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home:hover {
+  color: var(--neon-blue-400);
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item:nth-last-child(2),
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home:nth-last-child(2) {
+  color: var(--neon-blue-400);
+}
+
+/* Directory listing */
+.jp-FileBrowser .jp-DirListing-header {
+  background: var(--neon-bg-tertiary);
+  border-radius: var(--jp-border-radius) var(--jp-border-radius) 0 0;
+  border-bottom: 1px solid var(--jp-border-color1);
+  min-height: 40px;
+}
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem {
+  color: var(--neon-text-secondary);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.jp-FileBrowser .jp-DirListing-content {
+  background: var(--neon-bg-tertiary);
+  border-radius: 0 0 var(--jp-border-radius) var(--jp-border-radius);
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item {
+  min-height: 44px;
+  border-bottom: 1px solid var(--jp-border-color2);
+  color: var(--neon-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--neon-text-primary);
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-selected {
+  background: var(--neon-blue-500) !important;
+  color: var(--neon-text-primary);
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-running {
+  box-shadow: inset 3px 0 var(--neon-lime-400);
+}
+
+/* ============================================
+   INPUTS & FORM ELEMENTS
+   ============================================ */
+
+input.jp-mod-styled,
+.jp-DocumentSearch-input {
+  background: var(--neon-bg-input);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  color: var(--neon-text-primary);
+  font-size: var(--jp-ui-font-size1);
+  height: var(--jp-private-input-height);
+  padding: 0 14px;
+  transition: all 0.2s ease;
+}
+
+input.jp-mod-styled:focus,
+.jp-DocumentSearch-input:focus {
+  outline: none;
+  border-color: var(--neon-blue-400);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  background: var(--neon-bg-elevated);
+}
+
+input.jp-mod-styled::placeholder {
+  color: var(--neon-text-muted);
+}
+
+/* Search overlay */
+.jp-DocumentSearch-overlay {
+  background: var(--neon-glass-bg);
+  backdrop-filter: var(--neon-glass-blur);
+  border: 1px solid var(--neon-glass-border);
+  border-radius: var(--jp-border-radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper {
+  background: var(--neon-bg-input);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+}
+
+.jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper.jp-DocumentSearch-focused-input {
+  border-color: var(--neon-blue-400);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* ============================================
+   BUTTONS - Clean enterprise style
+   ============================================ */
+
+button.jp-mod-styled {
+  background: var(--neon-bg-tertiary);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  color: var(--neon-text-secondary);
+  font-size: var(--jp-ui-font-size1);
+  height: 36px;
+  padding: 0 18px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+button.jp-mod-styled:hover {
+  border-color: var(--neon-blue-400);
+  color: var(--neon-text-primary);
+  background: var(--neon-bg-elevated);
+}
+
+/* Primary button - vibrant blue */
+button.jp-mod-styled.jp-mod-accept {
+  background: var(--neon-blue-500);
+  border: none;
+  color: var(--neon-text-primary);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+button.jp-mod-styled.jp-mod-accept:hover {
+  background: var(--neon-blue-400);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+button.jp-mod-styled.jp-mod-reject {
+  background: transparent;
+  border: 1px solid var(--neon-blue-400);
+  color: var(--neon-blue-400);
+}
+
+button.jp-mod-styled.jp-mod-reject:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+button.jp-mod-styled.jp-mod-warn {
+  background: var(--neon-orange-500);
+  border: none;
+  color: var(--neon-text-primary);
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+}
+
+button.jp-mod-styled.jp-mod-warn:hover {
+  background: var(--neon-orange-400);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+}
+
+/* ============================================
+   DIALOGS
+   ============================================ */
+
+.jp-Dialog {
+  background: transparent;
+}
+
+.jp-Dialog-content {
+  background: var(--neon-glass-bg);
+  backdrop-filter: var(--neon-glass-blur);
+  border: 1px solid var(--neon-glass-border);
+  border-radius: var(--jp-border-radius);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.jp-Dialog-header {
+  color: var(--neon-text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 20px 20px 0;
+}
+
+.jp-Dialog-body {
+  background: transparent;
+  color: var(--neon-text-secondary);
+  padding: 16px 20px;
+}
+
+.jp-Dialog-footer {
+  background: transparent;
+  padding: 16px 20px 20px;
+}
+
+/* ============================================
+   CELLS
+   ============================================ */
+
+.jp-Cell {
+  background: var(--neon-bg-secondary);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  margin: 12px 0;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.jp-Cell:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.jp-Cell.jp-mod-active {
+  border-color: var(--neon-blue-400);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.jp-InputArea-prompt,
+.jp-OutputArea-prompt {
+  color: var(--neon-blue-400);
+  font-family: var(--jp-code-font-family);
+  font-weight: 500;
+}
+
+.jp-InputArea-editor,
+.jp-OutputArea-output {
+  background: var(--neon-bg-tertiary);
+  border-radius: var(--jp-border-radius);
+  border: 1px solid var(--jp-border-color1);
+}
+
+/* ============================================
+   STATUS BAR
+   ============================================ */
+
+#jp-main-statusbar {
+  background: var(--neon-bg-secondary);
+  border-top: 1px solid var(--jp-border-color1);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.2);
+  color: var(--neon-text-secondary);
+}
+
+/* ============================================
+   SPLIT PANEL HANDLES
+   ============================================ */
+
+.lm-SplitPanel-handle {
+  background: var(--neon-bg-elevated);
+  transition: all 0.2s ease;
+}
+
+.lm-SplitPanel-handle:hover {
+  background: var(--neon-blue-500);
+}
+
+.lm-SplitPanel-handle[data-orientation='vertical'] {
+  height: 2px !important;
+}
+
+.lm-SplitPanel-handle[data-orientation='horizontal'] {
+  width: 2px !important;
+}
+
+/* ============================================
+   ANIMATIONS - Minimal
+   ============================================ */
+
+/* Loading spinner */
+.jp-SpinnerContent {
+  background: var(--neon-blue-400);
+  border-radius: 50%;
+}
+
+.jp-SpinnerContent::before {
+  background: var(--neon-blue-400);
+}
+
+/* ============================================
+   RUNNING SESSIONS
+   ============================================ */
+
+.jp-RunningSessions-section {
+  background: var(--neon-bg-secondary);
+  border-radius: var(--jp-border-radius);
+  border: 1px solid var(--jp-border-color1);
+}
+
+.jp-RunningSessions-sectionHeader {
+  background: var(--neon-bg-tertiary);
+  border-radius: var(--jp-border-radius) var(--jp-border-radius) 0 0;
+  border-bottom: 1px solid var(--jp-border-color1);
+}
+
+.jp-RunningSessions-sectionHeader h2 {
+  color: var(--neon-text-secondary);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.jp-RunningSessions-item {
+  border-bottom: 1px solid var(--jp-border-color2);
+  color: var(--neon-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.jp-RunningSessions-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--neon-text-primary);
+}
+
+.jp-RunningSessions-shutdownAll.jp-mod-styled {
+  color: var(--neon-orange-400);
+}
+
+.jp-RunningSessions-shutdownAll.jp-mod-styled:hover {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+/* ============================================
+   SWITCH/TOGGLE
+   ============================================ */
+
+.jp-switch[aria-checked='true'] .jp-switch-track {
+  background: var(--neon-blue-500);
+}
+
+.jp-switch .jp-switch-thumb {
+  background: var(--neon-text-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   FILTER BOX
+   ============================================ */
+
+.jp-FilterBox {
+  background: var(--neon-bg-input) !important;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+}
+
+.jp-FilterBox:focus-within {
+  border-color: var(--neon-blue-400);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.jp-FilterBox input {
+  background: transparent;
+  color: var(--neon-text-primary);
+}
+
+.jp-FilterBox input::placeholder {
+  color: var(--neon-text-muted);
+}
+
+/* ============================================
+   NOTIFICATIONS & TOASTS
+   ============================================ */
+
+.jp-ToastNotification {
+  background: var(--neon-bg-secondary);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.jp-ToastNotification-info {
+  border-left: 3px solid var(--neon-blue-400);
+}
+
+.jp-ToastNotification-success {
+  border-left: 3px solid var(--neon-lime-400);
+}
+
+.jp-ToastNotification-warning {
+  border-left: 3px solid var(--neon-orange-400);
+}
+
+.jp-ToastNotification-error {
+  border-left: 3px solid var(--neon-orange-400);
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+  :root {
+    --jp-private-sidebar-tab-width: 44px;
+    --jp-private-sidebar-tab-height: 44px;
+    --jp-private-toolbar-height: 40px;
+  }
+  
+  .lm-MenuBar-item {
+    padding: 0 12px;
+    font-size: 12px;
+  }
+}
+

@@ -1,7 +1,7 @@
 /*
 Editor components styles
+Supports both Light and Neon Future themes
 */
-
 
 .react-flow__node {
   z-index: 1000 !important;
@@ -433,4 +433,538 @@ input:checked+label {
 .lm-ScrollBar-track,
 .lm-ScrollBar-button {
   display: none; /* Hide custom buttons and tracks */
+}
+
+/* ============================================
+   NEON FUTURE THEME ADAPTATIONS
+   ============================================ */
+
+/* Component Palette Sidebar - Dark Theme */
+.neon-future-theme .sidebar,
+body.neon-future-theme .sidebar {
+  background-color: var(--neon-bg-secondary, #1a1d29);
+  border-right: 1px solid var(--neon-bg-elevated, #2d3347);
+  border-left: 1px solid var(--neon-bg-elevated, #2d3347);
+}
+
+/* Palette search header */
+.neon-future-theme .sidebar .sidebar-header,
+body.neon-future-theme .sidebar .sidebar-header {
+  background-color: var(--neon-bg-secondary, #1a1d29) !important;
+}
+
+/* Search input in sidebar */
+.neon-future-theme .sidebar .ant-input,
+body.neon-future-theme .sidebar .ant-input {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-primary, #fff);
+}
+
+.neon-future-theme .sidebar .ant-input::placeholder,
+body.neon-future-theme .sidebar .ant-input::placeholder {
+  color: var(--neon-text-muted, #6b7280);
+}
+
+/* Refresh button in sidebar */
+.neon-future-theme .sidebar .ant-btn-default,
+body.neon-future-theme .sidebar .ant-btn-default {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .sidebar .ant-btn-default:hover,
+body.neon-future-theme .sidebar .ant-btn-default:hover {
+  background-color: var(--neon-bg-elevated, #2d3347);
+  border-color: var(--neon-blue-400, #3b82f6);
+  color: var(--neon-text-primary, #fff);
+}
+
+/* Collapse/Accordion in sidebar */
+.neon-future-theme .sidebar .ant-collapse,
+body.neon-future-theme .sidebar .ant-collapse {
+  background-color: transparent;
+}
+
+.neon-future-theme .sidebar .ant-collapse-item,
+body.neon-future-theme .sidebar .ant-collapse-item {
+  border-color: var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .sidebar .ant-collapse-header,
+body.neon-future-theme .sidebar .ant-collapse-header {
+  color: var(--neon-text-primary, #fff) !important;
+}
+
+.neon-future-theme .sidebar .ant-collapse-content,
+body.neon-future-theme .sidebar .ant-collapse-content {
+  background-color: transparent;
+  border-color: var(--neon-bg-elevated, #2d3347);
+}
+
+/* Component grid items (square buttons) */
+.neon-future-theme .palette-component-square,
+body.neon-future-theme .palette-component-square {
+  background-color: var(--neon-bg-tertiary, #252a3c) !important;
+  border-color: var(--neon-bg-elevated, #2d3347) !important;
+}
+
+.neon-future-theme .palette-component-square:hover,
+body.neon-future-theme .palette-component-square:hover {
+  background-color: var(--neon-bg-elevated, #2d3347) !important;
+  border-color: var(--neon-blue-400, #3b82f6) !important;
+}
+
+/* Subcategory labels */
+.neon-future-theme .sidebar .subcategory-label,
+body.neon-future-theme .sidebar .subcategory-label {
+  color: var(--neon-text-tertiary, #9ca3af);
+}
+
+/* Component names */
+.neon-future-theme .palette-component-square .component-name,
+body.neon-future-theme .palette-component-square .component-name {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+/* ============================================
+   REACT FLOW CONTROLS (Zoom buttons)
+   ============================================ */
+
+.neon-future-theme .react-flow__controls,
+body.neon-future-theme .react-flow__controls {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border: 1px solid var(--neon-bg-elevated, #2d3347);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.neon-future-theme .react-flow__controls-button,
+body.neon-future-theme .react-flow__controls-button {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .react-flow__controls-button:hover,
+body.neon-future-theme .react-flow__controls-button:hover {
+  background-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-primary, #fff);
+}
+
+.neon-future-theme .react-flow__controls-button svg,
+body.neon-future-theme .react-flow__controls-button svg {
+  fill: var(--neon-text-secondary, #e2e4ea);
+}
+
+/* ============================================
+   NODE CONFIGURATION MODAL / FORMS
+   ============================================ */
+
+/* Modal background */
+.neon-future-theme .react-flow__node-config-modal,
+body.neon-future-theme .react-flow__node-config-modal,
+.neon-future-theme .ant-modal-content,
+body.neon-future-theme .ant-modal-content {
+  background-color: var(--neon-bg-secondary, #1a1d29);
+  border: 1px solid var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .ant-modal-header,
+body.neon-future-theme .ant-modal-header {
+  background-color: var(--neon-bg-secondary, #1a1d29);
+  border-bottom: 1px solid var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .ant-modal-title,
+body.neon-future-theme .ant-modal-title {
+  color: var(--neon-text-primary, #fff);
+}
+
+.neon-future-theme .ant-modal-close,
+body.neon-future-theme .ant-modal-close {
+  color: var(--neon-text-tertiary, #9ca3af);
+}
+
+.neon-future-theme .ant-modal-close:hover,
+body.neon-future-theme .ant-modal-close:hover {
+  color: var(--neon-text-primary, #fff);
+  background-color: var(--neon-bg-elevated, #2d3347);
+}
+
+/* Form elements in node config */
+.neon-future-theme .ant-form,
+body.neon-future-theme .ant-form {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .ant-form-item-label > label,
+body.neon-future-theme .ant-form-item-label > label {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+/* Input fields */
+.neon-future-theme .ant-input,
+body.neon-future-theme .ant-input {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-primary, #fff);
+}
+
+.neon-future-theme .ant-input:hover,
+.neon-future-theme .ant-input:focus,
+body.neon-future-theme .ant-input:hover,
+body.neon-future-theme .ant-input:focus {
+  border-color: var(--neon-blue-400, #3b82f6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.neon-future-theme .ant-input::placeholder,
+body.neon-future-theme .ant-input::placeholder {
+  color: var(--neon-text-muted, #6b7280);
+}
+
+/* Input with prefix/suffix */
+.neon-future-theme .ant-input-affix-wrapper,
+body.neon-future-theme .ant-input-affix-wrapper {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .ant-input-affix-wrapper .ant-input,
+body.neon-future-theme .ant-input-affix-wrapper .ant-input {
+  background-color: transparent;
+}
+
+.neon-future-theme .ant-input-affix-wrapper:hover,
+.neon-future-theme .ant-input-affix-wrapper:focus,
+body.neon-future-theme .ant-input-affix-wrapper:hover,
+body.neon-future-theme .ant-input-affix-wrapper:focus {
+  border-color: var(--neon-blue-400, #3b82f6);
+}
+
+/* Search button in input */
+.neon-future-theme .ant-input-search-button,
+body.neon-future-theme .ant-input-search-button {
+  background-color: var(--neon-bg-elevated, #2d3347);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .ant-input-search-button:hover,
+body.neon-future-theme .ant-input-search-button:hover {
+  background-color: var(--neon-blue-500, #2563eb);
+  border-color: var(--neon-blue-500, #2563eb);
+  color: #fff;
+}
+
+/* Select dropdown */
+.neon-future-theme .ant-select:not(.ant-select-customize-input) .ant-select-selector,
+body.neon-future-theme .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-primary, #fff);
+}
+
+.neon-future-theme .ant-select:hover .ant-select-selector,
+body.neon-future-theme .ant-select:hover .ant-select-selector {
+  border-color: var(--neon-blue-400, #3b82f6);
+}
+
+.neon-future-theme .ant-select-focused .ant-select-selector,
+body.neon-future-theme .ant-select-focused .ant-select-selector {
+  border-color: var(--neon-blue-400, #3b82f6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* Select dropdown menu */
+.neon-future-theme .ant-select-dropdown,
+body.neon-future-theme .ant-select-dropdown {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border: 1px solid var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .ant-select-item,
+body.neon-future-theme .ant-select-item {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .ant-select-item:hover,
+body.neon-future-theme .ant-select-item:hover {
+  background-color: var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .ant-select-item-option-selected,
+body.neon-future-theme .ant-select-item-option-selected {
+  background-color: var(--neon-blue-500, #2563eb);
+  color: #fff;
+}
+
+/* Buttons in forms */
+.neon-future-theme .ant-btn-default,
+body.neon-future-theme .ant-btn-default {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .ant-btn-default:hover,
+body.neon-future-theme .ant-btn-default:hover {
+  background-color: var(--neon-bg-elevated, #2d3347);
+  border-color: var(--neon-blue-400, #3b82f6);
+  color: var(--neon-text-primary, #fff);
+}
+
+.neon-future-theme .ant-btn-primary,
+body.neon-future-theme .ant-btn-primary {
+  background-color: var(--neon-blue-500, #2563eb);
+  border-color: var(--neon-blue-500, #2563eb);
+}
+
+.neon-future-theme .ant-btn-primary:hover,
+body.neon-future-theme .ant-btn-primary:hover {
+  background-color: var(--neon-blue-400, #3b82f6);
+  border-color: var(--neon-blue-400, #3b82f6);
+}
+
+/* Switch toggle */
+.neon-future-theme .ant-switch,
+body.neon-future-theme .ant-switch {
+  background-color: var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .ant-switch-checked,
+body.neon-future-theme .ant-switch-checked {
+  background-color: var(--neon-blue-500, #2563eb);
+}
+
+/* Checkbox */
+.neon-future-theme .ant-checkbox-wrapper,
+body.neon-future-theme .ant-checkbox-wrapper {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .ant-checkbox-inner,
+body.neon-future-theme .ant-checkbox-inner {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .ant-checkbox-checked .ant-checkbox-inner,
+body.neon-future-theme .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--neon-blue-500, #2563eb);
+  border-color: var(--neon-blue-500, #2563eb);
+}
+
+/* Radio buttons */
+.neon-future-theme .ant-radio-wrapper,
+body.neon-future-theme .ant-radio-wrapper {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .ant-radio-inner,
+body.neon-future-theme .ant-radio-inner {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .ant-radio-checked .ant-radio-inner,
+body.neon-future-theme .ant-radio-checked .ant-radio-inner {
+  border-color: var(--neon-blue-500, #2563eb);
+}
+
+.neon-future-theme .ant-radio-inner::after,
+body.neon-future-theme .ant-radio-inner::after {
+  background-color: var(--neon-blue-500, #2563eb);
+}
+
+/* Tooltips */
+.neon-future-theme .ant-tooltip-inner,
+body.neon-future-theme .ant-tooltip-inner {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border: 1px solid var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-primary, #fff);
+}
+
+/* Node toolbar (when node is selected) */
+.neon-future-theme .react-flow__node-toolbar,
+body.neon-future-theme .react-flow__node-toolbar {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border: 1px solid var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .react-flow__node-toolbar button,
+body.neon-future-theme .react-flow__node-toolbar button {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .react-flow__node-toolbar button:hover,
+body.neon-future-theme .react-flow__node-toolbar button:hover {
+  background-color: var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .react-flow__node-toolbar svg,
+body.neon-future-theme .react-flow__node-toolbar svg {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+/* Minimap */
+.neon-future-theme .react-flow__minimap,
+body.neon-future-theme .react-flow__minimap {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border: 1px solid var(--neon-bg-elevated, #2d3347);
+}
+
+/* ============================================
+   NODE COMPONENT STYLES (Dark Theme)
+   ============================================ */
+
+.neon-future-theme .component,
+body.neon-future-theme .component {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-primary, #fff);
+}
+
+/* Component label - 组件名称白色 */
+.neon-future-theme .component_label,
+body.neon-future-theme .component_label,
+.neon-future-theme .react-flow__node .component_label,
+body.neon-future-theme .react-flow__node .component_label,
+.neon-future-theme .component .component_label,
+body.neon-future-theme .component .component_label {
+  color: #ffffff !important;
+}
+
+/* Component header - 组件标题白色 */
+.neon-future-theme .component__header,
+body.neon-future-theme .component__header,
+.neon-future-theme .component .component__header,
+body.neon-future-theme .component .component__header {
+  border-bottom-color: var(--neon-bg-elevated, #2d3347);
+  color: #ffffff !important;
+}
+
+/* Component body text */
+.neon-future-theme .component,
+body.neon-future-theme .component,
+.neon-future-theme .component .component__body,
+body.neon-future-theme .component .component__body {
+  color: var(--neon-text-primary, #fff);
+}
+
+/* 确保所有在组件内的文字都是白色 */
+.neon-future-theme .component *,
+body.neon-future-theme .component * {
+  color: inherit;
+}
+
+.neon-future-theme .component .component_label,
+body.neon-future-theme .component .component_label {
+  color: #ffffff !important;
+}
+
+/* ============================================
+   INPUT PLACEHOLDER - Dark Theme
+   ============================================ */
+
+/* 最高优先级覆盖 - 确保placeholder在任何场景下可见 */
+.neon-future-theme .ant-input::placeholder,
+body.neon-future-theme .ant-input::placeholder,
+.neon-future-theme input::placeholder,
+body.neon-future-theme input::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+.neon-future-theme .ant-input-affix-wrapper .ant-input::placeholder,
+body.neon-future-theme .ant-input-affix-wrapper .ant-input::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+/* Target placeholder in node config forms specifically */
+.neon-future-theme .react-flow__node .ant-input::placeholder,
+body.neon-future-theme .react-flow__node .ant-input::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+/* 组件配置对话框中的placeholder - 最高优先级 */
+.neon-future-theme [class*="node-config"] .ant-input::placeholder,
+body.neon-future-theme [class*="node-config"] .ant-input::placeholder,
+.neon-future-theme .ant-modal-content .ant-input::placeholder,
+body.neon-future-theme .ant-modal-content .ant-input::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+/* ============================================
+   PALETTE TABS - Dark Theme
+   ============================================ */
+
+.neon-future-theme .component-palette-horizontal .ant-tabs-nav,
+body.neon-future-theme .component-palette-horizontal .ant-tabs-nav {
+  background-color: var(--neon-bg-secondary, #1a1d29);
+  border-bottom: 1px solid var(--neon-bg-elevated, #2d3347);
+  margin: 0;
+}
+
+.neon-future-theme .component-palette-horizontal .ant-tabs-tab,
+body.neon-future-theme .component-palette-horizontal .ant-tabs-tab {
+  color: var(--neon-text-tertiary, #9ca3af);
+  background-color: transparent;
+  border: none;
+  padding: 8px 16px;
+}
+
+.neon-future-theme .component-palette-horizontal .ant-tabs-tab:hover,
+body.neon-future-theme .component-palette-horizontal .ant-tabs-tab:hover {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .component-palette-horizontal .ant-tabs-tab.ant-tabs-tab-active,
+body.neon-future-theme .component-palette-horizontal .ant-tabs-tab.ant-tabs-tab-active {
+  color: var(--neon-blue-400, #3b82f6);
+  background-color: var(--neon-bg-tertiary, #252a3c);
+}
+
+.neon-future-theme .component-palette-horizontal .ant-tabs-ink-bar,
+body.neon-future-theme .component-palette-horizontal .ant-tabs-ink-bar {
+  background-color: var(--neon-blue-400, #3b82f6);
+}
+
+/* Tab content area */
+.neon-future-theme .component-palette-horizontal .ant-tabs-content-holder,
+body.neon-future-theme .component-palette-horizontal .ant-tabs-content-holder {
+  background-color: var(--neon-bg-secondary, #1a1d29);
+}
+
+/* Scrollbar for horizontal palette */
+.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar,
+body.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar-track,
+body.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar-thumb,
+body.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--neon-bg-elevated, #2d3347);
+  border-radius: 3px;
+}
+
+.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar-thumb:hover,
+body.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--neon-blue-500, #2563eb);
 }

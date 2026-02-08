@@ -1,0 +1,461 @@
+/*
+ * AI Assistant Theme Adaptation
+ * Supports both Amphi Light and Neon Future themes
+ */
+
+/* ============================================
+   LIGHT THEME - AI CHAT MODAL
+   ============================================ */
+
+/* Chat modal content area - add border */
+.ai-chat-modal .ant-modal-content {
+  background: var(--jp-layout-color1, #fff);
+  border: 1px solid var(--jp-border-color1, #e0e0e0);
+}
+
+/* Left content panel - add border */
+.ai-chat-modal .ant-layout-content {
+  border-right: 1px solid var(--jp-border-color2, #e8e8e8);
+}
+
+/* Right sidebar */
+.ai-chat-modal .ant-layout-sider {
+  background: var(--jp-layout-color0, #fff) !important;
+}
+
+/* Chat messages area - add subtle background */
+.ai-chat-messages {
+  background: var(--jp-layout-color1, #fafafa);
+  border-right: 1px solid var(--jp-border-color2, #e8e8e8);
+}
+
+/* User message in light theme */
+.ai-chat-message-user {
+  background: #1890ff;
+  color: #fff;
+  border-radius: 8px 8px 0 8px;
+}
+
+/* Assistant message in light theme */
+.ai-chat-message-assistant {
+  background: var(--jp-layout-color1, #fff);
+  border: 1px solid var(--jp-border-color2, #e8e8e8);
+  border-radius: 8px 8px 8px 0;
+}
+
+/* Input area in light theme */
+.ai-chat-input-area {
+  background: var(--jp-layout-color0, #fff);
+  border-top: 1px solid var(--jp-border-color2, #e8e8e8);
+}
+
+/* Sidebar tabs in light theme */
+.ai-chat-tabs .ant-tabs-nav {
+  border-bottom: 1px solid var(--jp-border-color2, #e8e8e8);
+}
+
+/* Form elements in light theme */
+.ai-chat-config .ant-select:not(.ant-select-customize-input) .ant-select-selector,
+.ai-chat-config .ant-input,
+.ai-chat-config .ant-input-password {
+  background: var(--jp-layout-color1, #fff);
+  border: 1px solid var(--jp-border-color1, #d9d9d9);
+}
+
+/* Progress bar in light theme */
+.ai-chat-progress .ant-progress-outer,
+.ai-chat-progress .ant-progress-inner {
+  background: var(--jp-layout-color2, #f0f0f0);
+  border-radius: 100px;
+}
+
+.ai-chat-progress .ant-progress-bg {
+  background: #1890ff !important;
+  border-radius: 100px;
+  height: 8px !important;
+}
+
+/* ============================================
+   NEON FUTURE THEME - AI CHAT MODAL
+   ============================================ */
+
+/* Modal container */
+.neon-future-theme .ai-chat-modal .ant-modal-content,
+body.neon-future-theme .ai-chat-modal .ant-modal-content {
+  background: var(--neon-bg-secondary, #1a1d29) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+}
+
+/* Header */
+.neon-future-theme .ai-chat-modal .ant-modal-header,
+body.neon-future-theme .ai-chat-modal .ant-modal-header {
+  background: var(--neon-bg-secondary, #1a1d29) !important;
+  border-bottom: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+}
+
+.neon-future-theme .ai-chat-modal .ant-modal-title,
+body.neon-future-theme .ai-chat-modal .ant-modal-title {
+  color: var(--neon-text-primary, #fff) !important;
+}
+
+/* Layout backgrounds */
+.neon-future-theme .ai-chat-modal .ant-layout,
+body.neon-future-theme .ai-chat-modal .ant-layout {
+  background: transparent !important;
+}
+
+.neon-future-theme .ai-chat-modal .ant-layout-content,
+body.neon-future-theme .ai-chat-modal .ant-layout-content {
+  background: var(--neon-bg-primary, #0f1117) !important;
+  border-right: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+}
+
+/* Right sidebar */
+.neon-future-theme .ai-chat-modal .ant-layout-sider,
+body.neon-future-theme .ai-chat-modal .ant-layout-sider {
+  background: var(--neon-bg-secondary, #1a1d29) !important;
+}
+
+/* ============================================
+   SIDEBAR TABS - FIXED FOR NEON THEME
+   ============================================ */
+
+/* Tab container */
+.neon-future-theme .ai-chat-tabs .ant-tabs-nav,
+body.neon-future-theme .ai-chat-tabs .ant-tabs-nav {
+  background: transparent !important;
+  border-bottom: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  margin-bottom: 12px;
+}
+
+/* Unselected tab - WHITE COLOR */
+.neon-future-theme .ai-chat-tabs .ant-tabs-tab,
+body.neon-future-theme .ai-chat-tabs .ant-tabs-tab,
+.neon-future-theme .ai-chat-modal .ai-chat-tabs .ant-tabs-tab,
+body.neon-future-theme .ai-chat-modal .ai-chat-tabs .ant-tabs-tab {
+  color: #ffffff !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  opacity: 0.85;
+}
+
+/* Unselected tab hover */
+.neon-future-theme .ai-chat-tabs .ant-tabs-tab:hover,
+body.neon-future-theme .ai-chat-tabs .ant-tabs-tab:hover,
+.neon-future-theme .ai-chat-modal .ai-chat-tabs .ant-tabs-tab:hover,
+body.neon-future-theme .ai-chat-modal .ai-chat-tabs .ant-tabs-tab:hover {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
+/* Active tab */
+.neon-future-theme .ai-chat-tabs .ant-tabs-tab.ant-tabs-tab-active,
+body.neon-future-theme .ai-chat-tabs .ant-tabs-tab.ant-tabs-tab-active,
+.neon-future-theme .ai-chat-modal .ai-chat-tabs .ant-tabs-tab.ant-tabs-tab-active,
+body.neon-future-theme .ai-chat-modal .ai-chat-tabs .ant-tabs-tab.ant-tabs-tab-active {
+  color: var(--neon-blue-400, #3b82f6) !important;
+  background: var(--neon-bg-tertiary, #252a3c) !important;
+  border-radius: 4px 4px 0 0;
+  opacity: 1;
+}
+
+/* Active tab text */
+.neon-future-theme .ai-chat-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn,
+body.neon-future-theme .ai-chat-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--neon-blue-400, #3b82f6) !important;
+}
+
+/* Tab ink bar */
+.neon-future-theme .ai-chat-tabs .ant-tabs-ink-bar,
+body.neon-future-theme .ai-chat-tabs .ant-tabs-ink-bar {
+  background: var(--neon-blue-400, #3b82f6) !important;
+  height: 2px !important;
+}
+
+/* ============================================
+   MESSAGES - NEON THEME
+   ============================================ */
+
+.neon-future-theme .ai-chat-message-user,
+body.neon-future-theme .ai-chat-message-user {
+  background: var(--neon-blue-500, #2563eb) !important;
+  color: #fff !important;
+}
+
+.neon-future-theme .ai-chat-message-assistant,
+body.neon-future-theme .ai-chat-message-assistant {
+  background: var(--neon-bg-tertiary, #252a3c) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  color: var(--neon-text-secondary, #e2e4ea) !important;
+}
+
+/* Input area */
+.neon-future-theme .ai-chat-input-area,
+body.neon-future-theme .ai-chat-input-area {
+  background: var(--neon-bg-secondary, #1a1d29) !important;
+  border-top: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+}
+
+.neon-future-theme .ai-chat-input-area .ant-input,
+body.neon-future-theme .ai-chat-input-area .ant-input {
+  background: var(--neon-bg-tertiary, #252a3c) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  color: var(--neon-text-primary, #fff) !important;
+}
+
+/* ============================================
+   BUTTONS - FIXED WHITE TEXT
+   ============================================ */
+
+/* Primary button - Blue background with WHITE text */
+.neon-future-theme .ai-chat-btn-primary,
+body.neon-future-theme .ai-chat-btn-primary,
+.neon-future-theme .ai-chat-config .ant-btn-primary,
+body.neon-future-theme .ai-chat-config .ant-btn-primary,
+.neon-future-theme .ai-chat-modal .ant-btn-primary,
+body.neon-future-theme .ai-chat-modal .ant-btn-primary {
+  background: var(--neon-blue-500, #2563eb) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Primary button text - FORCE WHITE */
+.neon-future-theme .ai-chat-btn-primary > span,
+body.neon-future-theme .ai-chat-btn-primary > span,
+.neon-future-theme .ai-chat-config .ant-btn-primary > span,
+body.neon-future-theme .ai-chat-config .ant-btn-primary > span,
+.neon-future-theme .ai-chat-btn-primary .ant-btn-icon,
+body.neon-future-theme .ai-chat-btn-primary .ant-btn-icon,
+.neon-future-theme .ai-chat-config .ant-btn-primary .ant-btn-icon,
+body.neon-future-theme .ai-chat-config .ant-btn-primary .ant-btn-icon {
+  color: #ffffff !important;
+}
+
+/* Primary button hover */
+.neon-future-theme .ai-chat-btn-primary:hover,
+body.neon-future-theme .ai-chat-btn-primary:hover,
+.neon-future-theme .ai-chat-config .ant-btn-primary:hover,
+body.neon-future-theme .ai-chat-config .ant-btn-primary:hover {
+  background: var(--neon-blue-400, #3b82f6) !important;
+  color: #ffffff !important;
+}
+
+/* Default/Secondary button */
+.neon-future-theme .ai-chat-btn-default,
+body.neon-future-theme .ai-chat-btn-default,
+.neon-future-theme .ai-chat-config .ant-btn-default:not(.ant-btn-primary),
+body.neon-future-theme .ai-chat-config .ant-btn-default:not(.ant-btn-primary) {
+  background: var(--neon-bg-tertiary, #252a3c) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  color: var(--neon-text-secondary, #e2e4ea) !important;
+}
+
+.neon-future-theme .ai-chat-btn-default:hover,
+body.neon-future-theme .ai-chat-btn-default:hover {
+  background: var(--neon-bg-elevated, #2d3347) !important;
+  border-color: var(--neon-blue-400, #3b82f6) !important;
+  color: #ffffff !important;
+}
+
+/* ============================================
+   FORM ELEMENTS - NEON THEME
+   ============================================ */
+
+/* Select */
+.neon-future-theme .ai-chat-config .ant-select:not(.ant-select-customize-input) .ant-select-selector,
+body.neon-future-theme .ai-chat-config .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  background: var(--neon-bg-tertiary, #252a3c) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  color: var(--neon-text-primary, #fff) !important;
+}
+
+/* Select dropdown */
+.neon-future-theme .ai-chat-config .ant-select-dropdown,
+body.neon-future-theme .ai-chat-config .ant-select-dropdown {
+  background: var(--neon-bg-tertiary, #252a3c) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+}
+
+.neon-future-theme .ai-chat-config .ant-select-item,
+body.neon-future-theme .ai-chat-config .ant-select-item {
+  color: var(--neon-text-secondary, #e2e4ea) !important;
+}
+
+.neon-future-theme .ai-chat-config .ant-select-item-option-selected,
+body.neon-future-theme .ai-chat-config .ant-select-item-option-selected {
+  background: var(--neon-blue-500, #2563eb) !important;
+  color: #ffffff !important;
+}
+
+/* Slider */
+.neon-future-theme .ai-chat-config .ant-slider-rail,
+body.neon-future-theme .ai-chat-config .ant-slider-rail {
+  background: var(--neon-bg-elevated, #2d3347) !important;
+  height: 8px !important;
+  border-radius: 4px !important;
+}
+
+.neon-future-theme .ai-chat-config .ant-slider-track,
+body.neon-future-theme .ai-chat-config .ant-slider-track {
+  background: var(--neon-blue-400, #3b82f6) !important;
+  height: 8px !important;
+  border-radius: 4px !important;
+}
+
+.neon-future-theme .ai-chat-config .ant-slider-handle,
+body.neon-future-theme .ai-chat-config .ant-slider-handle {
+  border-color: var(--neon-blue-400, #3b82f6) !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-top: -4px !important;
+}
+
+/* Input */
+.neon-future-theme .ai-chat-config .ant-input,
+body.neon-future-theme .ai-chat-config .ant-input {
+  background: var(--neon-bg-tertiary, #252a3c) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  color: var(--neon-text-primary, #fff) !important;
+}
+
+.neon-future-theme .ai-chat-config .ant-input::placeholder,
+body.neon-future-theme .ai-chat-config .ant-input::placeholder {
+  color: var(--neon-text-muted, #6b7280) !important;
+}
+
+/* Password input */
+.neon-future-theme .ai-chat-config .ant-input-password,
+body.neon-future-theme .ai-chat-config .ant-input-password {
+  background: var(--neon-bg-tertiary, #252a3c) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+}
+
+.neon-future-theme .ai-chat-config .ant-input-password .ant-input,
+body.neon-future-theme .ai-chat-config .ant-input-password .ant-input {
+  background: transparent !important;
+  color: var(--neon-text-primary, #fff) !important;
+}
+
+/* ============================================
+   PROGRESS BAR - FIXED
+   ============================================ */
+
+/* Progress container */
+.neon-future-theme .ai-chat-progress,
+body.neon-future-theme .ai-chat-progress {
+  width: 100% !important;
+}
+
+/* Progress outer - background track */
+.neon-future-theme .ai-chat-progress .ant-progress-outer,
+body.neon-future-theme .ai-chat-progress .ant-progress-outer,
+.neon-future-theme .ai-chat-progress .ant-progress-inner,
+body.neon-future-theme .ai-chat-progress .ant-progress-inner {
+  background: var(--neon-bg-elevated, #2d3347) !important;
+  border-radius: 100px !important;
+  height: 8px !important;
+}
+
+/* Progress bar fill */
+.neon-future-theme .ai-chat-progress .ant-progress-bg,
+body.neon-future-theme .ai-chat-progress .ant-progress-bg,
+.neon-future-theme .ai-chat-progress .ant-progress-success-bg,
+body.neon-future-theme .ai-chat-progress .ant-progress-success-bg {
+  background: var(--neon-blue-400, #3b82f6) !important;
+  border-radius: 100px !important;
+  height: 8px !important;
+}
+
+/* Progress text */
+.neon-future-theme .ai-chat-progress .ant-progress-text,
+body.neon-future-theme .ai-chat-progress .ant-progress-text {
+  color: var(--neon-text-secondary, #e2e4ea) !important;
+}
+
+/* ============================================
+   API KEY CONFIG BOX
+   ============================================ */
+
+.neon-future-theme .ai-chat-config .api-key-box,
+body.neon-future-theme .ai-chat-config .api-key-box {
+  background: var(--neon-bg-tertiary, #252a3c) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.neon-future-theme .ai-chat-config .api-key-status,
+body.neon-future-theme .ai-chat-config .api-key-status {
+  color: var(--neon-text-primary, #fff) !important;
+}
+
+/* ============================================
+   MESSAGES AREA
+   ============================================ */
+
+.neon-future-theme .ai-chat-messages,
+body.neon-future-theme .ai-chat-messages {
+  background: var(--neon-bg-primary, #0f1117) !important;
+}
+
+/* ============================================
+   SEND BUTTON
+   ============================================ */
+
+.neon-future-theme .ai-chat-send-btn,
+body.neon-future-theme .ai-chat-send-btn {
+  background: var(--neon-blue-500, #2563eb) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+}
+
+.neon-future-theme .ai-chat-send-btn:hover,
+body.neon-future-theme .ai-chat-send-btn:hover {
+  background: var(--neon-blue-400, #3b82f6) !important;
+  color: #ffffff !important;
+}
+
+/* ============================================
+   AI ASSISTANT FLOATING BUTTON
+   ============================================ */
+
+.ai-assistant-floating-btn {
+  position: fixed;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10000;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, var(--jp-layout-color2, #f0f0f0) 0%, var(--jp-layout-color1, #ffffff) 100%);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--jp-border-color1, #e0e0e0);
+}
+
+.ai-assistant-floating-btn:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+/* Neon theme floating button */
+.neon-future-theme .ai-assistant-floating-btn,
+body.neon-future-theme .ai-assistant-floating-btn {
+  background: var(--neon-blue-500, #2563eb) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+}
+
+.neon-future-theme .ai-assistant-floating-btn:hover,
+body.neon-future-theme .ai-assistant-floating-btn:hover {
+  background: var(--neon-blue-400, #3b82f6) !important;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5) !important;
+}

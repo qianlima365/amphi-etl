@@ -1,0 +1,709 @@
+/*-----------------------------------------------------------------------------
+|  Neon Future Theme for Amphi ETL
+|  Optimized enterprise dark theme - clean, professional, blue-accented
+|  Aligned with reference design: deep indigo backgrounds, vibrant blue highlights
+|----------------------------------------------------------------------------*/
+
+@import './variables.css';
+
+/* ============================================
+   NOISE TEXTURE OVERLAY - Very subtle
+   ============================================ */
+
+/* Global noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: var(--neon-noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+body {
+  background-color: var(--neon-bg-primary);
+  color: var(--neon-text-primary);
+  font-family: var(--jp-ui-font-family);
+  scrollbar-color: var(--neon-bg-input) transparent;
+  scrollbar-width: thin;
+}
+
+/* Custom scrollbar styling - minimal */
+body ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+body ::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+body ::-webkit-scrollbar-thumb {
+  background: var(--neon-bg-elevated);
+  border-radius: 3px;
+}
+
+body ::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-blue-500);
+}
+
+body ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ============================================
+   HEADER & MENU
+   ============================================ */
+
+#jp-top-panel {
+  background: var(--neon-bg-secondary);
+  border-bottom: 1px solid var(--jp-border-color1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 10;
+}
+
+/* Menu bar styling */
+.lm-MenuBar {
+  background: transparent;
+  padding: 0 8px;
+}
+
+.lm-MenuBar-item {
+  padding: 0 16px;
+  background: transparent;
+  transition: all 0.2s ease;
+  line-height: 46px;
+  position: relative;
+  color: var(--neon-text-secondary);
+  border-radius: 4px;
+  margin: 0 2px;
+}
+
+.lm-MenuBar-item:hover {
+  color: var(--neon-text-primary);
+  background: var(--neon-bg-tertiary);
+}
+
+.lm-MenuBar-item.lm-mod-active {
+  background: var(--neon-bg-tertiary);
+  color: var(--neon-text-primary);
+}
+
+/* Dropdown menu styling - clean dark */
+.lm-Menu {
+  background: var(--neon-glass-bg);
+  backdrop-filter: var(--neon-glass-blur);
+  border: 1px solid var(--neon-glass-border);
+  border-radius: var(--jp-border-radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  padding: 6px 0;
+}
+
+.lm-Menu-item {
+  padding: 8px 20px;
+  color: var(--neon-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.lm-Menu-item:not(.lm-mod-disabled):hover {
+  background: var(--neon-blue-500);
+  color: var(--neon-text-primary);
+}
+
+.lm-Menu-item[data-type='separator'] > div {
+  height: 1px;
+  background: var(--jp-border-color1);
+  margin: 6px 0;
+}
+
+/* ============================================
+   SIDEBAR - Reference style with blue selection
+   ============================================ */
+
+.jp-SideBar.lm-TabBar {
+  background: var(--neon-bg-secondary);
+  border-right: 1px solid var(--jp-border-color1);
+}
+
+.jp-SideBar .lm-TabBar-tab {
+  min-height: var(--jp-private-sidebar-tab-height);
+  margin: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neon-text-secondary);
+  transition: all 0.2s ease;
+  position: relative;
+  border-radius: 8px;
+  width: 36px;
+  height: var(--jp-private-sidebar-tab-height);
+}
+
+/* 未选中Tab的图标颜色 - 确保可见 */
+.jp-SideBar .lm-TabBar-tab svg {
+  fill: var(--neon-text-secondary) !important;
+  color: var(--neon-text-secondary) !important;
+}
+
+.jp-SideBar .lm-TabBar-tab:hover svg {
+  fill: var(--neon-text-primary) !important;
+  color: var(--neon-text-primary) !important;
+}
+
+/* 选中Tab的图标颜色 */
+.jp-SideBar .lm-TabBar-tab.lm-mod-current svg {
+  fill: var(--neon-text-primary) !important;
+  color: var(--neon-text-primary) !important;
+}
+
+.jp-SideBar .lm-TabBar-tab:hover {
+  color: var(--neon-text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Selected state - vibrant blue background like reference */
+.jp-SideBar .lm-TabBar-tab.lm-mod-current {
+  background: var(--neon-blue-500);
+  color: var(--neon-text-primary);
+}
+
+.jp-SideBar .lm-TabBar-tab.lm-mod-current:hover {
+  background: var(--neon-blue-500);
+}
+
+/* Icon container - ensure centered */
+.jp-SideBar .lm-TabBar-tab .lm-TabBar-tabIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Icon image/svg inside */
+.jp-SideBar .lm-TabBar-tab .lm-TabBar-tabIcon img,
+.jp-SideBar .lm-TabBar-tab .lm-TabBar-tabIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ============================================
+   MAIN DOCK PANEL & TABS
+   ============================================ */
+
+#jp-main-dock-panel {
+  background: var(--neon-bg-primary);
+}
+
+.lm-DockPanel-tabBar {
+  background: transparent;
+  border-bottom: 1px solid var(--neon-bg-elevated);
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab {
+  background: var(--neon-bg-tertiary);
+  margin-left: 2px;
+  margin-right: 2px;
+  border-radius: var(--jp-border-radius) var(--jp-border-radius) 0 0;
+  color: var(--neon-text-tertiary);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab:hover {
+  background: var(--neon-bg-elevated);
+  color: var(--neon-text-secondary);
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab.lm-mod-current {
+  background: var(--neon-bg-elevated);
+  color: var(--neon-text-primary);
+  border-top: 2px solid var(--neon-blue-400);
+}
+
+/* Tab close button */
+.lm-TabBar-tabCloseIcon {
+  color: var(--neon-text-muted);
+  transition: all 0.2s ease;
+}
+
+.lm-TabBar-tabCloseIcon:hover {
+  color: var(--neon-orange-400);
+}
+
+/* ============================================
+   TOOLBAR - Clean enterprise style
+   ============================================ */
+
+.jp-Toolbar {
+  background: var(--neon-bg-secondary);
+  border-bottom: 1px solid var(--jp-border-color1);
+  min-height: var(--jp-private-toolbar-height);
+  padding: 0 12px;
+}
+
+/* Toolbar buttons - clean style */
+.jp-ToolbarButtonComponent {
+  background: var(--neon-bg-tertiary) !important;
+  border: 1px solid var(--jp-border-color1) !important;
+  border-radius: var(--jp-border-radius) !important;
+  color: var(--neon-text-secondary) !important;
+  font-size: 13px !important;
+  height: 32px !important;
+  padding: 0 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+.jp-ToolbarButtonComponent:hover {
+  background: var(--neon-bg-elevated) !important;
+  border-color: var(--neon-blue-400) !important;
+  color: var(--neon-text-primary) !important;
+}
+
+.jp-ToolbarButtonComponent:active {
+  background: var(--neon-bg-elevated) !important;
+  transform: translateY(1px);
+}
+
+/* Primary action button - vibrant blue */
+.jp-FileBrowser-toolbar .jp-ToolbarButtonComponent[data-command='launcher:create'] {
+  background: var(--neon-blue-500) !important;
+  border: none !important;
+  color: var(--neon-text-primary) !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+}
+
+.jp-FileBrowser-toolbar .jp-ToolbarButtonComponent[data-command='launcher:create']:hover {
+  background: var(--neon-blue-400) !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+}
+
+/* ============================================
+   FILE BROWSER
+   ============================================ */
+
+.jp-FileBrowser {
+  background: var(--neon-bg-secondary);
+  padding: 16px;
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar {
+  background: transparent;
+  border: none;
+}
+
+/* Breadcrumbs */
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs {
+  margin: 12px 0;
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item,
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home {
+  color: var(--neon-text-tertiary);
+  transition: all 0.2s ease;
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item:hover,
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home:hover {
+  color: var(--neon-blue-400);
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item:nth-last-child(2),
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home:nth-last-child(2) {
+  color: var(--neon-blue-400);
+}
+
+/* Directory listing */
+.jp-FileBrowser .jp-DirListing-header {
+  background: var(--neon-bg-tertiary);
+  border-radius: var(--jp-border-radius) var(--jp-border-radius) 0 0;
+  border-bottom: 1px solid var(--jp-border-color1);
+  min-height: 40px;
+}
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem {
+  color: var(--neon-text-secondary);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.jp-FileBrowser .jp-DirListing-content {
+  background: var(--neon-bg-tertiary);
+  border-radius: 0 0 var(--jp-border-radius) var(--jp-border-radius);
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item {
+  min-height: 44px;
+  border-bottom: 1px solid var(--jp-border-color2);
+  color: var(--neon-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--neon-text-primary);
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-selected {
+  background: var(--neon-blue-500) !important;
+  color: var(--neon-text-primary);
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-running {
+  box-shadow: inset 3px 0 var(--neon-lime-400);
+}
+
+/* ============================================
+   INPUTS & FORM ELEMENTS
+   ============================================ */
+
+input.jp-mod-styled,
+.jp-DocumentSearch-input {
+  background: var(--neon-bg-input);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  color: var(--neon-text-primary);
+  font-size: var(--jp-ui-font-size1);
+  height: var(--jp-private-input-height);
+  padding: 0 14px;
+  transition: all 0.2s ease;
+}
+
+input.jp-mod-styled:focus,
+.jp-DocumentSearch-input:focus {
+  outline: none;
+  border-color: var(--neon-blue-400);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  background: var(--neon-bg-elevated);
+}
+
+input.jp-mod-styled::placeholder {
+  color: var(--neon-text-muted);
+}
+
+/* Search overlay */
+.jp-DocumentSearch-overlay {
+  background: var(--neon-glass-bg);
+  backdrop-filter: var(--neon-glass-blur);
+  border: 1px solid var(--neon-glass-border);
+  border-radius: var(--jp-border-radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper {
+  background: var(--neon-bg-input);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+}
+
+.jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper.jp-DocumentSearch-focused-input {
+  border-color: var(--neon-blue-400);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* ============================================
+   BUTTONS - Clean enterprise style
+   ============================================ */
+
+button.jp-mod-styled {
+  background: var(--neon-bg-tertiary);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  color: var(--neon-text-secondary);
+  font-size: var(--jp-ui-font-size1);
+  height: 36px;
+  padding: 0 18px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+button.jp-mod-styled:hover {
+  border-color: var(--neon-blue-400);
+  color: var(--neon-text-primary);
+  background: var(--neon-bg-elevated);
+}
+
+/* Primary button - vibrant blue */
+button.jp-mod-styled.jp-mod-accept {
+  background: var(--neon-blue-500);
+  border: none;
+  color: var(--neon-text-primary);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+button.jp-mod-styled.jp-mod-accept:hover {
+  background: var(--neon-blue-400);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+button.jp-mod-styled.jp-mod-reject {
+  background: transparent;
+  border: 1px solid var(--neon-blue-400);
+  color: var(--neon-blue-400);
+}
+
+button.jp-mod-styled.jp-mod-reject:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+button.jp-mod-styled.jp-mod-warn {
+  background: var(--neon-orange-500);
+  border: none;
+  color: var(--neon-text-primary);
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+}
+
+button.jp-mod-styled.jp-mod-warn:hover {
+  background: var(--neon-orange-400);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+}
+
+/* ============================================
+   DIALOGS
+   ============================================ */
+
+.jp-Dialog {
+  background: transparent;
+}
+
+.jp-Dialog-content {
+  background: var(--neon-glass-bg);
+  backdrop-filter: var(--neon-glass-blur);
+  border: 1px solid var(--neon-glass-border);
+  border-radius: var(--jp-border-radius);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.jp-Dialog-header {
+  color: var(--neon-text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 20px 20px 0;
+}
+
+.jp-Dialog-body {
+  background: transparent;
+  color: var(--neon-text-secondary);
+  padding: 16px 20px;
+}
+
+.jp-Dialog-footer {
+  background: transparent;
+  padding: 16px 20px 20px;
+}
+
+/* ============================================
+   CELLS
+   ============================================ */
+
+.jp-Cell {
+  background: var(--neon-bg-secondary);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  margin: 12px 0;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.jp-Cell:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.jp-Cell.jp-mod-active {
+  border-color: var(--neon-blue-400);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.jp-InputArea-prompt,
+.jp-OutputArea-prompt {
+  color: var(--neon-blue-400);
+  font-family: var(--jp-code-font-family);
+  font-weight: 500;
+}
+
+.jp-InputArea-editor,
+.jp-OutputArea-output {
+  background: var(--neon-bg-tertiary);
+  border-radius: var(--jp-border-radius);
+  border: 1px solid var(--jp-border-color1);
+}
+
+/* ============================================
+   STATUS BAR
+   ============================================ */
+
+#jp-main-statusbar {
+  background: var(--neon-bg-secondary);
+  border-top: 1px solid var(--jp-border-color1);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.2);
+  color: var(--neon-text-secondary);
+}
+
+/* ============================================
+   SPLIT PANEL HANDLES
+   ============================================ */
+
+.lm-SplitPanel-handle {
+  background: var(--neon-bg-elevated);
+  transition: all 0.2s ease;
+}
+
+.lm-SplitPanel-handle:hover {
+  background: var(--neon-blue-500);
+}
+
+.lm-SplitPanel-handle[data-orientation='vertical'] {
+  height: 2px !important;
+}
+
+.lm-SplitPanel-handle[data-orientation='horizontal'] {
+  width: 2px !important;
+}
+
+/* ============================================
+   ANIMATIONS - Minimal
+   ============================================ */
+
+/* Loading spinner */
+.jp-SpinnerContent {
+  background: var(--neon-blue-400);
+  border-radius: 50%;
+}
+
+.jp-SpinnerContent::before {
+  background: var(--neon-blue-400);
+}
+
+/* ============================================
+   RUNNING SESSIONS
+   ============================================ */
+
+.jp-RunningSessions-section {
+  background: var(--neon-bg-secondary);
+  border-radius: var(--jp-border-radius);
+  border: 1px solid var(--jp-border-color1);
+}
+
+.jp-RunningSessions-sectionHeader {
+  background: var(--neon-bg-tertiary);
+  border-radius: var(--jp-border-radius) var(--jp-border-radius) 0 0;
+  border-bottom: 1px solid var(--jp-border-color1);
+}
+
+.jp-RunningSessions-sectionHeader h2 {
+  color: var(--neon-text-secondary);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.jp-RunningSessions-item {
+  border-bottom: 1px solid var(--jp-border-color2);
+  color: var(--neon-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.jp-RunningSessions-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--neon-text-primary);
+}
+
+.jp-RunningSessions-shutdownAll.jp-mod-styled {
+  color: var(--neon-orange-400);
+}
+
+.jp-RunningSessions-shutdownAll.jp-mod-styled:hover {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+/* ============================================
+   SWITCH/TOGGLE
+   ============================================ */
+
+.jp-switch[aria-checked='true'] .jp-switch-track {
+  background: var(--neon-blue-500);
+}
+
+.jp-switch .jp-switch-thumb {
+  background: var(--neon-text-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   FILTER BOX
+   ============================================ */
+
+.jp-FilterBox {
+  background: var(--neon-bg-input) !important;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+}
+
+.jp-FilterBox:focus-within {
+  border-color: var(--neon-blue-400);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.jp-FilterBox input {
+  background: transparent;
+  color: var(--neon-text-primary);
+}
+
+.jp-FilterBox input::placeholder {
+  color: var(--neon-text-muted);
+}
+
+/* ============================================
+   NOTIFICATIONS & TOASTS
+   ============================================ */
+
+.jp-ToastNotification {
+  background: var(--neon-bg-secondary);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.jp-ToastNotification-info {
+  border-left: 3px solid var(--neon-blue-400);
+}
+
+.jp-ToastNotification-success {
+  border-left: 3px solid var(--neon-lime-400);
+}
+
+.jp-ToastNotification-warning {
+  border-left: 3px solid var(--neon-orange-400);
+}
+
+.jp-ToastNotification-error {
+  border-left: 3px solid var(--neon-orange-400);
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+  :root {
+    --jp-private-sidebar-tab-width: 44px;
+    --jp-private-sidebar-tab-height: 44px;
+    --jp-private-toolbar-height: 40px;
+  }
+  
+  .lm-MenuBar-item {
+    padding: 0 12px;
+    font-size: 12px;
+  }
+}

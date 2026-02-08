@@ -20,8 +20,26 @@ const extension: JupyterFrontEndPlugin<void> = {
       name: 'Amphi Light',
       isLight: true,
       themeScrollbars: false,
-      load: () => manager.loadCSS(style),
-      unload: () => Promise.resolve(undefined)
+      load: () => {
+        console.log('Loading Amphi Light theme...');
+        // Remove any dark theme classes
+        document.body.classList.remove('neon-future-theme');
+        document.body.classList.add('amphi-light-theme');
+        document.body.setAttribute('data-jp-theme-name', 'Amphi Light');
+        
+        // Dispatch custom event for theme change notification
+        window.dispatchEvent(new CustomEvent('jupyterlab-theme-changed', { 
+          detail: { theme: 'light' } 
+        }));
+        
+        return manager.loadCSS(style);
+      },
+      unload: () => {
+        console.log('Unloading Amphi Light theme...');
+        document.body.classList.remove('amphi-light-theme');
+        document.body.removeAttribute('data-jp-theme-name');
+        return Promise.resolve(undefined);
+      }
     });
 
     app.docRegistry.addFileType(

@@ -33,6 +33,12 @@
       "title": "Default Engine for File Browser files",
       "description": "This parameter defines which backeng engine is used by default when drag and dropping files form the file browser onto the canvas.",
       "default": ""
+    },
+    "showAIAssistant": {
+      "type": "boolean",
+      "title": "Show AI Assistant",
+      "description": "Show or hide the AI assistant floating button.",
+      "default": true
     }
   },
   "additionalProperties": false,

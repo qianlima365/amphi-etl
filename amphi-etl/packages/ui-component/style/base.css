@@ -3,6 +3,11 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
+/* Platform name in top-left: use theme font color (white in dark theme, dark in light) */
+#jp-MainLogo .jp-MainLogo-title {
+  color: var(--jp-ui-font-color0);
+}
+
 .launcher-body {
   padding: 20px;
   width:80%;

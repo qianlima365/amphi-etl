@@ -5,6 +5,7 @@ import type { RcFile } from 'antd/es/upload';
 import type { DataNode } from 'antd/es/tree';
 import { ModelConfig, ChatMessage, Attachment, AmplnSchema, GenerationStep, DEFAULT_PROMPT_TEMPLATE, ModelProvider, UserApiKeyConfig } from './types';
 import { AIService } from './AIService';
+import { useTheme, getThemeStyles } from './useTheme';
 
 const { Sider, Content } = Layout;
 const { TextArea } = Input;
@@ -17,7 +18,11 @@ const { TextArea } = Input;
  * 简单的 Markdown 渲染器
  * 支持：标题、粗体、斜体、代码块、行内代码、列表、链接、引用、分隔线
  */
-const MarkdownRenderer: React.FC<{ content: string; className?: string }> = ({ content, className }) => {
+const MarkdownRenderer: React.FC<{ content: string; className?: string; isNeonTheme?: boolean }> = ({ 
+  content, 
+  className, 
+  isNeonTheme = false 
+}) => {
   const html = useMemo(() => {
     if (!content) return '';
 
@@ -27,21 +32,21 @@ const MarkdownRenderer: React.FC<{ content: string; className?: string }> = ({ c
     // 转义 HTML 特殊字符（保护安全性）
     text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-    // 代码块 (```code```) - 先处理，避免内部被其他规则影响；全文已转义，此处直接使用
+    // 代码块 (```code```) - 使用主题变量
     text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, _lang, code) => {
-      return `<pre style="background:#1e1e1e;color:#d4d4d4;padding:12px;border-radius:6px;overflow-x:auto;font-size:12px;margin:8px 0;white-space:pre-wrap;word-break:break-word;"><code>${code.trim()}</code></pre>`;
+      return `<pre style="background:var(--jp-layout-color2,#1e1e1e);color:var(--jp-ui-font-color0,#d4d4d4);padding:12px;border-radius:6px;overflow-x:auto;font-size:12px;margin:8px 0;white-space:pre-wrap;word-break:break-word;"><code>${code.trim()}</code></pre>`;
     });
 
-    // 行内代码 (`code`) - 不匹配已放入 pre 的内容
-    text = text.replace(/`([^`\n]+)`/g, '<code style="background:#f0f0f0;padding:2px 6px;border-radius:3px;font-size:12px;color:#d63384;">$1</code>');
+    // 行内代码 (`code`) - 使用主题变量
+    text = text.replace(/`([^`\n]+)`/g, '<code style="background:var(--jp-layout-color1,#f0f0f0);padding:2px 6px;border-radius:3px;font-size:12px;color:var(--jp-ui-font-color0,#333);">$1</code>');
 
-    // 标题 (### ## #)
-    text = text.replace(/^### (.+)$/gm, '<h4 style="font-size:14px;font-weight:600;margin:12px 0 8px 0;color:#333;">$1</h4>');
-    text = text.replace(/^## (.+)$/gm, '<h3 style="font-size:15px;font-weight:600;margin:14px 0 8px 0;color:#333;">$1</h3>');
-    text = text.replace(/^# (.+)$/gm, '<h2 style="font-size:16px;font-weight:600;margin:16px 0 10px 0;color:#333;">$1</h2>');
+    // 标题 (### ## #) - 使用主题文字色
+    text = text.replace(/^### (.+)$/gm, '<h4 style="font-size:14px;font-weight:600;margin:12px 0 8px 0;color:var(--jp-ui-font-color0,#333);">$1</h4>');
+    text = text.replace(/^## (.+)$/gm, '<h3 style="font-size:15px;font-weight:600;margin:14px 0 8px 0;color:var(--jp-ui-font-color0,#333);">$1</h3>');
+    text = text.replace(/^# (.+)$/gm, '<h2 style="font-size:16px;font-weight:600;margin:16px 0 10px 0;color:var(--jp-ui-font-color0,#333);">$1</h2>');
 
-    // 引用 (> quote)，支持多行
-    text = text.replace(/^&gt; (.+)$/gm, '<blockquote style="margin:8px 0;padding:8px 12px;border-left:4px solid #1890ff;background:#f5f5f5;color:#555;">$1</blockquote>');
+    // 引用 (> quote) - 使用主题变量
+    text = text.replace(/^&gt; (.+)$/gm, '<blockquote style="margin:8px 0;padding:8px 12px;border-left:4px solid #1890ff;background:var(--jp-layout-color1,#f5f5f5);color:var(--jp-ui-font-color2,#555);">$1</blockquote>');
 
     // 粗体 (**text** 或 __text__)
     text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -71,8 +76,8 @@ const MarkdownRenderer: React.FC<{ content: string; className?: string }> = ({ c
       return `<ol style="${ulStyle}">${items}</ol>`;
     });
 
-    // 分隔线 (--- 或 ***)
-    text = text.replace(/^[\-\*]{3,}$/gm, '<hr style="border:none;border-top:1px solid #e8e8e8;margin:12px 0;">');
+    // 分隔线 (--- 或 ***) - 使用主题边框色
+    text = text.replace(/^[\-\*]{3,}$/gm, '<hr style="border:none;border-top:1px solid var(--jp-border-color2,#e8e8e8);margin:12px 0;">');
 
     // 换行
     text = text.replace(/\n/g, '<br>');
@@ -84,7 +89,7 @@ const MarkdownRenderer: React.FC<{ content: string; className?: string }> = ({ c
     text = text.replace(/<\/ol><br>/g, '</ol>');
     text = text.replace(/<\/blockquote><br>/g, '</blockquote>');
     text = text.replace(/<\/li><br>/g, '</li>');
-    text = text.replace(/<hr[^>]*><br>/g, '<hr style="border:none;border-top:1px solid #e8e8e8;margin:12px 0;">');
+    text = text.replace(/<hr[^>]*><br>/g, '<hr style="border:none;border-top:1px solid var(--jp-border-color2,#e8e8e8);margin:12px 0;">');
 
     // 清理开头的 <br> 标签，避免首行空行
     text = text.replace(/^(<br\s*\/?>)+/gi, '');
@@ -94,8 +99,12 @@ const MarkdownRenderer: React.FC<{ content: string; className?: string }> = ({ c
 
   return (
     <div
-      className={className}
-      style={{ lineHeight: 1.6, wordBreak: 'break-word' }}
+      className={`${className || ''} ai-chat-markdown`}
+      style={{ 
+        lineHeight: 1.6, 
+        wordBreak: 'break-word', 
+        color: isNeonTheme ? 'var(--neon-text-secondary, #e0e0e8)' : 'var(--jp-ui-font-color0, #333)'
+      }}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -117,6 +126,10 @@ const AIChatModal: React.FC<{
   setLoading: (b: boolean) => void;
   onPipelineGenerated?: (pipeline: AmplnSchema) => void;
 }> = ({ onClose, setUnread, setLoading, onPipelineGenerated }) => {
+  // Theme detection
+  const { isNeonTheme } = useTheme();
+  const themeStyles = useMemo(() => getThemeStyles(isNeonTheme), [isNeonTheme]);
+  
   const [open, setOpen] = useState(true);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -569,22 +582,51 @@ const AIChatModal: React.FC<{
         footer={null}
         width={900}
         style={{ top: '5%' }}
-        bodyStyle={{ height: '80vh', padding: 0 }}
+        styles={isNeonTheme ? {
+          header: {
+            background: 'var(--neon-bg-secondary, #1a1d29)',
+            borderBottom: '1px solid var(--neon-bg-elevated, #2d3347)',
+            color: 'var(--neon-text-primary, #fff)',
+          },
+          content: {
+            background: 'var(--neon-bg-secondary, #1a1d29)',
+            border: '1px solid var(--neon-bg-elevated, #2d3347)',
+            boxShadow: '0 16px 48px rgba(0, 0, 0, 0.5)',
+          },
+          body: {
+            height: '80vh',
+            padding: 0,
+            background: 'transparent',
+            backdropFilter: 'none',
+          },
+        } : undefined}
+        bodyStyle={{ 
+          height: '80vh', 
+          padding: 0, 
+          background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'var(--jp-layout-color0, #fff)',
+          backdropFilter: 'none',
+        }}
+        className="ai-chat-modal"
         destroyOnClose
         maskClosable
         title={
-          <Space>
-            <RobotOutlined />
+          <Space style={{ color: themeStyles.modal.title.color }}>
+            <RobotOutlined style={{ color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }} />
             <span>Pipeline助手</span>
           </Space>
         }
       >
-        <Layout style={{ height: '100%' }}>
-          <Content style={{ borderRight: '1px solid var(--jp-border-color2, #e8e8e8)', display: 'flex', flexDirection: 'column' }}>
+        <Layout style={{ height: '100%', background: 'transparent' }}>
+          <Content style={{ 
+            background: isNeonTheme ? 'var(--neon-bg-primary, #0f1117)' : 'var(--jp-layout-color0, #fff)', 
+            borderRight: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)', 
+            display: 'flex', 
+            flexDirection: 'column' 
+          }}>
             {/* Generation Progress */}
             {generating && (
-              <div style={{ padding: '8px 16px', borderBottom: '1px solid #e8e8e8' }}>
-                <div style={{ marginBottom: 4 }}>
+              <div className="ai-chat-progress" style={{ padding: '8px 16px', borderBottom: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)' }}>
+                <div style={{ marginBottom: 4, color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }}>
                   {generationStep && STEP_LABELS[generationStep]}
                 </div>
                 <Progress percent={generationProgress} size="small" />
@@ -592,7 +634,7 @@ const AIChatModal: React.FC<{
             )}
             
             {/* Messages List */}
-            <div ref={listRef} style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+            <div ref={listRef} className="ai-chat-messages" style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
               {messages.map(m => (
                 <div 
                   key={m.id} 
@@ -605,7 +647,7 @@ const AIChatModal: React.FC<{
                 >
                   <div style={{ 
                     fontSize: 12, 
-                    color: '#888', 
+                    color: isNeonTheme ? 'var(--neon-text-tertiary, #9ca3af)' : 'var(--jp-ui-font-color3, #888)', 
                     marginBottom: 4,
                     textAlign: m.role === 'user' ? 'right' : 'left'
                   }}>
@@ -623,12 +665,14 @@ const AIChatModal: React.FC<{
                   {m.attachments && m.attachments.length > 0 && (
                     <div style={{ marginBottom: 4 }}>
                       {m.attachments.map((a, i) => (
-                        <span key={i} style={{ 
-                          background: '#f0f0f0', 
+                        <span key={i} className="ai-chat-attachment" style={{ 
+                          background: isNeonTheme ? 'rgba(63, 140, 255, 0.12)' : 'var(--jp-layout-color1, #f0f0f0)', 
                           padding: '2px 8px', 
                           borderRadius: 4, 
                           marginRight: 4,
-                          fontSize: 12
+                          fontSize: 12,
+                          color: isNeonTheme ? 'var(--neon-text-secondary, #e8e8ec)' : 'var(--jp-ui-font-color1, inherit)',
+                          border: isNeonTheme ? '1px solid rgba(63, 140, 255, 0.25)' : 'none',
                         }}>
                           📎 {a.name}
                         </span>
@@ -636,19 +680,23 @@ const AIChatModal: React.FC<{
                     </div>
                   )}
                   {m.role === 'user' ? (
-                    // 用户消息 - 右侧显示，蓝色背景
+                    // 用户消息 - 右侧显示
                     <pre
+                      className="ai-chat-message-user"
                       style={{
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-word',
-                        background: '#1890ff',
+                        background: isNeonTheme 
+                          ? 'var(--neon-blue-500, #2563eb)'
+                          : '#1890ff',
                         color: '#fff',
                         padding: 12,
                         borderRadius: '8px 8px 0 8px',
                         border: 'none',
                         margin: 0,
                         fontSize: 13,
-                        maxWidth: '80%'
+                        maxWidth: '80%',
+                        boxShadow: isNeonTheme ? '0 2px 8px rgba(37, 99, 235, 0.3)' : 'none',
                       }}
                     >
                       {m.content}
@@ -656,16 +704,25 @@ const AIChatModal: React.FC<{
                   ) : (
                     // Pipeline Agent 消息 - 左侧显示
                     <div
+                      className="ai-chat-message-assistant"
                       style={{
-                        background: 'var(--jp-layout-color1, #fff)',
+                        background: isNeonTheme 
+                          ? 'var(--neon-bg-tertiary, #252a3c)'
+                          : 'var(--jp-layout-color1, #fff)',
                         padding: 12,
                         borderRadius: '8px 8px 8px 0',
-                        border: '1px solid #e8e8e8',
+                        border: isNeonTheme 
+                          ? '1px solid var(--neon-bg-elevated, #2d3347)'
+                          : '1px solid var(--jp-border-color2, #e8e8e8)',
                         fontSize: 13,
-                        maxWidth: '90%'
+                        maxWidth: '90%',
+                        color: isNeonTheme 
+                          ? 'var(--neon-text-secondary, #e2e4ea)'
+                          : 'var(--jp-ui-font-color0, #333)',
+                        transition: 'all 0.3s ease',
                       }}
                     >
-                      <MarkdownRenderer content={m.content} />
+                      <MarkdownRenderer content={m.content} isNeonTheme={isNeonTheme} />
                     </div>
                   )}
                 </div>
@@ -673,15 +730,16 @@ const AIChatModal: React.FC<{
               {/* 回复中占位：仅加载时显示，不占消息位，回复到达后直接新增消息无空行 */}
               {chatLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
                 <div style={{ marginBottom: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <div style={{ fontSize: 12, color: '#888', marginBottom: 4 }}>🤖 Pipeline助手</div>
+                  <div style={{ fontSize: 12, color: isNeonTheme ? 'var(--neon-text-tertiary, #a0a0b0)' : 'var(--jp-ui-font-color3, #888)', marginBottom: 4 }}>🤖 Pipeline助手</div>
                   <div
+                    className="ai-chat-typing"
                     style={{
-                      background: 'var(--jp-layout-color1, #fff)',
+                      background: isNeonTheme ? 'var(--neon-bg-tertiary, #1a1a25)' : 'var(--jp-layout-color1, #fff)',
                       padding: 12,
                       borderRadius: '8px 8px 8px 0',
-                      border: '1px solid #e8e8e8',
+                      border: isNeonTheme ? '1px solid var(--neon-bg-elevated, #222230)' : '1px solid var(--jp-border-color2, #e8e8e8)',
                       fontSize: 13,
-                      color: '#1890ff',
+                      color: isNeonTheme ? 'var(--neon-text-secondary, #e0e0e8)' : '#1890ff',
                       fontStyle: 'italic',
                       animation: 'pulse 1.5s ease-in-out infinite'
                     }}
@@ -691,8 +749,16 @@ const AIChatModal: React.FC<{
                 </div>
               )}
               {messages.length === 0 && (
-                <div style={{ textAlign: 'center', color: '#999', marginTop: 100 }}>
-                  <RobotOutlined style={{ fontSize: 48, marginBottom: 16 }} />
+                <div className="ai-chat-empty" style={{ 
+                  textAlign: 'center', 
+                  color: isNeonTheme ? 'var(--neon-text-muted, #6b7280)' : 'var(--jp-ui-font-color3, #999)', 
+                  marginTop: 100 
+                }}>
+                  <RobotOutlined style={{ 
+                    fontSize: 48, 
+                    marginBottom: 16,
+                    color: isNeonTheme ? 'var(--neon-text-tertiary, #a0a0b0)' : 'inherit',
+                  }} />
                   <div>您好！我是你的 Pipeline 构建助手</div>
                   <div style={{ fontSize: 12, marginTop: 8 }}>
                     描述您的数据处理需求，我将帮您生成 Pipeline
@@ -702,20 +768,28 @@ const AIChatModal: React.FC<{
             </div>
             
             {/* Input Area */}
-            <div style={{ padding: 12, borderTop: '1px solid var(--jp-border-color2, #e8e8e8)' }}>
+            <div className="ai-chat-input-area" style={{ 
+              padding: 12, 
+              borderTop: isNeonTheme 
+                ? '1px solid var(--neon-bg-elevated, #2d3347)'
+                : '1px solid var(--jp-border-color2, #e8e8e8)',
+              background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'transparent',
+            }}>
               {attachments.length > 0 && (
                 <div style={{ marginBottom: 8 }}>
                   {attachments.map((a, i) => (
-                    <span key={i} style={{ 
-                      background: '#e6f7ff', 
+                    <span key={i} className="ai-chat-attachment" style={{ 
+                      background: isNeonTheme ? 'rgba(63, 140, 255, 0.12)' : 'var(--jp-layout-color2, #e6f7ff)', 
                       padding: '2px 8px', 
                       borderRadius: 4, 
                       marginRight: 4,
-                      fontSize: 12
+                      fontSize: 12,
+                      color: isNeonTheme ? 'var(--neon-text-secondary, #e8e8ec)' : 'var(--jp-ui-font-color1, inherit)',
+                      border: isNeonTheme ? '1px solid rgba(63, 140, 255, 0.25)' : 'none',
                     }}>
                       📎 {a.name}
                       <span 
-                        style={{ marginLeft: 4, cursor: 'pointer', color: '#999' }}
+                        style={{ marginLeft: 4, cursor: 'pointer', color: isNeonTheme ? 'var(--neon-text-muted, #606070)' : 'var(--jp-ui-font-color3, #999)' }}
                         onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))}
                       >
                         ×
@@ -734,7 +808,12 @@ const AIChatModal: React.FC<{
                   onKeyDown={handleKeyDown}
                   autoSize={{ minRows: 2, maxRows: 4 }}
                   placeholder="描述您的需求... (Shift+Enter 换行，Ctrl+Enter 发送)"
-                  style={{ flex: 1 }}
+                  style={{ 
+                    flex: 1,
+                    background: isNeonTheme ? 'var(--neon-bg-tertiary, #252a3c)' : 'var(--jp-layout-color1, #fff)',
+                    borderColor: isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : 'var(--jp-border-color2, #e8e8e8)',
+                    color: isNeonTheme ? 'var(--neon-text-primary, #fff)' : 'var(--jp-ui-font-color0, #333)',
+                  }}
                 />
               </Space.Compact>
               <div style={{ textAlign: 'right' }}>
@@ -743,6 +822,16 @@ const AIChatModal: React.FC<{
                   icon={<SendOutlined />} 
                   onClick={handleSend}
                   loading={generating}
+                  className="ai-chat-send-btn"
+                  style={{
+                    background: isNeonTheme 
+                      ? 'var(--neon-blue-500, #2563eb)'
+                      : 'var(--amphi-interactive-01, #1890ff)',
+                    border: 'none',
+                    boxShadow: isNeonTheme 
+                      ? '0 2px 8px rgba(37, 99, 235, 0.3)'
+                      : 'none',
+                  }}
                 >
                   发送
                 </Button>
@@ -751,18 +840,24 @@ const AIChatModal: React.FC<{
           </Content>
           
           {/* Right Sidebar - Configuration */}
-          <Sider width={280} theme="light" style={{ padding: 12, overflowY: 'auto' }}>
+          <Sider width={280} theme="light" className="ai-chat-sider" style={{ 
+            padding: 12, 
+            overflowY: 'auto', 
+            background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'var(--jp-layout-color0, #fff)',
+            borderLeft: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : 'none',
+          }}>
             <Tabs
+              className="ai-chat-tabs"
               size="small"
               items={[
                 {
                   key: 'model',
                   label: <><SettingOutlined /> 模型配置</>,
                   children: (
-                    <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                    <Space className="ai-chat-config" direction="vertical" style={{ width: '100%' }} size="middle">
                       {/* Provider Selection */}
                       <div>
-                        <div style={{ marginBottom: 4, fontSize: 12 }}>模型厂商</div>
+                        <div style={{ marginBottom: 4, fontSize: 12, color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }}>模型厂商</div>
                         <Select
                           value={modelConfig.providerId}
                           onChange={v => {
@@ -793,7 +888,7 @@ const AIChatModal: React.FC<{
                       
                       {/* Model Selection - 来自 config 的 models 或 supportedModels */}
                       <div>
-                        <div style={{ marginBottom: 4, fontSize: 12 }}>模型</div>
+                        <div style={{ marginBottom: 4, fontSize: 12, color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }}>模型</div>
                         <Select
                           value={modelConfig.model}
                           onChange={v => setModelConfig(prev => ({ ...prev, model: v }))}
@@ -813,22 +908,22 @@ const AIChatModal: React.FC<{
                         const currentKeyConfig = userApiKeys.find(k => k.providerId === modelConfig.providerId);
                         const isConfigured = currentKeyConfig?.hasApiKey;
                         return (
-                          <div style={{ background: '#f5f5f5', padding: 8, borderRadius: 4 }}>
-                            <div style={{ fontSize: 12, marginBottom: 8, fontWeight: 500 }}>
+                          <div style={{ background: isNeonTheme ? 'var(--neon-bg-tertiary, #252a3c)' : 'var(--jp-layout-color1, #f5f5f5)', padding: 8, borderRadius: 6, border: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : 'none' }}>
+                            <div style={{ fontSize: 12, marginBottom: 8, fontWeight: 500, color: isNeonTheme ? 'var(--neon-text-primary, #fff)' : 'var(--jp-ui-font-color0, inherit)' }}>
                               API Key 配置
                               {isConfigured ? (
-                                <span style={{ color: '#52c41a', marginLeft: 8 }}>✓ 已配置</span>
+                                <span style={{ color: isNeonTheme ? 'var(--neon-lime-400, #10b981)' : '#52c41a', marginLeft: 8 }}>✓ 已配置</span>
                               ) : (
-                                <span style={{ color: '#faad14', marginLeft: 8 }}>○ 未配置</span>
+                                <span style={{ color: isNeonTheme ? 'var(--neon-orange-400, #f59e0b)' : '#faad14', marginLeft: 8 }}>○ 未配置</span>
                               )}
                             </div>
                             {isConfigured && currentKeyConfig?.maskedKey && (
                               <div style={{ 
                                 fontSize: 11, 
-                                color: '#666', 
+                                color: isNeonTheme ? 'var(--neon-text-tertiary, #a0a0b0)' : 'var(--jp-ui-font-color2, #666)', 
                                 marginBottom: 8,
                                 padding: '4px 8px',
-                                background: '#e8e8e8',
+                                background: isNeonTheme ? 'var(--neon-bg-elevated, #222230)' : 'var(--jp-layout-color2, #e8e8e8)',
                                 borderRadius: 4,
                                 fontFamily: 'monospace'
                               }}>
@@ -902,7 +997,7 @@ const AIChatModal: React.FC<{
                               </Button>
                             </Space>
                             {isConfigured && !newApiKey && (
-                              <div style={{ fontSize: 11, color: '#888', marginTop: 6 }}>
+                              <div style={{ fontSize: 11, color: isNeonTheme ? 'var(--neon-text-muted, #606070)' : 'var(--jp-ui-font-color3, #888)', marginTop: 6 }}>
                                 输入新的 API Key 后点击「更新」可覆盖当前配置
                               </div>
                             )}
@@ -912,15 +1007,15 @@ const AIChatModal: React.FC<{
                                   marginTop: 8,
                                   padding: 8,
                                   borderRadius: 4,
-                                  background: testResult.success ? '#f6ffed' : '#fff2f0',
-                                  border: `1px solid ${testResult.success ? '#b7eb8f' : '#ffccc7'}`,
-                                  color: testResult.success ? '#389e0d' : '#cf1322',
+                                  background: testResult.success ? 'var(--jp-success-color0, #f6ffed)' : 'var(--jp-error-color0, #fff2f0)',
+                                  border: `1px solid ${testResult.success ? 'var(--jp-success-color1, #b7eb8f)' : 'var(--jp-error-color1, #ffccc7)'}`,
+                                  color: testResult.success ? 'var(--jp-success-color2, #389e0d)' : 'var(--jp-error-color2, #cf1322)',
                                   fontSize: 12
                                 }}
                               >
                                 <div style={{ fontWeight: 500 }}>{testResult.message}</div>
                                 {testResult.detail && testResult.detail.length > 0 && (
-                                  <div style={{ marginTop: 4, color: '#666' }}>
+                                  <div style={{ marginTop: 4, color: isNeonTheme ? 'var(--neon-text-tertiary, #a0a0b0)' : 'var(--jp-ui-font-color2, #666)' }}>
                                     可用模型: {testResult.detail.join(', ')}
                                   </div>
                                 )}
@@ -932,7 +1027,7 @@ const AIChatModal: React.FC<{
                       
                       {/* Parameters */}
                       <div>
-                        <div style={{ marginBottom: 4, fontSize: 12 }}>
+                        <div style={{ marginBottom: 4, fontSize: 12, color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }}>
                           Temperature: {modelConfig.temperature}
                         </div>
                         <Slider
@@ -945,7 +1040,7 @@ const AIChatModal: React.FC<{
                       </div>
                       
                       <div>
-                        <div style={{ marginBottom: 4, fontSize: 12 }}>
+                        <div style={{ marginBottom: 4, fontSize: 12, color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }}>
                           Max Tokens: {modelConfig.maxTokens}
                         </div>
                         <Slider
@@ -964,7 +1059,7 @@ const AIChatModal: React.FC<{
                   label: <><ThunderboltOutlined /> 自定义提示词</>,
                   children: (
                     <Space direction="vertical" style={{ width: '100%' }} size="middle">
-                      <div style={{ fontSize: 12, color: '#666', background: '#f5f5f5', padding: 8, borderRadius: 4 }}>
+                      <div style={{ fontSize: 12, color: isNeonTheme ? 'var(--neon-text-tertiary, #a0a0b0)' : 'var(--jp-ui-font-color2, #666)', background: isNeonTheme ? 'var(--neon-bg-tertiary, #1a1a25)' : 'var(--jp-layout-color1, #f5f5f5)', padding: 8, borderRadius: 4, border: isNeonTheme ? '1px solid var(--neon-bg-elevated, #222230)' : 'none' }}>
                         💡 自定义提示词为可选项，作为内置提示词的补充。清空后不影响正常使用。
                       </div>
                       <TextArea
@@ -1035,10 +1130,10 @@ const AIChatModal: React.FC<{
                     <Space direction="vertical" style={{ width: '100%' }} size="middle">
                       {/* Validation Warnings */}
                       {getValidationWarnings(previewPipeline).length > 0 && (
-                        <div style={{ background: '#fff2f0', border: '1px solid #ffccc7', borderRadius: 4, padding: 8 }}>
-                          <div style={{ color: '#cf1322', fontWeight: 500, marginBottom: 4 }}>⚠️ 校验警告</div>
+                        <div style={{ background: 'var(--jp-error-color0, #fff2f0)', border: '1px solid var(--jp-error-color1, #ffccc7)', borderRadius: 4, padding: 8 }}>
+                          <div style={{ color: 'var(--jp-error-color2, #cf1322)', fontWeight: 500, marginBottom: 4 }}>⚠️ 校验警告</div>
                           {getValidationWarnings(previewPipeline).map((w, i) => (
-                            <div key={i} style={{ color: '#cf1322', fontSize: 12 }}>• {w}</div>
+                            <div key={i} style={{ color: 'var(--jp-error-color2, #cf1322)', fontSize: 12 }}>• {w}</div>
                           ))}
                         </div>
                       )}
@@ -1070,12 +1165,14 @@ const AIChatModal: React.FC<{
                         />
                       ) : (
                         <pre style={{ 
-                          background: '#f5f5f5', 
+                          background: 'var(--jp-layout-color1, #f5f5f5)', 
                           padding: 8, 
                           borderRadius: 4, 
                           fontSize: 11,
                           maxHeight: 300,
-                          overflow: 'auto'
+                          overflow: 'auto',
+                          color: 'var(--jp-ui-font-color0, inherit)',
+                          border: '1px solid var(--jp-border-color2, #e8e8e8)'
                         }}>
                           {JSON.stringify(previewPipeline, null, 2)}
                         </pre>
@@ -1095,7 +1192,7 @@ const AIChatModal: React.FC<{
                       </Button>
                     </Space>
                   ) : (
-                    <div style={{ textAlign: 'center', color: '#999', padding: 20 }}>
+                    <div style={{ textAlign: 'center', color: 'var(--jp-ui-font-color3, #999)', padding: 20 }}>
                       生成 Pipeline 后将在此预览
                     </div>
                   )

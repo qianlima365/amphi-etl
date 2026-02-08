@@ -26,6 +26,7 @@
     "workspaces": {
         "packages": [
             "packages/theme-light",
+            "packages/theme-neon-future",
             "packages/ui-component"
         ]
     },

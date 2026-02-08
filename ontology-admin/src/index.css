@@ -37,9 +37,7 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
 
 /* 连线名称（边标签）：16 号字、加粗，颜色由各边 labelStyle 控制 */
 .react-flow__edge-text { font-size: 16px; font-weight: 700; }
-.react-flow__edge-textwrapper { font-size: 16px; font-weight: 700; }
-
-/* 虚线流动动效 */
+.react-flow__edge-textwrapper { font-size: 16px; font-weight: 700; }/* 虚线流动动效 */
 .react-flow__edge.edge--dash-flow path {
   stroke-dashoffset: 0;
   animation: edgeDashFlow 0.6s linear infinite;

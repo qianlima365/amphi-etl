@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Input, Space, Tooltip, Button, Tabs, message } from 'antd';
+import { Input, Space, Tooltip, Button, Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { Notification } from '@jupyterlab/apputils';
 import { refreshIcon } from './icons';
+import { useTheme } from './ai/useTheme';
 
 interface ComponentPaletteProps {
   componentService: { getComponents: () => any[] | Promise<any[]> };
@@ -38,6 +39,7 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({
   componentService,
   onRefreshed
 }) => {
+  const { isNeonTheme } = useTheme();
   const [searchValue, setSearchValue] = useState('');
   const [activeTabKey, setActiveTabKey] = useState('0');
   const [components, setComponents] = useState<any[]>([]);
@@ -129,32 +131,29 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({
           className="palette-component-square"
           onDragStart={(event) => onDragStart(event, component._id, component._default ? JSON.stringify(component._default) : '{}')}
           style={{
-            // Layout
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'space-between',
-            // Dimensions (Fixed)
             width: '70px',
             height: '70px',
-            flex: '0 0 70px', // Prevent shrinking in flex container
-            // Style
+            flex: '0 0 70px',
             padding: '6px 2px 6px 2px',
-            border: '1px solid #d9d9d9',
+            border: `1px solid ${isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : '#d9d9d9'}`,
             borderRadius: '6px',
             cursor: 'move',
-            backgroundColor: '#ffffff',
+            backgroundColor: isNeonTheme ? 'var(--neon-bg-tertiary, #252a3c)' : '#ffffff',
             transition: 'all 0.2s ease',
             marginRight: '8px'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#F2F4F7';
-            e.currentTarget.style.borderColor = '#778899';
+            e.currentTarget.style.backgroundColor = isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : '#F2F4F7';
+            e.currentTarget.style.borderColor = isNeonTheme ? 'var(--neon-blue-400, #3b82f6)' : '#778899';
             e.currentTarget.style.transform = 'translateY(-1px)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#ffffff';
-            e.currentTarget.style.borderColor = '#d9d9d9';
+            e.currentTarget.style.backgroundColor = isNeonTheme ? 'var(--neon-bg-tertiary, #252a3c)' : '#ffffff';
+            e.currentTarget.style.borderColor = isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : '#d9d9d9';
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
@@ -162,11 +161,12 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({
             {renderIcon(component?._icon, 30)}
           </div>
           <div
+            className="component-name"
             style={{
               fontSize: '10px',
               textAlign: 'center',
               lineHeight: '1.1',
-              color: '#595959',
+              color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : '#595959',
               fontWeight: '500',
               wordBreak: 'break-word',
               overflow: 'hidden',
@@ -188,11 +188,18 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({
     const subCategories = Object.keys(categoryData);
     let allComponents: any[] = [];
     subCategories.forEach(subCat => {
-        allComponents = allComponents.concat(categoryData[subCat]);
+      allComponents = allComponents.concat(categoryData[subCat]);
     });
 
     if (allComponents.length === 0) {
-        return <div style={{ padding: '16px', color: '#8c8c8c' }}>No components found.</div>;
+      return (
+        <div style={{ 
+          padding: '16px', 
+          color: isNeonTheme ? 'var(--neon-text-tertiary, #9ca3af)' : '#8c8c8c' 
+        }}>
+          No components found.
+        </div>
+      );
     }
 
     return (
@@ -200,15 +207,15 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({
         style={{
           display: 'flex',
           flexDirection: 'row',
-          flexWrap: 'nowrap', // Force single line
-          overflowX: 'auto',  // Enable horizontal scroll
+          flexWrap: 'nowrap',
+          overflowX: 'auto',
           overflowY: 'hidden',
           alignItems: 'center',
-          padding: '10px 4px 10px 4px', // Padding around the cards
+          padding: '10px 4px 10px 4px',
           width: '100%',
-          scrollbarWidth: 'thin', // Firefox
+          scrollbarWidth: 'thin',
         }}
-        className="palette-horizontal-scroll" // Class for custom scrollbar styling if needed
+        className="palette-horizontal-scroll"
       >
         {allComponents.map((component, index) =>
           renderComponentItem(component, `comp-${index}`)
@@ -226,14 +233,17 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({
     return categories.map((category, index) => ({
       key: String(index),
       label: (
-        <span style={{ fontWeight: '600', fontSize: '13px', color: '#262626' }}>
+        <span style={{ 
+          fontWeight: '600', 
+          fontSize: '13px', 
+          color: isNeonTheme ? 'var(--neon-text-primary, #fff)' : '#262626' 
+        }}>
           {category.charAt(0).toUpperCase() + category.slice(1)}
         </span>
       ),
-      // The content is the scrollable row
       children: renderTabContent(filteredCategorizedComponents[category]),
     }));
-  }, [filteredCategorizedComponents]);
+  }, [filteredCategorizedComponents, isNeonTheme]);
 
   // Auto-select first tab
   useEffect(() => {
@@ -243,27 +253,40 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({
     if (tabItems.length === 0) setActiveTabKey('0');
   }, [tabItems.length]);
 
-
   // --- Render: Search Bar Control ---
   const searchControls = (
     <Space style={{ marginRight: '16px', paddingLeft: '8px' }}>
-        <Input
-          placeholder="Search components"
-          onChange={(e) => setSearchValue(e.target.value)}
-          value={searchValue}
-          style={{ width: 200 }} 
+      <Input
+        placeholder="Search components"
+        onChange={(e) => setSearchValue(e.target.value)}
+        value={searchValue}
+        style={{ 
+          width: 200,
+          backgroundColor: isNeonTheme ? 'var(--neon-bg-tertiary, #252a3c)' : undefined,
+          borderColor: isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : undefined,
+          color: isNeonTheme ? 'var(--neon-text-primary, #fff)' : undefined,
+        }} 
+        size="small"
+        suffix={
+          <SearchOutlined style={{ 
+            color: isNeonTheme ? 'var(--neon-text-muted, #6b7280)' : 'rgba(0,0,0,.25)' 
+          }} />
+        }
+        allowClear
+      />
+      <Tooltip title="Refresh components">
+        <Button
           size="small"
-          suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-          allowClear
+          onClick={() => fetchComponents({ notify: true })}
+          loading={loading}
+          icon={renderIcon(refreshIcon, 14) as React.ReactNode}
+          style={{
+            backgroundColor: isNeonTheme ? 'var(--neon-bg-tertiary, #252a3c)' : undefined,
+            borderColor: isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : undefined,
+            color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : undefined,
+          }}
         />
-        <Tooltip title="Refresh components">
-          <Button
-            size="small"
-            onClick={() => fetchComponents({ notify: true })}
-            loading={loading}
-            icon={renderIcon(refreshIcon, 14) as React.ReactNode}
-          />
-        </Tooltip>
+      </Tooltip>
     </Space>
   );
 
@@ -272,33 +295,39 @@ const ComponentPalette: React.FC<ComponentPaletteProps> = ({
       className="component-palette-horizontal"
       style={{
         width: '100%',
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #e8e8e8',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+        backgroundColor: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : '#ffffff',
+        borderBottom: `1px solid ${isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : '#e8e8e8'}`,
+        boxShadow: isNeonTheme ? 'none' : '0 2px 4px rgba(0,0,0,0.02)',
         zIndex: 100,
         position: 'relative'
       }}
     >
-        {/* Using tabBarExtraContent={{ left: ... }} allows us to put the 
-           Search/Refresh inputs on the same line as the tabs, aligned left. 
-        */}
-        <Tabs
-          activeKey={activeTabKey}
-          items={tabItems}
-          onChange={setActiveTabKey}
-          type="line"
-          size="small"
-          tabBarExtraContent={{ left: searchControls }}
-          tabBarStyle={{ margin: 0, padding: '0 8px' }} // Remove default bottom margin of tab header
-          destroyInactiveTabPane={true} // Performance optimization
-        />
-        
-        {/* Empty State Helper */}
-        {tabItems.length === 0 && (
-            <div style={{ padding: '16px', textAlign: 'center', color: '#8c8c8c', fontSize: '12px' }}>
-                {searchValue ? `No components match "${searchValue}"` : "No components available"}
-            </div>
-        )}
+      <Tabs
+        activeKey={activeTabKey}
+        items={tabItems}
+        onChange={setActiveTabKey}
+        type="line"
+        size="small"
+        tabBarExtraContent={{ left: searchControls }}
+        tabBarStyle={{ 
+          margin: 0, 
+          padding: '0 8px',
+          borderBottom: `1px solid ${isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : '#f0f0f0'}`,
+        }}
+        destroyInactiveTabPane={true}
+        className={isNeonTheme ? 'neon-tabs' : ''}
+      />
+      
+      {tabItems.length === 0 && (
+        <div style={{ 
+          padding: '16px', 
+          textAlign: 'center', 
+          color: isNeonTheme ? 'var(--neon-text-tertiary, #9ca3af)' : '#8c8c8c', 
+          fontSize: '12px' 
+        }}>
+          {searchValue ? `No components match "${searchValue}"` : "No components available"}
+        </div>
+      )}
     </div>
   );
 };

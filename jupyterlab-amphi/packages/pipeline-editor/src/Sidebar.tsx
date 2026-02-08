@@ -10,6 +10,7 @@ import { Input, Space, Tooltip, Collapse, Button, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { Notification } from '@jupyterlab/apputils';
 import { refreshIcon } from './icons';
+import { useTheme } from './ai/useTheme';
 
 const { Panel } = Collapse;
 
@@ -42,6 +43,7 @@ const renderIcon = (icon: any, size: number | string = 14) => {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ componentService, onRefreshed }) => {
+  const { isNeonTheme } = useTheme();
   const [searchValue, setSearchValue] = useState('');
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [components, setComponents] = useState<any[]>([]);
@@ -142,22 +144,22 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService, onRefreshed }) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 padding: '6px 2px 6px 2px',
-                border: '1px solid #d9d9d9',
+                border: `1px solid ${isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : '#d9d9d9'}`,
                 borderRadius: '6px',
                 cursor: 'grab',
-                backgroundColor: '#ffffff',
+                backgroundColor: isNeonTheme ? 'var(--neon-bg-tertiary, #252a3c)' : '#ffffff',
                 width: '70px',
                 height: '70px',
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#F2F4F7';
-                e.currentTarget.style.borderColor = '#778899';
+                e.currentTarget.style.backgroundColor = isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : '#F2F4F7';
+                e.currentTarget.style.borderColor = isNeonTheme ? 'var(--neon-blue-400, #3b82f6)' : '#778899';
                 e.currentTarget.style.transform = 'translateY(-1px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#ffffff';
-                e.currentTarget.style.borderColor = '#d9d9d9';
+                e.currentTarget.style.backgroundColor = isNeonTheme ? 'var(--neon-bg-tertiary, #252a3c)' : '#ffffff';
+                e.currentTarget.style.borderColor = isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : '#d9d9d9';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
@@ -165,11 +167,12 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService, onRefreshed }) => {
                 {renderIcon(component?._icon, 30)}
               </div>
               <div
+                className="component-name"
                 style={{
                   fontSize: '10px',
                   textAlign: 'center',
                   lineHeight: '1.1',
-                  color: '#595959',
+                  color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : '#595959',
                   fontWeight: '500',
                   wordBreak: 'break-word',
                   overflow: 'hidden',
@@ -200,10 +203,11 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService, onRefreshed }) => {
             <div key={`${category}-${subIndex}`} style={{ marginBottom: '16px' }}>
               {subCat !== '_' && (
                 <div
+                  className="subcategory-label"
                   style={{
                     fontSize: '12px',
                     fontWeight: '600',
-                    color: '#8c8c8c',
+                    color: isNeonTheme ? 'var(--neon-text-tertiary, #9ca3af)' : '#8c8c8c',
                     marginBottom: '8px',
                     paddingLeft: '8px'
                   }}
@@ -268,11 +272,12 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService, onRefreshed }) => {
   return (
     <aside className="sidebar" title={'Components'} >
       <div
+        className="sidebar-header"
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 999,
-          backgroundColor: 'white',
+          backgroundColor: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'white',
         }}
       >
         <Space direction="vertical" style={{ marginTop: '10px', marginLeft: '10px', width: '90%', textAlign: 'center' }}>
@@ -282,7 +287,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService, onRefreshed }) => {
               onChange={onSearch}
               value={searchValue}
               style={{ marginBottom: 8, flex: 1 }}
-              suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+              suffix={<SearchOutlined style={{ color: isNeonTheme ? 'var(--neon-text-muted, #6b7280)' : 'rgba(0,0,0,.25)' }} />}
               allowClear
             />
             <Tooltip title="Refresh components">
@@ -313,7 +318,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService, onRefreshed }) => {
                 style={{
                   fontWeight: '600',
                   fontSize: '13px',
-                  color: '#262626'
+                  color: isNeonTheme ? 'var(--neon-text-primary, #fff)' : '#262626'
                 }}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -323,7 +328,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService, onRefreshed }) => {
             style: {
               borderRadius: '6px',
               marginBottom: '4px',
-              border: '1px solid #f0f0f0',
+              border: `1px solid ${isNeonTheme ? 'var(--neon-bg-elevated, #2d3347)' : '#f0f0f0'}`,
               paddingLeft: '6px',
               paddingRight: '6px'
             }

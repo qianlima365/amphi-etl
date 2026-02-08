@@ -112,6 +112,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
     let enableDebugMode: boolean;
     let enableTelemetry: boolean;
     let defaultEngineBackend: string;
+    let showAIAssistant: boolean;
 
     // Fetch the initial state of the settings.
     function loadSetting(setting: ISettingRegistry.ISettings): void {
@@ -131,6 +132,10 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
       enableTelemetry = setting.get('enableTelemetry').composite as boolean;
       console.log(
         `Settings extension: enableTelemetry is set to '${enableTelemetry}'`
+      );
+      showAIAssistant = setting.get('showAIAssistant').composite as boolean;
+      console.log(
+        `Settings extension: showAIAssistant is set to '${showAIAssistant}'`
       );
     }
 
@@ -818,6 +823,39 @@ ${code}
           });
         }
 
+        // Mount AI Assistant floating button
+        let aiAssistantContainer: HTMLElement | null = null;
+        
+        function updateAIAssistantVisibility(): void {
+          if (showAIAssistant) {
+            if (!aiAssistantContainer) {
+              try {
+                mountAIAssistant();
+                aiAssistantContainer = document.getElementById('ai-assistant-container');
+                console.log('AI Assistant mounted successfully');
+              } catch (e) {
+                console.error('Failed to mount AI Assistant:', e);
+              }
+            } else {
+              aiAssistantContainer.style.display = 'block';
+            }
+          } else {
+            if (aiAssistantContainer) {
+              aiAssistantContainer.style.display = 'none';
+            }
+          }
+        }
+        
+        // Initial mount based on settings
+        updateAIAssistantVisibility();
+        
+        // Listen for setting changes
+        settings.changed.connect(() => {
+          showAIAssistant = settings.get('showAIAssistant').composite as boolean;
+          console.log(`Settings extension: showAIAssistant changed to '${showAIAssistant}'`);
+          updateAIAssistantVisibility();
+        });
+
       })
       .catch(reason => {
         console.error(
@@ -833,14 +871,6 @@ ${code}
         args: widget => ({ path: widget.context.path, factory: PIPELINE_FACTORY }),
         name: widget => widget.context.path
       });
-    }
-
-    // Mount AI Assistant floating button
-    try {
-      mountAIAssistant();
-      console.log('AI Assistant mounted successfully');
-    } catch (e) {
-      console.error('Failed to mount AI Assistant:', e);
     }
 
     return pipelineEditortracker;
