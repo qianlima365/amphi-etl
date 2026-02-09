@@ -43,6 +43,8 @@ body.neon-future-theme,
   --neon-text-secondary: #e2e4ea;
   --neon-text-tertiary: #9ca3af;
   --neon-text-muted: #6b7280;
+  /* 输入框 placeholder：介于 tertiary 与 secondary 之间，柔和可见、不抢主内容 */
+  --neon-placeholder: #a8b0bf;
 
   /* ---------- 画布组件（节点） ---------- */
   --neon-component-bg: #252a3c;

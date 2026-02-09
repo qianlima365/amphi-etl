@@ -469,7 +469,7 @@ body.neon-future-theme .sidebar .ant-input {
 
 .neon-future-theme .sidebar .ant-input::placeholder,
 body.neon-future-theme .sidebar .ant-input::placeholder {
-  color: var(--neon-text-muted, #6b7280);
+  color: var(--neon-placeholder, #a8b0bf);
 }
 
 /* Refresh button in sidebar */
@@ -702,7 +702,7 @@ body.neon-future-theme .ant-input:focus {
 
 .neon-future-theme .ant-input::placeholder,
 body.neon-future-theme .ant-input::placeholder {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--neon-placeholder, #a8b0bf);
 }
 
 /* Input with prefix/suffix */
@@ -748,6 +748,23 @@ body.neon-future-theme .ant-select:not(.ant-select-customize-input) .ant-select-
   border-color: var(--neon-input-border, var(--neon-bg-elevated));
   color: var(--neon-text-primary, #fff);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Select / Cascader / DatePicker 占位提示文案 - 与 Input placeholder 统一的提示色（覆盖所有配置页） */
+.neon-future-theme .ant-select-selection-placeholder,
+body.neon-future-theme .ant-select-selection-placeholder,
+.neon-future-theme .ant-select .ant-select-selection-placeholder,
+body.neon-future-theme .ant-select .ant-select-selection-placeholder {
+  color: var(--neon-placeholder, #a8b0bf) !important;
+  opacity: 1;
+}
+
+.neon-future-theme .ant-cascader .ant-select-selection-placeholder,
+body.neon-future-theme .ant-cascader .ant-select-selection-placeholder,
+.neon-future-theme .ant-picker-input input::placeholder,
+body.neon-future-theme .ant-picker-input input::placeholder {
+  color: var(--neon-placeholder, #a8b0bf) !important;
+  opacity: 1;
 }
 
 .neon-future-theme .ant-select:hover .ant-select-selector,
@@ -1035,24 +1052,22 @@ body.neon-future-theme .edgebutton:hover {
    INPUT PLACEHOLDER - Dark Theme
    ============================================ */
 
-/* 最高优先级覆盖 - neon 下 placeholder 与输入文字均为白色 */
+/* 最高优先级 - neon 下 INPUT placeholder 使用提示文案色（柔和可见、不抢主内容） */
 .neon-future-theme .ant-input::placeholder,
 body.neon-future-theme .ant-input::placeholder,
 .neon-future-theme input::placeholder,
 body.neon-future-theme input::placeholder {
-  color: #fff !important;
-  opacity: 0.85 !important;
-  -webkit-text-fill-color: #fff !important;
+  color: var(--neon-placeholder, #a8b0bf) !important;
+  -webkit-text-fill-color: var(--neon-placeholder, #a8b0bf) !important;
 }
 
 .neon-future-theme .ant-input-affix-wrapper .ant-input::placeholder,
 body.neon-future-theme .ant-input-affix-wrapper .ant-input::placeholder {
-  color: #fff !important;
-  opacity: 0.85 !important;
-  -webkit-text-fill-color: #fff !important;
+  color: var(--neon-placeholder, #a8b0bf) !important;
+  -webkit-text-fill-color: var(--neon-placeholder, #a8b0bf) !important;
 }
 
-/* 组件配置面板（输入/输出节点内）INPUT：占位符与用户输入均为白色 */
+/* 组件内输入框：正文白色，placeholder 用提示色 */
 .neon-future-theme .component .ant-input,
 body.neon-future-theme .component .ant-input {
   color: #fff !important;
@@ -1061,9 +1076,8 @@ body.neon-future-theme .component .ant-input {
 
 .neon-future-theme .component .ant-input::placeholder,
 body.neon-future-theme .component .ant-input::placeholder {
-  color: #fff !important;
-  opacity: 0.85 !important;
-  -webkit-text-fill-color: #fff !important;
+  color: var(--neon-placeholder, #a8b0bf) !important;
+  -webkit-text-fill-color: var(--neon-placeholder, #a8b0bf) !important;
 }
 
 .neon-future-theme .component .ant-input-affix-wrapper .ant-input,
@@ -1074,27 +1088,33 @@ body.neon-future-theme .component .ant-input-affix-wrapper .ant-input {
 
 .neon-future-theme .component .ant-input-affix-wrapper .ant-input::placeholder,
 body.neon-future-theme .component .ant-input-affix-wrapper .ant-input::placeholder {
-  color: #fff !important;
-  opacity: 0.85 !important;
-  -webkit-text-fill-color: #fff !important;
+  color: var(--neon-placeholder, #a8b0bf) !important;
+  -webkit-text-fill-color: var(--neon-placeholder, #a8b0bf) !important;
 }
 
-/* Target placeholder in node config forms specifically */
 .neon-future-theme .react-flow__node .ant-input::placeholder,
 body.neon-future-theme .react-flow__node .ant-input::placeholder {
-  color: #fff !important;
-  opacity: 0.85 !important;
-  -webkit-text-fill-color: #fff !important;
+  color: var(--neon-placeholder, #a8b0bf) !important;
+  -webkit-text-fill-color: var(--neon-placeholder, #a8b0bf) !important;
 }
 
-/* 组件配置对话框中的 placeholder */
+/* 组件配置对话框（Modal）内：placeholder 统一为提示色 */
 .neon-future-theme [class*="node-config"] .ant-input::placeholder,
 body.neon-future-theme [class*="node-config"] .ant-input::placeholder,
 .neon-future-theme .ant-modal-content .ant-input::placeholder,
-body.neon-future-theme .ant-modal-content .ant-input::placeholder {
-  color: #fff !important;
-  opacity: 0.85 !important;
-  -webkit-text-fill-color: #fff !important;
+.neon-future-theme .ant-modal-body .ant-input::placeholder,
+body.neon-future-theme .ant-modal-content .ant-input::placeholder,
+body.neon-future-theme .ant-modal-body .ant-input::placeholder {
+  color: var(--neon-placeholder, #a8b0bf) !important;
+  -webkit-text-fill-color: var(--neon-placeholder, #a8b0bf) !important;
+}
+
+.neon-future-theme .ant-modal-content .ant-input-affix-wrapper .ant-input::placeholder,
+.neon-future-theme .ant-modal-body .ant-input-affix-wrapper .ant-input::placeholder,
+body.neon-future-theme .ant-modal-content .ant-input-affix-wrapper .ant-input::placeholder,
+body.neon-future-theme .ant-modal-body .ant-input-affix-wrapper .ant-input::placeholder {
+  color: var(--neon-placeholder, #a8b0bf) !important;
+  -webkit-text-fill-color: var(--neon-placeholder, #a8b0bf) !important;
 }
 
 /* ============================================
