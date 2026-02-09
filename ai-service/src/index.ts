@@ -101,10 +101,25 @@ function corsOriginCheck(origin: string | undefined, cb: (err: Error | null, all
   if (!origin) return cb(null, true);
   if (corsOrigins.includes('*')) return cb(null, true);
   if (corsOrigins.includes(origin)) return cb(null, origin);
+  
+  // 允许 localhost（开发环境或未配置 CORS_ORIGIN 时）
   const isLocalhost = origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:');
   if (isLocalhost && (process.env.NODE_ENV !== 'production' || corsOrigins.length === 0)) {
     return cb(null, origin);
   }
+
+  // 允许局域网 IP（10.x / 192.168.x / 172.16–31.x），便于通过本机 IP 或 iframe 嵌入访问
+  const isPrivateIP =
+    /^http:\/\/192\.168\.\d+\.\d+:\d+$/.test(origin) ||
+    /^http:\/\/10\.\d+\.\d+\.\d+:\d+$/.test(origin) ||
+    /^http:\/\/172\.(1[6-9]|2\d|3[01])\.\d+\.\d+:\d+$/.test(origin) ||
+    /^http:\/\/127\.\d+\.\d+\.\d+:\d+$/.test(origin);
+  if (isPrivateIP) {
+    console.log(`[CORS] 允许局域网访问: ${origin}`);
+    return cb(null, origin);
+  }
+
+  console.log(`[CORS] 拒绝访问: ${origin}`);
   cb(null, false);
 }
 
@@ -120,18 +135,47 @@ app.use(cors({
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
+  // 禁用 contentSecurityPolicy，避免阻止跨域请求
+  contentSecurityPolicy: false,
+  // 允许跨域嵌入
+  frameguard: false,
 }));
+
+// 开发环境下更宽松的 CORS - 允许所有来源
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors({
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'X-XSRFToken', '_xsrf'],
+    exposedHeaders: ['Content-Length'],
+    credentials: true,
+  }));
+}
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 
-// Rate limiting
+// Rate limiting - 跳过本地开发环境
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 30, // 30 requests per minute
+  max: 100, // 增加到 100 请求/分钟
+  skip: (req) => {
+    // 跳过本地请求
+    const ip = req.ip || req.socket.remoteAddress || '';
+    return ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168.') || ip.startsWith('10.');
+  },
   message: { error: 'Too many requests, please try again later.' },
 });
 app.use('/ai', limiter);
 app.use('/agent', limiter);
+
+// 请求日志中间件 - 帮助调试 403 问题
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  console.log('  Origin:', req.headers.origin);
+  console.log('  Content-Type:', req.headers['content-type']);
+  console.log('  Authorization:', req.headers.authorization ? 'Present' : 'None');
+  next();
+});
 
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

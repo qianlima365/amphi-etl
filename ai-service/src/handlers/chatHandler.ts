@@ -248,8 +248,9 @@ export async function chatHandler(req: Request, res: Response): Promise<void> {
       userId = 'default',
       model: modelConfig,
       customPrompt,
-      intentThreshold = 0.6
-    } = req.body as ChatRequest;
+      intentThreshold = 0.6,
+      stream: wantStream = false
+    } = req.body as ChatRequest & { stream?: boolean };
 
     // 验证必填参数
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -339,36 +340,46 @@ export async function chatHandler(req: Request, res: Response): Promise<void> {
         error: pipelineResult.error
       });
     } else {
-      // 普通对话 - 不生成 Pipeline
+      // 普通对话 - 不生成 Pipeline（支持流式输出）
       console.log('\n[Chat Handler] ==================== Step 2: 普通对话 ====================');
-      console.log('[Chat Handler] 意图为普通对话，不生成 Pipeline');
-      const chatResult = await handleNormalChat(
-        messages,
-        userId,
-        modelConfig,
-        customPrompt
-      );
-
-      const duration = Date.now() - startTime;
-      console.log(`[Chat Handler] 对话回复完成 (${duration}ms)`);
-      console.log('[Chat Handler] 回复内容:', chatResult.message?.substring(0, 200) + (chatResult.message && chatResult.message.length > 200 ? '...' : ''));
-      console.log('==================== 普通对话结束 ====================\n');
-      console.log('========== [Chat Handler] 对话结束 ==========\n');
-
-      res.json({
-        success: chatResult.success,
-        message: chatResult.message,
-        intent: {
-          type: intentResult.intent === 'none' ? 'chat' : intentResult.intent,
-          confidence: intentResult.confidence
-        },
-        metadata: {
-          duration,
-          model: modelConfig?.model,
-          provider: modelConfig?.providerId
-        },
-        error: chatResult.error
-      });
+      console.log('[Chat Handler] 意图为普通对话，不生成 Pipeline, stream=', wantStream);
+      if (wantStream) {
+        await handleNormalChatStream(
+          req,
+          res,
+          messages,
+          userId,
+          modelConfig,
+          customPrompt,
+          intentResult
+        );
+      } else {
+        const chatResult = await handleNormalChat(
+          messages,
+          userId,
+          modelConfig,
+          customPrompt
+        );
+        const duration = Date.now() - startTime;
+        console.log(`[Chat Handler] 对话回复完成 (${duration}ms)`);
+        console.log('[Chat Handler] 回复内容:', chatResult.message?.substring(0, 200) + (chatResult.message && chatResult.message.length > 200 ? '...' : ''));
+        console.log('==================== 普通对话结束 ====================\n');
+        console.log('========== [Chat Handler] 对话结束 ==========\n');
+        res.json({
+          success: chatResult.success,
+          message: chatResult.message,
+          intent: {
+            type: intentResult.intent === 'none' ? 'chat' : intentResult.intent,
+            confidence: intentResult.confidence
+          },
+          metadata: {
+            duration,
+            model: modelConfig?.model,
+            provider: modelConfig?.providerId
+          },
+          error: chatResult.error
+        });
+      }
     }
   } catch (error: any) {
     const duration = Date.now() - startTime;
@@ -384,6 +395,80 @@ export async function chatHandler(req: Request, res: Response): Promise<void> {
 }
 
 /**
+ * 构建普通对话的 LLM 消息列表（供 handleNormalChat 与 handleNormalChatStream 复用）
+ */
+function buildChatLLMMessages(
+  messages: ChatMessage[],
+  customSystemPrompt?: string
+): Array<{ role: 'system' | 'user' | 'assistant'; content: string }> {
+  const systemPrompt = buildSystemPrompt(CHAT_SYSTEM_PROMPT, customSystemPrompt);
+  const llmMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+    { role: 'system', content: systemPrompt }
+  ];
+  const recentMessages = messages.slice(-10);
+  for (const msg of recentMessages) {
+    if (msg.role === 'user' || msg.role === 'assistant') {
+      llmMessages.push({ role: msg.role, content: msg.content });
+    }
+  }
+  return llmMessages;
+}
+
+/**
+ * 普通对话 - 流式输出（SSE）
+ */
+async function handleNormalChatStream(
+  _req: Request,
+  res: Response,
+  messages: ChatMessage[],
+  userId: string,
+  modelConfig?: ChatRequest['model'],
+  customSystemPrompt?: string,
+  intentResult?: { intent: string; confidence: number }
+): Promise<void> {
+  const llmMessages = buildChatLLMMessages(messages, customSystemPrompt);
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders?.();
+
+  const sendEvent = (data: object) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+    if (typeof (res as any).flush === 'function') (res as any).flush();
+  };
+
+  try {
+    const stream = LLMService.streamChat(
+      userId,
+      llmMessages,
+      {
+        providerId: modelConfig?.providerId || 'openai',
+        model: modelConfig?.model,
+        apiKey: modelConfig?.apiKey,
+        baseUrl: modelConfig?.baseUrl,
+        temperature: modelConfig?.temperature ?? 0.7,
+        topP: modelConfig?.topP ?? 0.9,
+        maxTokens: modelConfig?.maxTokens ?? 2048
+      }
+    );
+    for await (const chunk of stream) {
+      if (chunk) sendEvent({ content: chunk });
+    }
+    sendEvent({
+      done: true,
+      intent: intentResult ? { type: intentResult.intent === 'none' ? 'chat' : intentResult.intent, confidence: intentResult.confidence } : undefined
+    });
+  } catch (error: any) {
+    console.error('[Chat Handler] 流式对话失败:', error);
+    sendEvent({ error: error.message || '流式对话失败' });
+    sendEvent({ done: true });
+  } finally {
+    res.end();
+  }
+}
+
+/**
  * 处理普通对话
  */
 async function handleNormalChat(
@@ -392,26 +477,8 @@ async function handleNormalChat(
   modelConfig?: ChatRequest['model'],
   customSystemPrompt?: string
 ): Promise<{ success: boolean; message?: string; error?: { message: string } }> {
-  
-  // 使用内置系统提示词 + 用户自定义补充
-  const systemPrompt = buildSystemPrompt(CHAT_SYSTEM_PROMPT, customSystemPrompt);
-  
   console.log('[Chat Handler] 系统提示词构建完成');
-  console.log('[Chat Handler] - 内置提示词长度:', CHAT_SYSTEM_PROMPT.length);
-  console.log('[Chat Handler] - 用户自定义:', customSystemPrompt ? `${customSystemPrompt.length} 字符` : '(无)');
-
-  // 构建消息列表
-  const llmMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-    { role: 'system', content: systemPrompt }
-  ];
-
-  // 添加历史消息（最多 10 条）
-  const recentMessages = messages.slice(-10);
-  for (const msg of recentMessages) {
-    if (msg.role === 'user' || msg.role === 'assistant') {
-      llmMessages.push({ role: msg.role, content: msg.content });
-    }
-  }
+  const llmMessages = buildChatLLMMessages(messages, customSystemPrompt);
 
   try {
     const response = await LLMService.chat(
@@ -427,7 +494,6 @@ async function handleNormalChat(
         maxTokens: modelConfig?.maxTokens ?? 2048
       }
     );
-
     return {
       success: true,
       message: response.content

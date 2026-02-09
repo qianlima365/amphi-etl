@@ -3,6 +3,7 @@
  */
 
 import Database from 'better-sqlite3';
+import type { Database as DatabaseType } from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,7 +21,7 @@ if (!fs.existsSync(dbDir)) {
 }
 
 // Initialize database
-const db = new Database(DB_PATH);
+const db: DatabaseType = new Database(DB_PATH);
 db.pragma('journal_mode = WAL');
 
 // Create tables

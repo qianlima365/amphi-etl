@@ -43,7 +43,7 @@ const logo: JupyterFrontEndPlugin<void> = {
       // Create a title text element instead of icon (color from theme via .jp-MainLogo-title)
       const titleElement = document.createElement('span');
       titleElement.className = 'jp-MainLogo-title';
-      titleElement.textContent = 'Pipeline Build';
+      titleElement.textContent = 'Pipeline Builder';
       titleElement.style.cssText = `
         font-size: 14px;
         font-weight: 600;

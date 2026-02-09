@@ -1,7 +1,10 @@
 {
   "@jupyterlab/apputils-extension:themes": {
-    "theme": "Amphi Light",
+    "theme": "Neon Future",
     "theme-scrollbars": true
+  },
+  "@jupyterlab/translation-extension:plugin": {
+    "locale": "zh_CN"
   },
   "@jupyterlab/statusbar-extension:plugin": {
     "visible": false

@@ -12,18 +12,32 @@ import {
   UserApiKeyConfig
 } from './types';
 
-// AI 服务地址：同源时用 /ai（需代理到 AI 服务）；否则用绝对地址（如 http://localhost:3000/ai）
-// 可通过页面 data 属性 data-ai-service-url 或 环境覆盖
+// AI 服务地址
+// - 可通过页面 data 属性 data-ai-service-url 覆盖（如部署时同源代理或自定义端口）
+// - localhost/127.0.0.1 或局域网 IP：直接请求 AI 服务（默认 3001），不依赖 Jupyter 代理
+// - 其他域名：使用同源 /ai，需在服务端配置将 /ai、/agent 代理到 AI 服务
+const DEFAULT_AI_PORT = '3000';
+
+function isPrivateIP(host: string): boolean {
+  return (
+    host.startsWith('10.') ||
+    host.startsWith('192.168.') ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+    host === 'localhost' ||
+    host === '127.0.0.1'
+  );
+}
+
 function getApiBase(): string {
   const host = window.location.hostname;
-  const port = window.location.port;
   const fromData = document.documentElement.getAttribute('data-ai-service-url');
   if (fromData) return fromData.replace(/\/$/, '') + '/ai';
-  // 与前端同源时走相对路径，依赖服务端把 /ai 代理到 AI 服务
-  if (host !== 'localhost' && host !== '127.0.0.1') return '/ai';
-  // 本地开发：前端多为 8888/8889，AI 服务另起在 3000，用绝对地址
-  const aiPort = '3000';
-  return `http://${host}:${aiPort}/ai`;
+  // 本地或局域网访问：直接连 AI 服务，避免 Jupyter 未配置代理时出现 403
+  if (isPrivateIP(host)) {
+    return `http://${host}:${DEFAULT_AI_PORT}/ai`;
+  }
+  // 其他域名（如正式环境）：假定同源已配置代理
+  return '/ai';
 }
 const API_BASE = getApiBase();
 const OPTIMIZE_TIMEOUT = 8000; // 8 seconds
@@ -293,11 +307,22 @@ export class AIService {
           signal: controller.signal
         });
         
-        if (!response.ok) {
-          const errorText = await response.text();
+        // 检查内容类型，确保是 JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await response.text();
+          console.error('[AIService] 非 JSON 响应:', text.substring(0, 500));
           return {
             success: false,
-            error: `渲染服务返回错误: ${response.status} ${errorText}`
+            error: `服务返回非 JSON 数据 (HTTP ${response.status})。请检查 AI 服务是否已启动。`
+          };
+        }
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ message: '未知错误' }));
+          return {
+            success: false,
+            error: `渲染服务返回错误: ${response.status} ${errorData.message || errorData.error || ''}`
           };
         }
         
@@ -409,6 +434,14 @@ export class AIService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, providerId, apiKey, baseUrl })
       });
+      
+      // 检查内容类型
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('[AIService] saveApiKey 非 JSON 响应');
+        return false;
+      }
+      
       const data = await response.json();
       return data.success === true;
     } catch (error) {
@@ -484,6 +517,14 @@ export class AIService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, ...prefs })
       });
+      
+      // 检查内容类型
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('[AIService] savePreferences 非 JSON 响应');
+        return false;
+      }
+      
       const data = await response.json();
       return data.success === true;
     } catch (error) {
@@ -587,15 +628,52 @@ export class AIService {
     console.log('[AIService] 消息数:', messages.length);
 
     try {
+      console.log('[AIService] 发送请求到:', `${AGENT_BASE}/chat`);
+      
       const response = await fetch(`${AGENT_BASE}/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
         body: JSON.stringify({
           messages,
           userId,
           ...options
         })
       });
+
+      console.log('[AIService] 响应状态:', response.status, response.statusText);
+      
+      // 处理 403 错误
+      if (response.status === 403) {
+        return {
+          success: false,
+          error: { 
+            message: 'AI 服务返回 403 禁止访问错误。',
+            suggestions: [
+              '检查 AI 服务是否正常运行',
+              '检查 CORS 配置是否正确',
+              '如果使用 JupyterLab 代理，确认代理配置正确'
+            ]
+          }
+        };
+      }
+
+      // 检查内容类型，确保是 JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('[AIService] 非 JSON 响应:', text.substring(0, 500));
+        return {
+          success: false,
+          error: { 
+            message: `服务返回非 JSON 数据 (HTTP ${response.status})。请检查 AI 服务是否已启动。`,
+            suggestions: ['确认 AI 服务已启动', '检查网络连接', '稍后重试']
+          }
+        };
+      }
 
       const data = await response.json();
       console.log('[AIService] 对话响应:', {
@@ -611,6 +689,115 @@ export class AIService {
         success: false,
         error: { message: error.message }
       };
+    }
+  }
+
+  /**
+   * 统一对话接口 - 流式输出（仅普通对话时流式；Pipeline 生成仍为一次性 JSON）
+   * onChunk: 每收到一段内容调用一次
+   * 返回与 chat() 相同的结构（流式时 message 为累积全文）
+   */
+  static async chatStream(
+    messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
+    options?: {
+      model?: {
+        providerId: string;
+        model?: string;
+        apiKey?: string;
+        baseUrl?: string;
+        temperature?: number;
+        topP?: number;
+        maxTokens?: number;
+      };
+      customPrompt?: string;
+      intentThreshold?: number;
+    },
+    onChunk?: (chunk: string) => void
+  ): Promise<{
+    success: boolean;
+    message?: string;
+    intent?: {
+      type: 'pipeline_generate' | 'pipeline_edit' | 'chat' | 'none';
+      confidence: number;
+    };
+    pipeline?: AmplnSchema;
+    validation?: any;
+    metadata?: any;
+    error?: { message: string; suggestions?: string[] };
+  }> {
+    const AGENT_BASE = this.getAgentApiBase();
+    const userId = getUserId();
+
+    const response = await fetch(`${AGENT_BASE}/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/event-stream, application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        messages,
+        userId,
+        stream: true,
+        ...options
+      })
+    });
+
+    if (response.status === 403) {
+      return {
+        success: false,
+        error: {
+          message: 'AI 服务返回 403 禁止访问错误。',
+          suggestions: ['检查 AI 服务是否正常运行', '检查 CORS 配置']
+        }
+      };
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    // 非流式：Pipeline 或服务端未开 stream
+    if (contentType.includes('application/json')) {
+      const data = await response.json();
+      return data;
+    }
+    // 流式 SSE
+    if (!response.body) {
+      return { success: false, error: { message: '无响应内容' } };
+    }
+    let accumulated = '';
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const raw = line.slice(6).trim();
+            if (raw === '[DONE]') continue;
+            try {
+              const data = JSON.parse(raw);
+              if (data.content != null) {
+                accumulated += data.content;
+                onChunk?.(data.content);
+              }
+              if (data.error) {
+                return { success: false, error: { message: data.error } };
+              }
+            } catch (_) {}
+          }
+        }
+      }
+      return {
+        success: true,
+        message: accumulated,
+        intent: { type: 'chat', confidence: 1 }
+      };
+    } finally {
+      reader.releaseLock();
     }
   }
 
@@ -651,6 +838,17 @@ export class AIService {
           ...options
         })
       });
+
+      // 检查内容类型
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('[AIService] 非 JSON 响应:', text.substring(0, 500));
+        return {
+          success: false,
+          error: { message: `服务返回非 JSON 数据 (HTTP ${response.status})` }
+        };
+      }
 
       const data = await response.json();
       console.log('[AIService] 意图识别结果:', data);
@@ -721,6 +919,17 @@ export class AIService {
         })
       });
 
+      // 检查内容类型
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('[AIService] 非 JSON 响应:', text.substring(0, 500));
+        return {
+          success: false,
+          error: { message: `服务返回非 JSON 数据 (HTTP ${response.status})` }
+        };
+      }
+
       const data = await response.json();
       console.log('[AIService] Agent 生成结果:', {
         success: data.success,
@@ -772,6 +981,17 @@ export class AIService {
         body: JSON.stringify({ pipeline, autoFix })
       });
 
+      // 检查内容类型
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('[AIService] 非 JSON 响应:', text.substring(0, 500));
+        return {
+          success: false,
+          error: { message: `服务返回非 JSON 数据 (HTTP ${response.status})` }
+        };
+      }
+
       const data = await response.json();
       console.log('[AIService] 验证结果:', data.validation?.summary);
       return data;
@@ -821,6 +1041,18 @@ export class AIService {
         : `${AGENT_BASE}/templates`;
 
       const response = await fetch(url);
+      
+      // 检查内容类型
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('[AIService] 非 JSON 响应:', text.substring(0, 500));
+        return {
+          success: false,
+          error: { message: `服务返回非 JSON 数据 (HTTP ${response.status})` }
+        };
+      }
+      
       return await response.json();
     } catch (error: any) {
       console.error('[AIService] 获取模板列表错误:', error);
@@ -843,6 +1075,18 @@ export class AIService {
 
     try {
       const response = await fetch(`${AGENT_BASE}/templates/${templateId}`);
+      
+      // 检查内容类型
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('[AIService] 非 JSON 响应:', text.substring(0, 500));
+        return {
+          success: false,
+          error: { message: `服务返回非 JSON 数据 (HTTP ${response.status})` }
+        };
+      }
+      
       return await response.json();
     } catch (error: any) {
       console.error('[AIService] 获取模板详情错误:', error);
@@ -892,6 +1136,18 @@ export class AIService {
         : `${AGENT_BASE}/nodes`;
 
       const response = await fetch(url);
+      
+      // 检查内容类型
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('[AIService] 非 JSON 响应:', text.substring(0, 500));
+        return {
+          success: false,
+          error: { message: `服务返回非 JSON 数据 (HTTP ${response.status})` }
+        };
+      }
+      
       return await response.json();
     } catch (error: any) {
       console.error('[AIService] 获取节点库错误:', error);
@@ -914,6 +1170,18 @@ export class AIService {
 
     try {
       const response = await fetch(`${AGENT_BASE}/nodes/${nodeId}`);
+      
+      // 检查内容类型
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('[AIService] 非 JSON 响应:', text.substring(0, 500));
+        return {
+          success: false,
+          error: { message: `服务返回非 JSON 数据 (HTTP ${response.status})` }
+        };
+      }
+      
       return await response.json();
     } catch (error: any) {
       console.error('[AIService] 获取节点详情错误:', error);

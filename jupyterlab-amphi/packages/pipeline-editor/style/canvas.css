@@ -968,3 +968,125 @@ body.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar-thumb {
 body.neon-future-theme .palette-horizontal-scroll::-webkit-scrollbar-thumb:hover {
   background-color: var(--neon-blue-500, #2563eb);
 }
+
+/* ============================================
+   HOMEPAGE / LAUNCHER - Dark Theme
+   ============================================ */
+
+/* Launcher 主容器背景 */
+.neon-future-theme .launcher-body,
+body.neon-future-theme .launcher-body {
+  background-color: var(--neon-bg-primary, #0f1117) !important;
+}
+
+/* Launcher content 区域 */
+.neon-future-theme .launcher-content,
+body.neon-future-theme .launcher-content {
+  background-color: transparent !important;
+}
+
+/* Launcher grid */
+.neon-future-theme .launcher-grid,
+body.neon-future-theme .launcher-grid {
+  background-color: transparent !important;
+}
+
+/* Launcher 卡片 - 新建 Pipeline 卡片 */
+.neon-future-theme .launcher-card,
+body.neon-future-theme .launcher-card {
+  background-color: var(--neon-bg-secondary, #1a1d29) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 卡片头部 */
+.neon-future-theme .launcher-card-header,
+body.neon-future-theme .launcher-card-header {
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--neon-bg-elevated, #2d3347);
+}
+
+/* 卡片标题 "开始" */
+.neon-future-theme .launcher-card-header h3,
+body.neon-future-theme .launcher-card-header h3 {
+  color: #ffffff !important;
+}
+
+/* Launcher 卡片列表 */
+.neon-future-theme .launcher-card-list,
+body.neon-future-theme .launcher-card-list {
+  background-color: transparent !important;
+}
+
+.neon-future-theme .launcher-card-list li,
+body.neon-future-theme .launcher-card-list li {
+  background-color: transparent !important;
+}
+
+/* Launcher 卡片项 - 新建 Pipeline 链接 */
+.neon-future-theme .launcher-card-item,
+body.neon-future-theme .launcher-card-item {
+  background-color: var(--neon-bg-tertiary, #252a3c) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  border-radius: 8px;
+}
+
+.neon-future-theme .launcher-card-item:hover,
+body.neon-future-theme .launcher-card-item:hover {
+  background-color: var(--neon-bg-elevated, #2d3347) !important;
+  border-color: var(--neon-blue-500, #2563eb) !important;
+}
+
+/* 卡片项内标题 "新建 Pipeline" */
+.neon-future-theme .launcher-card-item strong,
+body.neon-future-theme .launcher-card-item strong {
+  color: #ffffff !important;
+}
+
+/* 卡片项内描述文字 */
+.neon-future-theme .launcher-card-item p,
+body.neon-future-theme .launcher-card-item p {
+  color: var(--neon-text-tertiary, #9ca3af) !important;
+}
+
+/* Launcher 图标容器 */
+.neon-future-theme .launcher-icon,
+body.neon-future-theme .launcher-icon {
+  background-color: transparent !important;
+}
+
+/* Alert box 警告框 */
+.neon-future-theme .alert-box,
+body.neon-future-theme .alert-box {
+  background-color: var(--neon-bg-secondary, #1a1d29) !important;
+  border: 1px solid var(--neon-bg-elevated, #2d3347) !important;
+  border-radius: 8px;
+}
+
+.neon-future-theme .alert-content,
+body.neon-future-theme .alert-content {
+  background-color: transparent !important;
+}
+
+.neon-future-theme .alert-text h2,
+body.neon-future-theme .alert-text h2 {
+  color: #ffffff !important;
+}
+
+.neon-future-theme .alert-text p,
+body.neon-future-theme .alert-text p {
+  color: var(--neon-text-secondary, #e2e4ea) !important;
+}
+
+.neon-future-theme .alert-close-btn,
+body.neon-future-theme .alert-close-btn {
+  background-color: var(--neon-bg-tertiary, #252a3c) !important;
+  color: var(--neon-text-secondary, #e2e4ea) !important;
+}
+
+.neon-future-theme .alert-close-btn:hover,
+body.neon-future-theme .alert-close-btn:hover {
+  background-color: var(--neon-bg-elevated, #2d3347) !important;
+  color: #ffffff !important;
+}

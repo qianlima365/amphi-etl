@@ -149,10 +149,14 @@ export class Launcher extends JupyterlabLauncher {
     };
 
     const bundle = (this as any).translator?.load ? (this as any).translator.load('amphi-ui') : { __: (s: string) => s };
-    const isZh = typeof navigator !== 'undefined' && (navigator.language || '').toLowerCase().startsWith('zh');
+    // 默认使用中文：优先浏览器语言为 zh，否则使用系统默认中文
+    const isZh = typeof navigator !== 'undefined'
+      ? (navigator.language || '').toLowerCase().startsWith('zh')
+      : true;
+    const defaultZh = true;
     const t = (en: string, zh: string) => {
       const translated = bundle.__(en);
-      return translated !== en ? translated : (isZh ? zh : en);
+      return translated !== en ? translated : (isZh || defaultZh ? zh : en);
     };
 
     const handleUploadFiles = () => {

@@ -302,28 +302,38 @@ const AIChatModal: React.FC<{
     setGenerationProgress(0);
     setIntentResult(null);
     
+    const assistantMsgId = String(Date.now() + 1);
+    addMessage({
+      id: assistantMsgId,
+      role: 'assistant',
+      content: '',
+      ts: Date.now()
+    });
+
     try {
-      // 构建消息列表（包含历史消息，不包含 typing 消息）
       const chatMessages = messages
         .slice(-10)
         .map(m => ({ role: m.role, content: m.content }));
       chatMessages.push({ role: 'user' as const, content: text });
-      
-      // 调用统一对话接口
-      console.log('[AI Assistant] 调用统一对话接口...');
-      const result = await AIService.chat(chatMessages, {
-        model: {
-          providerId: modelConfig.providerId,
-          model: modelConfig.model,
-          baseUrl: modelConfig.baseUrl,
-          apiKey: modelConfig.apiKey,
-          temperature: modelConfig.temperature,
-          topP: modelConfig.topP,
-          maxTokens: modelConfig.maxTokens
+
+      console.log('[AI Assistant] 调用统一对话接口（流式）...');
+      const result = await AIService.chatStream(
+        chatMessages,
+        {
+          model: {
+            providerId: modelConfig.providerId,
+            model: modelConfig.model,
+            baseUrl: modelConfig.baseUrl,
+            apiKey: modelConfig.apiKey,
+            temperature: modelConfig.temperature,
+            topP: modelConfig.topP,
+            maxTokens: modelConfig.maxTokens
+          },
+          customPrompt: modelConfig.customPrompt
         },
-        customPrompt: modelConfig.customPrompt
-      });
-      
+        (chunk) => setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: m.content + chunk } : m))
+      );
+
       const duration = Date.now() - startTime;
       console.log('[AI Assistant] 响应:', {
         success: result.success,
@@ -332,8 +342,7 @@ const AIChatModal: React.FC<{
         duration
       });
       console.log('========== [AI Assistant] 调用结束 ==========\n');
-      
-      // 保存意图结果
+
       if (result.intent) {
         setIntentResult({
           intent: result.intent.type === 'chat' ? 'none' : result.intent.type as any,
@@ -341,28 +350,21 @@ const AIChatModal: React.FC<{
           shouldTrigger: result.intent.type === 'pipeline_generate'
         });
       }
-      
-      // 处理响应
+
       if (result.success) {
         if (result.pipeline) {
-          // Pipeline 生成成功 - 显示进度完成
+          setMessages(prev => prev.filter(m => m.id !== assistantMsgId));
           setGenerating(true);
           setGenerationProgress(100);
           setGenerationStep('outputting');
-          
-          // 处理验证结果
           if (result.validation?.issues) {
             setValidationIssues(result.validation.issues);
           }
-          
-          // 构建响应消息
           let responseContent = result.message || 'Pipeline 生成成功!';
-          
           if (result.metadata) {
             responseContent += `\n\n**生成方式**: ${result.metadata.generationMethod === 'llm' ? 'AI 模型' : '规则引擎'}`;
             responseContent += `\n**耗时**: ${result.metadata.duration || duration}ms`;
           }
-          
           if (result.validation?.summary) {
             const { errors, warnings } = result.validation.summary;
             if (errors > 0) {
@@ -373,12 +375,9 @@ const AIChatModal: React.FC<{
               responseContent += `\n\n✅ **验证通过**`;
             }
           }
-          
           responseContent += `\n\n\`\`\`json\n${JSON.stringify(result.pipeline, null, 2)}\n\`\`\``;
-          
-          // 添加助手回复（不替换占位，避免留下空行）
           addMessage({
-            id: String(Date.now() + 1),
+            id: String(Date.now() + 2),
             role: 'assistant',
             content: responseContent,
             ts: Date.now()
@@ -387,13 +386,7 @@ const AIChatModal: React.FC<{
           setShowPreview(true);
           setUnread(0);
         } else {
-          // 普通对话回复 - 添加助手消息
-          addMessage({
-            id: String(Date.now() + 1),
-            role: 'assistant',
-            content: result.message || '抱歉，我没有理解您的问题。',
-            ts: Date.now()
-          });
+          setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: result.message || m.content || '抱歉，我没有理解您的问题。' } : m));
         }
       } else {
         // 请求失败
@@ -412,26 +405,14 @@ const AIChatModal: React.FC<{
           }
         }
         
-        // 添加错误信息为助手消息
-        addMessage({
-          id: String(Date.now() + 1),
-          role: 'assistant',
-          content: errorContent,
-          ts: Date.now()
-        });
+        setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: errorContent } : m));
       }
     } catch (e: any) {
       const duration = Date.now() - startTime;
       console.error('[AI Assistant] 调用异常:', e);
       console.log(`[AI Assistant] 耗时: ${duration}ms`);
       console.log('========== [AI Assistant] 调用结束 (异常) ==========\n');
-      // 添加异常信息为助手消息
-      addMessage({
-        id: String(Date.now() + 2),
-        role: 'assistant',
-        content: `请求异常: ${String(e.message || e)}`,
-        ts: Date.now()
-      });
+      setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: `请求异常: ${String(e.message || e)}` } : m));
     } finally {
       setChatLoading(false);
       setLoading(false);
@@ -503,11 +484,27 @@ const AIChatModal: React.FC<{
           onPipelineGenerated?.(previewPipeline);
           setShowSaveDialog(false);
         } else {
-          message.error(`渲染失败: ${result.error}`);
+          // 显示详细错误信息，并提供下载选项
+          Modal.error({
+            title: '保存失败',
+            content: (
+              <div>
+                <p>{result.error || '未知错误'}</p>
+                <p style={{ marginTop: 8, fontSize: 12, color: '#888' }}>
+                  您可以下载 .ampln 文件手动导入
+                </p>
+              </div>
+            ),
+            okText: '下载文件',
+            onOk: () => {
+              AIService.downloadPipeline(previewPipeline, fileName);
+            },
+          });
         }
       } else {
-        // Just save without rendering
-        message.success('Pipeline 保存成功!');
+        // 直接下载文件
+        AIService.downloadPipeline(previewPipeline, fileName);
+        message.success('Pipeline 已下载!');
         setShowSaveDialog(false);
       }
     } catch (e: any) {
