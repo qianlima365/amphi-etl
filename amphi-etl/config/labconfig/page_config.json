@@ -17,7 +17,7 @@
       "@jupyterlab/celltags-extension:plugin": false,
       "@jupyterlab/tooltip-extension:notebooks": false,
       "@jupyterlab/workspaces-extension:sidebar": false,
-      "@jupyterlab/apputils-extension:announcements": false,
+      "@jupyterlab/apputils-extension:announcements": true,
       "@jupyterlab/console-extension": false,
       "@jupyterlab/theme-dark-high-contrast-extension": false,
       "@jupyterlab/logconsole-extension:plugin": true

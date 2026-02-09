@@ -6,6 +6,9 @@
   "@jupyterlab/translation-extension:plugin": {
     "locale": "zh_CN"
   },
+  "@jupyterlab/apputils-extension:notification": {
+    "fetchNews": "false"
+  },
   "@jupyterlab/statusbar-extension:plugin": {
     "visible": false
   },

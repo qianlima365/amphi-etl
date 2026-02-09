@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Modal, Layout, Input, Button, Space, Select, Slider, Upload, Tabs, message, Tooltip, Progress, Tree, Switch } from 'antd';
-import { UploadOutlined, CopyOutlined, SendOutlined, ThunderboltOutlined, RobotOutlined, SettingOutlined, EyeOutlined, SaveOutlined } from '@ant-design/icons';
+import { UploadOutlined, CopyOutlined, SendOutlined, ThunderboltOutlined, RobotOutlined, SettingOutlined, EyeOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import type { RcFile } from 'antd/es/upload';
 import type { DataNode } from 'antd/es/tree';
 import { ModelConfig, ChatMessage, Attachment, AmplnSchema, GenerationStep, DEFAULT_PROMPT_TEMPLATE, ModelProvider, UserApiKeyConfig } from './types';
@@ -120,12 +120,16 @@ const STEP_LABELS: Record<GenerationStep, string> = {
   outputting: '输出 JSON'
 };
 
+const PANEL_WIDTH = 420;
+
 const AIChatModal: React.FC<{
   onClose: () => void;
   setUnread: (n: number) => void;
   setLoading: (b: boolean) => void;
   onPipelineGenerated?: (pipeline: AmplnSchema) => void;
-}> = ({ onClose, setUnread, setLoading, onPipelineGenerated }) => {
+  /** 以右侧面板形式打开（从页面右侧滑出），仅展示对话，配置/提示词通过右上角操作入口打开 */
+  asPanel?: boolean;
+}> = ({ onClose, setUnread, setLoading, onPipelineGenerated, asPanel = true }) => {
   // Theme detection
   const { isNeonTheme } = useTheme();
   const themeStyles = useMemo(() => getThemeStyles(isNeonTheme), [isNeonTheme]);
@@ -185,6 +189,10 @@ const AIChatModal: React.FC<{
   const [saveFileName, setSaveFileName] = useState('');
   const [savePath, setSavePath] = useState('./pipelines/');
   const [renderAfterSave, setRenderAfterSave] = useState(true);
+
+  // 右侧面板模式：设置抽屉（模型配置/提示词/预览）通过右上角操作打开
+  const [settingsDrawerOpen, setSettingsDrawerOpen] = useState(false);
+  const [settingsDrawerTab, setSettingsDrawerTab] = useState<'model' | 'prompt' | 'preview'>('model');
 
   // Load providers, API keys, and user preferences on mount
   useEffect(() => {
@@ -569,73 +577,72 @@ const AIChatModal: React.FC<{
     return warnings;
   };
 
-  return (
-    <>
-      {/* CSS animation for typing indicator */}
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-      `}</style>
-      <Modal
-        open={open}
-        onCancel={close}
-        footer={null}
-        width={900}
-        style={{ top: '5%' }}
-        styles={isNeonTheme ? {
-          header: {
-            background: 'var(--neon-bg-secondary, #1a1d29)',
-            borderBottom: '1px solid var(--neon-bg-elevated, #2d3347)',
+  const openSettingsDrawer = useCallback((tab: 'model' | 'prompt' | 'preview') => {
+    console.log('[AIChatModal] 打开设置抽屉:', tab);
+    setSettingsDrawerTab(tab);
+    setSettingsDrawerOpen(true);
+  }, []);
+
+  // 关闭设置抽屉 - 只有通过关闭按钮才能调用
+  const closeSettingsDrawer = useCallback(() => {
+    console.log('[AIChatModal] 关闭设置抽屉');
+    setSettingsDrawerOpen(false);
+  }, []);
+
+  const handleSettingsClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openSettingsDrawer('model');
+  }, [openSettingsDrawer]);
+
+  const panelHeader = (
+    <div
+      className="ai-chat-panel-header"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '12px 16px',
+        borderBottom: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)',
+        background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'var(--jp-layout-color0, #fff)',
+        color: isNeonTheme ? 'var(--neon-text-primary, #fff)' : 'var(--jp-ui-font-color0, #333)',
+      }}
+    >
+      <Space style={{ color: 'inherit' }}>
+        <RobotOutlined style={{ color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }} />
+        <span>Pipeline助手</span>
+      </Space>
+      <Space size="small">
+        <Button
+          type="default"
+          size="small"
+          icon={<SettingOutlined />}
+          onClick={handleSettingsClick}
+          title="设置（模型配置、提示词、预览）"
+          style={isNeonTheme ? {
+            background: 'var(--neon-bg-tertiary, #252a3c)',
+            borderColor: 'var(--neon-bg-elevated, #2d3347)',
             color: 'var(--neon-text-primary, #fff)',
-          },
-          content: {
-            background: 'var(--neon-bg-secondary, #1a1d29)',
-            border: '1px solid var(--neon-bg-elevated, #2d3347)',
-            boxShadow: '0 16px 48px rgba(0, 0, 0, 0.5)',
-          },
-          body: {
-            height: '80vh',
-            padding: 0,
-            background: 'transparent',
-            backdropFilter: 'none',
-          },
-        } : undefined}
-        bodyStyle={{ 
-          height: '80vh', 
-          padding: 0, 
-          background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'var(--jp-layout-color0, #fff)',
-          backdropFilter: 'none',
-        }}
-        className="ai-chat-modal"
-        destroyOnClose
-        maskClosable
-        title={
-          <Space style={{ color: themeStyles.modal.title.color }}>
-            <RobotOutlined style={{ color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }} />
-            <span>Pipeline助手</span>
-          </Space>
-        }
-      >
-        <Layout style={{ height: '100%', background: 'transparent' }}>
-          <Content style={{ 
-            background: isNeonTheme ? 'var(--neon-bg-primary, #0f1117)' : 'var(--jp-layout-color0, #fff)', 
-            borderRight: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)', 
-            display: 'flex', 
-            flexDirection: 'column' 
-          }}>
-            {/* Generation Progress */}
-            {generating && (
-              <div className="ai-chat-progress" style={{ padding: '8px 16px', borderBottom: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)' }}>
-                <div style={{ marginBottom: 4, color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }}>
-                  {generationStep && STEP_LABELS[generationStep]}
-                </div>
-                <Progress percent={generationProgress} size="small" />
-              </div>
-            )}
-            
-            {/* Messages List */}
+          } : undefined}
+        >
+          设置
+        </Button>
+        <Button type="text" size="small" icon={<CloseOutlined />} onClick={close} style={{ color: 'inherit' }} title="关闭" />
+      </Space>
+    </div>
+  );
+
+  const chatContentBody = (
+    <>
+      {generating && (
+        <div className="ai-chat-progress" style={{ padding: '8px 16px', borderBottom: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)' }}>
+          <div style={{ marginBottom: 4, color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }}>
+            {generationStep && STEP_LABELS[generationStep]}
+          </div>
+          <Progress percent={generationProgress} size="small" />
+        </div>
+      )}
+      {/* Messages List */}
             <div ref={listRef} className="ai-chat-messages" style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
               {messages.map(m => (
                 <div 
@@ -839,20 +846,17 @@ const AIChatModal: React.FC<{
                 </Button>
               </div>
             </div>
-          </Content>
-          
-          {/* Right Sidebar - Configuration */}
-          <Sider width={280} theme="light" className="ai-chat-sider" style={{ 
-            padding: 12, 
-            overflowY: 'auto', 
-            background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'var(--jp-layout-color0, #fff)',
-            borderLeft: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : 'none',
-          }}>
-            <Tabs
-              className="ai-chat-tabs"
-              size="small"
-              items={[
-                {
+    </>
+  );
+
+  const settingsTabs = (
+    <Tabs
+      className="ai-chat-tabs"
+      size="small"
+      activeKey={settingsDrawerTab}
+      onChange={(k) => setSettingsDrawerTab(k as 'model' | 'prompt' | 'preview')}
+      items={[
+        {
                   key: 'model',
                   label: <><SettingOutlined /> 模型配置</>,
                   children: (
@@ -1201,10 +1205,150 @@ const AIChatModal: React.FC<{
                 }
               ]}
             />
-          </Sider>
-        </Layout>
-      </Modal>
-      
+  );
+
+  return (
+    <>
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        .ai-chat-panel { animation: ai-chat-panel-in 0.25s ease-out; }
+        @keyframes ai-chat-panel-in {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .ai-chat-drawer--neon.ant-drawer .ant-drawer-content-wrapper {
+          background: var(--neon-bg-secondary, #1a1d29) !important;
+          box-shadow: -4px 0 24px rgba(0,0,0,0.4);
+        }
+        .ai-chat-drawer--neon.ant-drawer .ant-drawer-mask {
+          background: rgba(0,0,0,0.6) !important;
+        }
+        .ai-chat-drawer--neon.ant-drawer .ant-drawer-title,
+        .ai-chat-drawer--neon.ant-drawer .ant-drawer-close {
+          color: var(--neon-text-primary, #fff) !important;
+        }
+        .ai-chat-drawer--neon .ant-select-selector,
+        .ai-chat-drawer--neon .ant-input,
+        .ai-chat-drawer--neon .ant-input-affix-wrapper,
+        .ai-chat-drawer--neon textarea.ant-input {
+          background: var(--neon-bg-tertiary, #252a3c) !important;
+          border-color: var(--neon-bg-elevated, #2d3347) !important;
+          color: var(--neon-text-primary, #fff) !important;
+        }
+        .ai-chat-drawer--neon .ant-tabs-tab { color: var(--neon-text-secondary, #e2e4ea); }
+        .ai-chat-drawer--neon .ant-tabs-tab-active .ant-tabs-tab-btn { color: var(--neon-cyan-400, #22d3ee); }
+        .ai-chat-drawer--neon .ant-slider-track { background: var(--neon-cyan-400, #22d3ee) !important; }
+        .ai-chat-settings-panel {
+          animation: ai-chat-settings-panel-in 0.2s ease-out;
+        }
+        @keyframes ai-chat-settings-panel-in {
+          from { transform: translateX(100%); opacity: 0.6; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      `}</style>
+      {asPanel ? (
+        <>
+          {/* 设置面板 - 自定义实现，仅通过标题栏关闭按钮关闭 */}
+          {settingsDrawerOpen && (
+            <div
+              className="ai-chat-settings-panel"
+              style={{
+                position: 'fixed',
+                right: PANEL_WIDTH,
+                top: 0,
+                bottom: 0,
+                width: 320,
+                zIndex: 10002,
+                display: 'flex',
+                flexDirection: 'column',
+                background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'var(--jp-layout-color0, #fff)',
+                boxShadow: '4px 0 24px rgba(0,0,0,0.3)',
+                borderLeft: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  borderBottom: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)',
+                  background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'var(--jp-layout-color0, #fff)',
+                  color: isNeonTheme ? 'var(--neon-text-primary, #fff)' : 'var(--jp-ui-font-color0, #333)',
+                  flexShrink: 0,
+                }}
+              >
+                <span>设置</span>
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<CloseOutlined style={{ color: isNeonTheme ? '#fff' : '#333' }} />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closeSettingsDrawer();
+                  }}
+                  style={{ marginRight: -8 }}
+                />
+              </div>
+              <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
+                {settingsTabs}
+              </div>
+            </div>
+          )}
+          <div
+            className="ai-chat-panel"
+            style={{
+              position: 'fixed',
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: PANEL_WIDTH,
+              zIndex: 10001,
+              display: 'flex',
+              flexDirection: 'column',
+              background: isNeonTheme ? 'var(--neon-bg-primary, #0f1117)' : 'var(--jp-layout-color0, #fff)',
+              boxShadow: '-4px 0 24px rgba(0,0,0,0.15)',
+              borderLeft: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)',
+            }}
+          >
+            {panelHeader}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
+              {chatContentBody}
+            </div>
+          </div>
+        </>
+      ) : (
+        <Modal
+          open={open}
+          onCancel={close}
+          footer={null}
+          width={900}
+          style={{ top: '5%' }}
+          styles={isNeonTheme ? {
+            header: { background: 'var(--neon-bg-secondary, #1a1d29)', borderBottom: '1px solid var(--neon-bg-elevated, #2d3347)', color: 'var(--neon-text-primary, #fff)' },
+            content: { background: 'var(--neon-bg-secondary, #1a1d29)', border: '1px solid var(--neon-bg-elevated, #2d3347)', boxShadow: '0 16px 48px rgba(0, 0, 0, 0.5)' },
+            body: { height: '80vh', padding: 0, background: 'transparent', backdropFilter: 'none' },
+          } : undefined}
+          bodyStyle={{ height: '80vh', padding: 0, background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'var(--jp-layout-color0, #fff)', backdropFilter: 'none' }}
+          className="ai-chat-modal"
+          destroyOnClose
+          maskClosable
+          title={<Space style={{ color: themeStyles.modal.title.color }}><RobotOutlined /><span>Pipeline助手</span></Space>}
+        >
+          <Layout style={{ height: '100%', background: 'transparent' }}>
+            <Content style={{ background: isNeonTheme ? 'var(--neon-bg-primary, #0f1117)' : 'var(--jp-layout-color0, #fff)', borderRight: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)', display: 'flex', flexDirection: 'column' }}>
+              {chatContentBody}
+            </Content>
+            <Sider width={280} theme="light" className="ai-chat-sider" style={{ padding: 12, overflowY: 'auto', background: isNeonTheme ? 'var(--neon-bg-secondary, #1a1d29)' : 'var(--jp-layout-color0, #fff)', borderLeft: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : 'none' }}>
+              {settingsTabs}
+            </Sider>
+          </Layout>
+        </Modal>
+      )}
+
       {/* Save Confirm Dialog */}
       <Modal
         open={showSaveDialog}
