@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Future 主题变量预览</title>
+  <style>
+    /* 复用 neon-theme-variables.css 中的变量定义，便于本地预览 */
+    body.neon-future-theme {
+      --neon-bg-primary: #0f1117;
+      --neon-bg-secondary: #1a1d29;
+      --neon-bg-tertiary: #252a3c;
+      --neon-bg-elevated: #2d3347;
+      --neon-accent: #6366f1;
+      --neon-blue-400: #3b82f6;
+      --neon-gradient-accent: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #6366f1 100%);
+      --neon-component-selected-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4), 0 0 20px rgba(99, 102, 241, 0.2);
+      --neon-modal-glow-border: 0 0 0 1px rgba(99, 102, 241, 0.3), 0 0 24px rgba(99, 102, 241, 0.08);
+      --neon-text-primary: #fff;
+      --neon-text-secondary: #e2e4ea;
+      --neon-input-focus-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    body { font-family: system-ui, sans-serif; padding: 24px; background: #f0f2f5; }
+    body.neon-future-theme { background: var(--neon-bg-primary); color: var(--neon-text-primary); }
+    h1 { margin-bottom: 16px; }
+    .toggle { margin-bottom: 24px; }
+    .toggle button { padding: 8px 16px; cursor: pointer; border-radius: 6px; }
+    .demo-section { margin-bottom: 32px; }
+    .demo-section h2 { font-size: 14px; margin-bottom: 12px; color: #666; }
+    body.neon-future-theme .demo-section h2 { color: var(--neon-text-tertiary, #9ca3af); }
+    /* 模拟画布节点 */
+    .mock-node {
+      width: 180px; min-height: 100px; padding: 8px; border-radius: 6px;
+      background: #F2F4F7; border: 1px solid #e0e0e0; color: #161616;
+      position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .mock-node::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: #778899; border-radius: 6px 6px 0 0;
+    }
+    body.neon-future-theme .mock-node {
+      background: var(--neon-bg-tertiary); border-color: var(--neon-bg-elevated);
+      color: var(--neon-text-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    body.neon-future-theme .mock-node::before { background: var(--neon-gradient-accent); }
+    body.neon-future-theme .mock-node.selected {
+      border-color: var(--neon-accent); box-shadow: var(--neon-component-selected-shadow);
+    }
+    .mock-node .label { font-size: 12px; font-weight: 600; margin-top: 4px; }
+    /* 模拟配置弹窗 */
+    .mock-modal {
+      max-width: 400px; padding: 0; border-radius: 8px;
+      background: #fff; border: 1px solid #e8e8e8; box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+    body.neon-future-theme .mock-modal {
+      background: var(--neon-bg-secondary); border-color: var(--neon-bg-elevated);
+      box-shadow: var(--neon-modal-glow-border);
+    }
+    .mock-modal-header { padding: 12px 16px; border-bottom: 1px solid #eee; font-weight: 600; }
+    body.neon-future-theme .mock-modal-header { border-color: var(--neon-bg-elevated); }
+    .mock-modal-body { padding: 16px; }
+    .mock-input {
+      width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #d9d9d9;
+      background: #fff; color: #333; margin-bottom: 12px; box-sizing: border-box;
+    }
+    body.neon-future-theme .mock-input {
+      background: var(--neon-bg-tertiary); border-color: var(--neon-bg-elevated);
+      color: var(--neon-text-primary);
+    }
+    .mock-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+    body.neon-future-theme .mock-input:focus {
+      border-color: var(--neon-blue-400); box-shadow: var(--neon-input-focus-shadow);
+    }
+    .mock-btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; border: 1px solid #d9d9d9; background: #fff; }
+    body.neon-future-theme .mock-btn {
+      background: var(--neon-bg-tertiary); border-color: var(--neon-bg-elevated);
+      color: var(--neon-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="toggle">
+    <button type="button" id="themeToggle">切换到 Neon Future 主题</button>
+  </div>
+  <h1>ETL 主题变量预览（静态 Demo）</h1>
+  <p>用于快速查看变量在 Neon 下的效果，实际效果以应用内为准。</p>
+
+  <div class="demo-section">
+    <h2>画布节点</h2>
+    <div class="mock-node" id="mockNode">
+      <div class="label">Database Input</div>
+    </div>
+    <p style="margin-top:8px;font-size:12px;"><button type="button" id="selectNode">切换选中</button></p>
+  </div>
+
+  <div class="demo-section">
+    <h2>配置弹窗（模拟）</h2>
+    <div class="mock-modal">
+      <div class="mock-modal-header">节点配置</div>
+      <div class="mock-modal-body">
+        <input class="mock-input" type="text" placeholder="输入框" />
+        <button class="mock-btn">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var body = document.body;
+    var btn = document.getElementById('themeToggle');
+    var node = document.getElementById('mockNode');
+    var selectBtn = document.getElementById('selectNode');
+    btn.textContent = body.classList.contains('neon-future-theme') ? '切换到 Light 主题' : '切换到 Neon Future 主题';
+    btn.onclick = function () {
+      body.classList.toggle('neon-future-theme');
+      btn.textContent = body.classList.contains('neon-future-theme') ? '切换到 Light 主题' : '切换到 Neon Future 主题';
+    };
+    selectBtn.onclick = function () { node.classList.toggle('selected'); };
+  </script>
+</body>
+</html>

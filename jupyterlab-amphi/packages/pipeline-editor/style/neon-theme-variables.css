@@ -1,0 +1,88 @@
+/**
+ * Neon Future Theme - CSS Custom Properties
+ * ETL Pipeline Editor 主题变量配置文件
+ *
+ * 使用方式：主题切换时在 body 上添加 class="neon-future-theme"，
+ * 本文件通过 body.neon-future-theme 选择器注入变量，供 canvas.css 等引用。
+ *
+ * 维护说明：仅修改本文件中的变量值即可全局调整 neon 主题色系、发光强度、圆角等。
+ */
+
+/* ============================================
+   NEON FUTURE THEME VARIABLES
+   Apply when body has class: neon-future-theme
+   ============================================ */
+
+body.neon-future-theme,
+.neon-future-theme {
+  /* ---------- 背景层级 ---------- */
+  --neon-bg-primary: #0f1117;
+  --neon-bg-secondary: #1a1d29;
+  --neon-bg-tertiary: #252a3c;
+  --neon-bg-elevated: #2d3347;
+
+  /* ---------- 主色 / 强调色（蓝紫霓虹） ---------- */
+  --neon-accent: #6366f1;
+  --neon-accent-hover: #818cf8;
+  --neon-blue-400: #3b82f6;
+  --neon-blue-500: #2563eb;
+  --neon-cyan-400: #22d3ee;
+  --neon-purple-500: #8b5cf6;
+
+  /* ---------- 渐变（标题栏、发光） ---------- */
+  --neon-gradient-accent: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #6366f1 100%);
+  --neon-gradient-subtle: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+  --neon-gradient-glow: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(99, 102, 241, 0.3) 100%);
+
+  /* ---------- 边框 / 分割线 ---------- */
+  --neon-border: #2d3347;
+  --neon-border-focus: #3b82f6;
+
+  /* ---------- 文字 ---------- */
+  --neon-text-primary: #ffffff;
+  --neon-text-secondary: #e2e4ea;
+  --neon-text-tertiary: #9ca3af;
+  --neon-text-muted: #6b7280;
+
+  /* ---------- 画布组件（节点） ---------- */
+  --neon-component-bg: #252a3c;
+  --neon-component-border: #2d3347;
+  --neon-component-top-bar: var(--neon-gradient-accent);
+  --neon-component-selected-border: #6366f1;
+  --neon-component-selected-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4), 0 0 20px rgba(99, 102, 241, 0.2);
+  --neon-component-border-radius: 6px;
+  --neon-component-top-bar-height: 4px;
+
+  /* ---------- 连接点 Handle ---------- */
+  --neon-handle-bg: #3b82f6;
+  --neon-handle-border: #6366f1;
+  --neon-handle-hover-glow: 0 0 12px rgba(59, 130, 246, 0.6);
+
+  /* ---------- 连接线 Edge ---------- */
+  --neon-edge-stroke: #3b82f6;
+  --neon-edge-stroke-width: 2px;
+  --neon-edge-selected-stroke: #818cf8;
+  --neon-edge-glow: 0 0 8px rgba(59, 130, 246, 0.5);
+  --neon-edge-temp-stroke: rgba(59, 130, 246, 0.6);
+
+  /* ---------- 配置面板 / Modal ---------- */
+  --neon-modal-bg: #1a1d29;
+  --neon-modal-border: #2d3347;
+  --neon-modal-header-border: #2d3347;
+  --neon-modal-glow-border: 0 0 0 1px rgba(99, 102, 241, 0.3), 0 0 24px rgba(99, 102, 241, 0.08);
+
+  /* ---------- 表单控件（输入框、按钮、下拉） ---------- */
+  --neon-input-bg: #252a3c;
+  --neon-input-border: #2d3347;
+  --neon-input-focus-border: #3b82f6;
+  --neon-input-focus-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  --neon-btn-default-bg: #252a3c;
+  --neon-btn-default-border: #2d3347;
+  --neon-btn-primary-bg: #2563eb;
+  --neon-btn-primary-border: #2563eb;
+
+  /* ---------- 发光强度（可统一调大/调小） ---------- */
+  --neon-glow-weak: 0 0 8px;
+  --neon-glow-medium: 0 0 16px;
+  --neon-glow-strong: 0 0 24px;
+}

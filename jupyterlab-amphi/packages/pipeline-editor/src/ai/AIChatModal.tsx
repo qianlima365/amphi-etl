@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { Modal, Layout, Input, Button, Space, Select, Slider, Upload, Tabs, message, Tooltip, Progress, Tree, Switch } from 'antd';
-import { UploadOutlined, CopyOutlined, SendOutlined, ThunderboltOutlined, RobotOutlined, SettingOutlined, EyeOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
+import { Modal, Layout, Input, Button, Space, Select, Slider, Upload, Tabs, message, Tooltip, Progress, Switch } from 'antd';
+import { UploadOutlined, CopyOutlined, SendOutlined, ThunderboltOutlined, SettingOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import type { RcFile } from 'antd/es/upload';
-import type { DataNode } from 'antd/es/tree';
 import { ModelConfig, ChatMessage, Attachment, AmplnSchema, GenerationStep, DEFAULT_PROMPT_TEMPLATE, ModelProvider, UserApiKeyConfig } from './types';
 import { AIService } from './AIService';
 import { useTheme, getThemeStyles } from './useTheme';
@@ -182,7 +181,6 @@ const AIChatModal: React.FC<{
   // Pipeline preview state
   const [previewPipeline, setPreviewPipeline] = useState<AmplnSchema | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  const [previewMode, setPreviewMode] = useState<'tree' | 'json'>('tree');
   
   // Save dialog state
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -192,7 +190,7 @@ const AIChatModal: React.FC<{
 
   // 右侧面板模式：设置抽屉（模型配置/提示词/预览）通过右上角操作打开
   const [settingsDrawerOpen, setSettingsDrawerOpen] = useState(false);
-  const [settingsDrawerTab, setSettingsDrawerTab] = useState<'model' | 'prompt' | 'preview'>('model');
+  const [settingsDrawerTab, setSettingsDrawerTab] = useState<'model' | 'prompt'>('model');
 
   // Load providers, API keys, and user preferences on mount
   useEffect(() => {
@@ -539,45 +537,7 @@ const AIChatModal: React.FC<{
     }
   };
 
-  // Build tree data for pipeline preview
-  const buildTreeData = (pipeline: AmplnSchema): DataNode[] => {
-    const nodes: DataNode = {
-      title: `节点 (${pipeline.nodes.length})`,
-      key: 'nodes',
-      children: pipeline.nodes.map(n => ({
-        title: `${n.id} (${n.type})`,
-        key: `node-${n.id}`
-      }))
-    };
-    
-    const edges: DataNode = {
-      title: `连线 (${pipeline.edges.length})`,
-      key: 'edges',
-      children: pipeline.edges.map(e => ({
-        title: `${e.source} → ${e.target}`,
-        key: `edge-${e.id}`
-      }))
-    };
-    
-    return [
-      { title: `名称: ${pipeline.name}`, key: 'name', isLeaf: true },
-      { title: `版本: ${pipeline.version}`, key: 'version', isLeaf: true },
-      nodes,
-      edges
-    ];
-  };
-
-  // Validate pipeline and get warnings
-  const getValidationWarnings = (pipeline: AmplnSchema): string[] => {
-    const warnings: string[] = [];
-    if (!pipeline.name) warnings.push('缺少 name 字段');
-    if (!pipeline.version) warnings.push('缺少 version 字段');
-    if (!pipeline.nodes || pipeline.nodes.length === 0) warnings.push('nodes 为空');
-    if (!pipeline.edges) warnings.push('缺少 edges 字段');
-    return warnings;
-  };
-
-  const openSettingsDrawer = useCallback((tab: 'model' | 'prompt' | 'preview') => {
+  const openSettingsDrawer = useCallback((tab: 'model' | 'prompt') => {
     console.log('[AIChatModal] 打开设置抽屉:', tab);
     setSettingsDrawerTab(tab);
     setSettingsDrawerOpen(true);
@@ -609,7 +569,7 @@ const AIChatModal: React.FC<{
       }}
     >
       <Space style={{ color: 'inherit' }}>
-        <RobotOutlined style={{ color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }} />
+        <span style={{ fontSize: 20 }}>🤖</span>
         <span>Pipeline助手</span>
       </Space>
       <Space size="small">
@@ -618,7 +578,7 @@ const AIChatModal: React.FC<{
           size="small"
           icon={<SettingOutlined />}
           onClick={handleSettingsClick}
-          title="设置（模型配置、提示词、预览）"
+          title="设置（模型配置、提示词）"
           style={isNeonTheme ? {
             background: 'var(--neon-bg-tertiary, #252a3c)',
             borderColor: 'var(--neon-bg-elevated, #2d3347)',
@@ -763,11 +723,11 @@ const AIChatModal: React.FC<{
                   color: isNeonTheme ? 'var(--neon-text-muted, #6b7280)' : 'var(--jp-ui-font-color3, #999)', 
                   marginTop: 100 
                 }}>
-                  <RobotOutlined style={{ 
+                  <span style={{ 
                     fontSize: 48, 
                     marginBottom: 16,
-                    color: isNeonTheme ? 'var(--neon-text-tertiary, #a0a0b0)' : 'inherit',
-                  }} />
+                    lineHeight: 1,
+                  }}>🤖</span>
                   <div>您好！我是你的 Pipeline 构建助手</div>
                   <div style={{ fontSize: 12, marginTop: 8 }}>
                     描述您的数据处理需求，我将帮您生成 Pipeline
@@ -854,7 +814,7 @@ const AIChatModal: React.FC<{
       className="ai-chat-tabs"
       size="small"
       activeKey={settingsDrawerTab}
-      onChange={(k) => setSettingsDrawerTab(k as 'model' | 'prompt' | 'preview')}
+      onChange={(k) => setSettingsDrawerTab(k as 'model' | 'prompt')}
       items={[
         {
                   key: 'model',
@@ -1003,7 +963,7 @@ const AIChatModal: React.FC<{
                               </Button>
                             </Space>
                             {isConfigured && !newApiKey && (
-                              <div style={{ fontSize: 11, color: isNeonTheme ? 'var(--neon-text-muted, #606070)' : 'var(--jp-ui-font-color3, #888)', marginTop: 6 }}>
+                              <div style={{ fontSize: 11, color: isNeonTheme ? 'var(--neon-text-muted,rgb(246, 246, 248))' : 'var(--jp-ui-font-color3, #888)', marginTop: 6 }}>
                                 输入新的 API Key 后点击「更新」可覆盖当前配置
                               </div>
                             )}
@@ -1128,80 +1088,6 @@ const AIChatModal: React.FC<{
                       </Space>
                     </Space>
                   )
-                },
-                {
-                  key: 'preview',
-                  label: <><EyeOutlined /> Pipeline 预览</>,
-                  children: previewPipeline ? (
-                    <Space direction="vertical" style={{ width: '100%' }} size="middle">
-                      {/* Validation Warnings */}
-                      {getValidationWarnings(previewPipeline).length > 0 && (
-                        <div style={{ background: 'var(--jp-error-color0, #fff2f0)', border: '1px solid var(--jp-error-color1, #ffccc7)', borderRadius: 4, padding: 8 }}>
-                          <div style={{ color: 'var(--jp-error-color2, #cf1322)', fontWeight: 500, marginBottom: 4 }}>⚠️ 校验警告</div>
-                          {getValidationWarnings(previewPipeline).map((w, i) => (
-                            <div key={i} style={{ color: 'var(--jp-error-color2, #cf1322)', fontSize: 12 }}>• {w}</div>
-                          ))}
-                        </div>
-                      )}
-                      
-                      {/* View Toggle */}
-                      <div>
-                        <Button.Group>
-                          <Button 
-                            type={previewMode === 'tree' ? 'primary' : 'default'}
-                            onClick={() => setPreviewMode('tree')}
-                          >
-                            树形
-                          </Button>
-                          <Button 
-                            type={previewMode === 'json' ? 'primary' : 'default'}
-                            onClick={() => setPreviewMode('json')}
-                          >
-                            JSON
-                          </Button>
-                        </Button.Group>
-                      </div>
-                      
-                      {/* Preview Content */}
-                      {previewMode === 'tree' ? (
-                        <Tree
-                          treeData={buildTreeData(previewPipeline)}
-                          defaultExpandAll
-                          style={{ fontSize: 12 }}
-                        />
-                      ) : (
-                        <pre style={{ 
-                          background: 'var(--jp-layout-color1, #f5f5f5)', 
-                          padding: 8, 
-                          borderRadius: 4, 
-                          fontSize: 11,
-                          maxHeight: 300,
-                          overflow: 'auto',
-                          color: 'var(--jp-ui-font-color0, inherit)',
-                          border: '1px solid var(--jp-border-color2, #e8e8e8)'
-                        }}>
-                          {JSON.stringify(previewPipeline, null, 2)}
-                        </pre>
-                      )}
-                      
-                      {/* Save Button */}
-                      <Button 
-                        type="primary" 
-                        block 
-                        icon={<SaveOutlined />}
-                        onClick={() => {
-                          setSaveFileName(`pipeline_${new Date().toISOString().replace(/[:.]/g, '').slice(0, 15)}.ampln`);
-                          setShowSaveDialog(true);
-                        }}
-                      >
-                        保存 Pipeline
-                      </Button>
-                    </Space>
-                  ) : (
-                    <div style={{ textAlign: 'center', color: 'var(--jp-ui-font-color3, #999)', padding: 20 }}>
-                      生成 Pipeline 后将在此预览
-                    </div>
-                  )
                 }
               ]}
             />
@@ -1248,13 +1134,15 @@ const AIChatModal: React.FC<{
           from { transform: translateX(100%); opacity: 0.6; }
           to { transform: translateX(0); opacity: 1; }
         }
+        .ai-chat-settings-panel--neon .ant-tabs-tab { color: #fff !important; }
+        .ai-chat-settings-panel--neon .ant-tabs-tab-active .ant-tabs-tab-btn { color: var(--neon-cyan-400, #22d3ee) !important; }
       `}</style>
       {asPanel ? (
         <>
           {/* 设置面板 - 自定义实现，仅通过标题栏关闭按钮关闭 */}
           {settingsDrawerOpen && (
             <div
-              className="ai-chat-settings-panel"
+              className={isNeonTheme ? 'ai-chat-settings-panel ai-chat-settings-panel--neon' : 'ai-chat-settings-panel'}
               style={{
                 position: 'fixed',
                 right: PANEL_WIDTH,
@@ -1336,7 +1224,7 @@ const AIChatModal: React.FC<{
           className="ai-chat-modal"
           destroyOnClose
           maskClosable
-          title={<Space style={{ color: themeStyles.modal.title.color }}><RobotOutlined /><span>Pipeline助手</span></Space>}
+          title={<Space style={{ color: themeStyles.modal.title.color }}><span style={{ fontSize: 20 }}>🤖</span><span>Pipeline助手</span></Space>}
         >
           <Layout style={{ height: '100%', background: 'transparent' }}>
             <Content style={{ background: isNeonTheme ? 'var(--neon-bg-primary, #0f1117)' : 'var(--jp-layout-color0, #fff)', borderRight: isNeonTheme ? '1px solid var(--neon-bg-elevated, #2d3347)' : '1px solid var(--jp-border-color2, #e8e8e8)', display: 'flex', flexDirection: 'column' }}>

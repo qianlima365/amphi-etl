@@ -21,7 +21,8 @@ Supports both Light and Neon Future themes
 }
 
 .react-flow__node.selected {
-  border-color: 1px solid black;
+  border-color: transparent;
+  outline: none;
 }
 
 .react-flow__node-toolbar {
@@ -342,7 +343,7 @@ Components palette sidebar
 }
 
 /*
-Edges 
+Edges - default (light theme)
 */
 
 .temp .react-flow__edge-path {
@@ -350,6 +351,10 @@ Edges
   stroke-dasharray: 5 5;
 }
 
+.react-flow__edge-path {
+  stroke-width: 2px;
+  transition: stroke 0.2s ease, filter 0.2s ease;
+}
 
 .edgebutton {
   width: 20px;
@@ -359,11 +364,12 @@ Edges
   cursor: pointer;
   border-radius: 50%;
   font-size: 12px;
-  line-height: 1; /* equivalent to leading-none */
+  line-height: 1;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .edgebutton:hover {
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1); /* equivalent to shadow-lg */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -562,19 +568,92 @@ body.neon-future-theme .react-flow__controls-button svg {
    NODE CONFIGURATION MODAL / FORMS
    ============================================ */
 
-/* Modal background */
+/* Modal background - 节点配置弹窗（霓虹发光边框） */
 .neon-future-theme .react-flow__node-config-modal,
 body.neon-future-theme .react-flow__node-config-modal,
 .neon-future-theme .ant-modal-content,
 body.neon-future-theme .ant-modal-content {
+  background-color: var(--neon-modal-bg, var(--neon-bg-secondary, #1a1d29));
+  border: 1px solid var(--neon-modal-border, var(--neon-bg-elevated, #2d3347));
+  box-shadow: var(--neon-modal-glow-border);
+  border-radius: 8px;
+}
+
+/* Modal 内容区 - 消除大白底 */
+.neon-future-theme .ant-modal-body,
+body.neon-future-theme .ant-modal-body {
   background-color: var(--neon-bg-secondary, #1a1d29);
-  border: 1px solid var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-primary, #fff);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.neon-future-theme .ant-modal-footer,
+body.neon-future-theme .ant-modal-footer {
+  background-color: var(--neon-bg-secondary, #1a1d29);
+  border-top: 1px solid var(--neon-bg-elevated, #2d3347);
+}
+
+/* 配置弹窗内的 Card / Divider 等块级元素 */
+.neon-future-theme .ant-modal-body .ant-card,
+body.neon-future-theme .ant-modal-body .ant-card {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-primary, #fff);
+}
+
+.neon-future-theme .ant-modal-body .ant-card .ant-card-head,
+body.neon-future-theme .ant-modal-body .ant-card .ant-card-head {
+  background-color: transparent;
+  border-bottom-color: var(--neon-bg-elevated, #2d3347);
+  color: var(--neon-text-primary, #fff);
+}
+
+.neon-future-theme .ant-modal-body .ant-card .ant-card-body,
+body.neon-future-theme .ant-modal-body .ant-card .ant-card-body {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .ant-modal-body .ant-divider,
+body.neon-future-theme .ant-modal-body .ant-divider {
+  border-color: var(--neon-bg-elevated, #2d3347);
+}
+
+.neon-future-theme .ant-modal-body .ant-divider-inner-text,
+body.neon-future-theme .ant-modal-body .ant-divider-inner-text {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+/* 配置弹窗内 Tabs - 与主题统一 */
+.neon-future-theme .ant-modal-body .ant-tabs-nav,
+body.neon-future-theme .ant-modal-body .ant-tabs-nav {
+  margin-bottom: 12px;
+}
+
+.neon-future-theme .ant-modal-body .ant-tabs-tab,
+body.neon-future-theme .ant-modal-body .ant-tabs-tab {
+  color: var(--neon-text-tertiary, #9ca3af);
+}
+
+.neon-future-theme .ant-modal-body .ant-tabs-tab:hover,
+body.neon-future-theme .ant-modal-body .ant-tabs-tab:hover {
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .ant-modal-body .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn,
+body.neon-future-theme .ant-modal-body .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--neon-accent, var(--neon-blue-400));
+}
+
+.neon-future-theme .ant-modal-body .ant-tabs-ink-bar,
+body.neon-future-theme .ant-modal-body .ant-tabs-ink-bar {
+  background: var(--neon-gradient-accent);
 }
 
 .neon-future-theme .ant-modal-header,
 body.neon-future-theme .ant-modal-header {
-  background-color: var(--neon-bg-secondary, #1a1d29);
-  border-bottom: 1px solid var(--neon-bg-elevated, #2d3347);
+  background-color: var(--neon-modal-bg, var(--neon-bg-secondary));
+  border-bottom: 1px solid var(--neon-modal-header-border, var(--neon-bg-elevated));
 }
 
 .neon-future-theme .ant-modal-title,
@@ -593,7 +672,7 @@ body.neon-future-theme .ant-modal-close:hover {
   background-color: var(--neon-bg-elevated, #2d3347);
 }
 
-/* Form elements in node config */
+/* Form elements in node config - 统一使用变量 */
 .neon-future-theme .ant-form,
 body.neon-future-theme .ant-form {
   color: var(--neon-text-secondary, #e2e4ea);
@@ -604,32 +683,34 @@ body.neon-future-theme .ant-form-item-label > label {
   color: var(--neon-text-secondary, #e2e4ea);
 }
 
-/* Input fields */
+/* Input fields - 霓虹聚焦边框 */
 .neon-future-theme .ant-input,
 body.neon-future-theme .ant-input {
-  background-color: var(--neon-bg-tertiary, #252a3c);
-  border-color: var(--neon-bg-elevated, #2d3347);
+  background-color: var(--neon-input-bg, var(--neon-bg-tertiary));
+  border-color: var(--neon-input-border, var(--neon-bg-elevated));
   color: var(--neon-text-primary, #fff);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .neon-future-theme .ant-input:hover,
 .neon-future-theme .ant-input:focus,
 body.neon-future-theme .ant-input:hover,
 body.neon-future-theme .ant-input:focus {
-  border-color: var(--neon-blue-400, #3b82f6);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  border-color: var(--neon-input-focus-border, var(--neon-blue-400));
+  box-shadow: var(--neon-input-focus-shadow);
 }
 
 .neon-future-theme .ant-input::placeholder,
 body.neon-future-theme .ant-input::placeholder {
-  color: var(--neon-text-muted, #6b7280);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 /* Input with prefix/suffix */
 .neon-future-theme .ant-input-affix-wrapper,
 body.neon-future-theme .ant-input-affix-wrapper {
-  background-color: var(--neon-bg-tertiary, #252a3c);
-  border-color: var(--neon-bg-elevated, #2d3347);
+  background-color: var(--neon-input-bg, var(--neon-bg-tertiary));
+  border-color: var(--neon-input-border, var(--neon-bg-elevated));
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .neon-future-theme .ant-input-affix-wrapper .ant-input,
@@ -641,7 +722,8 @@ body.neon-future-theme .ant-input-affix-wrapper .ant-input {
 .neon-future-theme .ant-input-affix-wrapper:focus,
 body.neon-future-theme .ant-input-affix-wrapper:hover,
 body.neon-future-theme .ant-input-affix-wrapper:focus {
-  border-color: var(--neon-blue-400, #3b82f6);
+  border-color: var(--neon-input-focus-border, var(--neon-blue-400));
+  box-shadow: var(--neon-input-focus-shadow);
 }
 
 /* Search button in input */
@@ -659,23 +741,24 @@ body.neon-future-theme .ant-input-search-button:hover {
   color: #fff;
 }
 
-/* Select dropdown */
+/* Select dropdown - 与输入框一致的霓虹聚焦 */
 .neon-future-theme .ant-select:not(.ant-select-customize-input) .ant-select-selector,
 body.neon-future-theme .ant-select:not(.ant-select-customize-input) .ant-select-selector {
-  background-color: var(--neon-bg-tertiary, #252a3c);
-  border-color: var(--neon-bg-elevated, #2d3347);
+  background-color: var(--neon-input-bg, var(--neon-bg-tertiary));
+  border-color: var(--neon-input-border, var(--neon-bg-elevated));
   color: var(--neon-text-primary, #fff);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .neon-future-theme .ant-select:hover .ant-select-selector,
 body.neon-future-theme .ant-select:hover .ant-select-selector {
-  border-color: var(--neon-blue-400, #3b82f6);
+  border-color: var(--neon-input-focus-border, var(--neon-blue-400));
 }
 
 .neon-future-theme .ant-select-focused .ant-select-selector,
 body.neon-future-theme .ant-select-focused .ant-select-selector {
-  border-color: var(--neon-blue-400, #3b82f6);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  border-color: var(--neon-input-focus-border, var(--neon-blue-400));
+  box-shadow: var(--neon-input-focus-shadow);
 }
 
 /* Select dropdown menu */
@@ -701,25 +784,26 @@ body.neon-future-theme .ant-select-item-option-selected {
   color: #fff;
 }
 
-/* Buttons in forms */
+/* Buttons in forms - 使用主题变量 */
 .neon-future-theme .ant-btn-default,
 body.neon-future-theme .ant-btn-default {
-  background-color: var(--neon-bg-tertiary, #252a3c);
-  border-color: var(--neon-bg-elevated, #2d3347);
+  background-color: var(--neon-btn-default-bg, var(--neon-bg-tertiary));
+  border-color: var(--neon-btn-default-border, var(--neon-bg-elevated));
   color: var(--neon-text-secondary, #e2e4ea);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .neon-future-theme .ant-btn-default:hover,
 body.neon-future-theme .ant-btn-default:hover {
   background-color: var(--neon-bg-elevated, #2d3347);
-  border-color: var(--neon-blue-400, #3b82f6);
+  border-color: var(--neon-input-focus-border, var(--neon-blue-400));
   color: var(--neon-text-primary, #fff);
 }
 
 .neon-future-theme .ant-btn-primary,
 body.neon-future-theme .ant-btn-primary {
-  background-color: var(--neon-blue-500, #2563eb);
-  border-color: var(--neon-blue-500, #2563eb);
+  background-color: var(--neon-btn-primary-bg, var(--neon-blue-500));
+  border-color: var(--neon-btn-primary-border, var(--neon-blue-500));
 }
 
 .neon-future-theme .ant-btn-primary:hover,
@@ -819,44 +903,87 @@ body.neon-future-theme .react-flow__minimap {
 }
 
 /* ============================================
-   NODE COMPONENT STYLES (Dark Theme)
+   NODE COMPONENT STYLES (Neon Future - 画布组件)
    ============================================ */
 
 .neon-future-theme .component,
 body.neon-future-theme .component {
-  background-color: var(--neon-bg-tertiary, #252a3c);
-  border-color: var(--neon-bg-elevated, #2d3347);
+  background-color: var(--neon-component-bg, var(--neon-bg-tertiary, #252a3c));
+  border: 1px solid var(--neon-component-border, var(--neon-bg-elevated, #2d3347));
   color: var(--neon-text-primary, #fff);
+  border-radius: var(--neon-component-border-radius, 6px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Component label - 组件名称白色 */
+/* 组件顶部霓虹渐变条（覆盖默认 ::before） */
+.neon-future-theme .component::before,
+body.neon-future-theme .component::before {
+  height: var(--neon-component-top-bar-height, 4px);
+  background: var(--neon-component-top-bar, var(--neon-gradient-accent));
+  border-top-left-radius: var(--neon-component-border-radius, 6px);
+  border-top-right-radius: var(--neon-component-border-radius, 6px);
+}
+
+/* 选中状态：霓虹发光边框 */
+.neon-future-theme .react-flow__node.selected .component,
+body.neon-future-theme .react-flow__node.selected .component {
+  border-color: var(--neon-component-selected-border, var(--neon-accent));
+  box-shadow: var(--neon-component-selected-shadow);
+}
+
+/* 连接点 Handle - 霓虹色与悬停发光 */
+.neon-future-theme .component .handle-right,
+.neon-future-theme .component .handle-left,
+.neon-future-theme .component .second-handle-left,
+body.neon-future-theme .component .handle-right,
+body.neon-future-theme .component .handle-left,
+body.neon-future-theme .component .second-handle-left {
+  background-color: var(--neon-handle-bg, var(--neon-blue-400));
+  border: 1px solid var(--neon-handle-border, var(--neon-accent));
+  transition: box-shadow 0.2s ease;
+}
+
+.neon-future-theme .component .handle-right:hover,
+.neon-future-theme .component .handle-left:hover,
+.neon-future-theme .component .second-handle-left:hover,
+body.neon-future-theme .component .handle-right:hover,
+body.neon-future-theme .component .handle-left:hover,
+body.neon-future-theme .component .second-handle-left:hover {
+  box-shadow: var(--neon-handle-hover-glow);
+}
+
+.neon-future-theme .component .handle-bottom,
+body.neon-future-theme .component .handle-bottom {
+  background-color: var(--neon-handle-bg, var(--neon-blue-400));
+  border: 1px solid var(--neon-handle-border, var(--neon-accent));
+}
+
+/* Component label - 组件名称 */
 .neon-future-theme .component_label,
 body.neon-future-theme .component_label,
 .neon-future-theme .react-flow__node .component_label,
 body.neon-future-theme .react-flow__node .component_label,
 .neon-future-theme .component .component_label,
 body.neon-future-theme .component .component_label {
-  color: #ffffff !important;
+  color: var(--neon-text-primary, #fff) !important;
 }
 
-/* Component header - 组件标题白色 */
+/* Component header */
 .neon-future-theme .component__header,
 body.neon-future-theme .component__header,
 .neon-future-theme .component .component__header,
 body.neon-future-theme .component .component__header {
-  border-bottom-color: var(--neon-bg-elevated, #2d3347);
-  color: #ffffff !important;
+  border-bottom-color: var(--neon-border, var(--neon-bg-elevated));
+  color: var(--neon-text-primary, #fff) !important;
 }
 
 /* Component body text */
-.neon-future-theme .component,
-body.neon-future-theme .component,
 .neon-future-theme .component .component__body,
 body.neon-future-theme .component .component__body {
   color: var(--neon-text-primary, #fff);
 }
 
-/* 确保所有在组件内的文字都是白色 */
 .neon-future-theme .component *,
 body.neon-future-theme .component * {
   color: inherit;
@@ -864,46 +991,110 @@ body.neon-future-theme .component * {
 
 .neon-future-theme .component .component_label,
 body.neon-future-theme .component .component_label {
-  color: #ffffff !important;
+  color: var(--neon-text-primary, #fff) !important;
+}
+
+/* ============================================
+   CONNECTION LINES (Edges) - Neon Future
+   ============================================ */
+
+.neon-future-theme .react-flow__edge-path,
+body.neon-future-theme .react-flow__edge-path {
+  stroke: var(--neon-edge-stroke, var(--neon-blue-400));
+  stroke-width: var(--neon-edge-stroke-width, 2px);
+}
+
+.neon-future-theme .react-flow__edge.selected .react-flow__edge-path,
+body.neon-future-theme .react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--neon-edge-selected-stroke, var(--neon-accent-hover));
+  filter: drop-shadow(var(--neon-edge-glow));
+}
+
+.neon-future-theme .temp .react-flow__edge-path,
+body.neon-future-theme .temp .react-flow__edge-path {
+  stroke: var(--neon-edge-temp-stroke);
+  stroke-dasharray: 6 4;
+}
+
+.neon-future-theme .edgebutton,
+body.neon-future-theme .edgebutton {
+  background-color: var(--neon-bg-tertiary, #252a3c);
+  border: 1px solid var(--neon-border, #2d3347);
+  color: var(--neon-text-secondary, #e2e4ea);
+}
+
+.neon-future-theme .edgebutton:hover,
+body.neon-future-theme .edgebutton:hover {
+  background-color: var(--neon-bg-elevated, #2d3347);
+  border-color: var(--neon-blue-400);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+  color: var(--neon-text-primary, #fff);
 }
 
 /* ============================================
    INPUT PLACEHOLDER - Dark Theme
    ============================================ */
 
-/* 最高优先级覆盖 - 确保placeholder在任何场景下可见 */
+/* 最高优先级覆盖 - neon 下 placeholder 与输入文字均为白色 */
 .neon-future-theme .ant-input::placeholder,
 body.neon-future-theme .ant-input::placeholder,
 .neon-future-theme input::placeholder,
 body.neon-future-theme input::placeholder {
-  color: #9ca3af !important;
-  opacity: 1 !important;
-  -webkit-text-fill-color: #9ca3af !important;
+  color: #fff !important;
+  opacity: 0.85 !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .neon-future-theme .ant-input-affix-wrapper .ant-input::placeholder,
 body.neon-future-theme .ant-input-affix-wrapper .ant-input::placeholder {
-  color: #9ca3af !important;
-  opacity: 1 !important;
-  -webkit-text-fill-color: #9ca3af !important;
+  color: #fff !important;
+  opacity: 0.85 !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+/* 组件配置面板（输入/输出节点内）INPUT：占位符与用户输入均为白色 */
+.neon-future-theme .component .ant-input,
+body.neon-future-theme .component .ant-input {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+.neon-future-theme .component .ant-input::placeholder,
+body.neon-future-theme .component .ant-input::placeholder {
+  color: #fff !important;
+  opacity: 0.85 !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+.neon-future-theme .component .ant-input-affix-wrapper .ant-input,
+body.neon-future-theme .component .ant-input-affix-wrapper .ant-input {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+.neon-future-theme .component .ant-input-affix-wrapper .ant-input::placeholder,
+body.neon-future-theme .component .ant-input-affix-wrapper .ant-input::placeholder {
+  color: #fff !important;
+  opacity: 0.85 !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 /* Target placeholder in node config forms specifically */
 .neon-future-theme .react-flow__node .ant-input::placeholder,
 body.neon-future-theme .react-flow__node .ant-input::placeholder {
-  color: #9ca3af !important;
-  opacity: 1 !important;
-  -webkit-text-fill-color: #9ca3af !important;
+  color: #fff !important;
+  opacity: 0.85 !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
-/* 组件配置对话框中的placeholder - 最高优先级 */
+/* 组件配置对话框中的 placeholder */
 .neon-future-theme [class*="node-config"] .ant-input::placeholder,
 body.neon-future-theme [class*="node-config"] .ant-input::placeholder,
 .neon-future-theme .ant-modal-content .ant-input::placeholder,
 body.neon-future-theme .ant-modal-content .ant-input::placeholder {
-  color: #9ca3af !important;
-  opacity: 1 !important;
-  -webkit-text-fill-color: #9ca3af !important;
+  color: #fff !important;
+  opacity: 0.85 !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 /* ============================================
@@ -1089,4 +1280,30 @@ body.neon-future-theme .alert-close-btn {
 body.neon-future-theme .alert-close-btn:hover {
   background-color: var(--neon-bg-elevated, #2d3347) !important;
   color: #ffffff !important;
+}
+
+/* ============================================
+   RESPONSIVE - 不同分辨率下视觉一致
+   ============================================ */
+
+/* 使用 rem 的组件尺寸在根字体变化时按比例缩放 */
+@media (max-width: 768px) {
+  .neon-future-theme .component,
+  body.neon-future-theme .component {
+    min-height: 100px;
+  }
+
+  .neon-future-theme .ant-modal-content,
+  body.neon-future-theme .ant-modal-content {
+    max-width: calc(100vw - 24px);
+    margin: 12px auto;
+  }
+}
+
+@media (min-resolution: 2dppx) {
+  .neon-future-theme .component::before,
+  body.neon-future-theme .component::before {
+    /* 高分辨率下渐变条更锐利 */
+    backface-visibility: hidden;
+  }
 }
