@@ -302,11 +302,12 @@ const AIChatModal: React.FC<{
     setGenerationProgress(0);
     setIntentResult(null);
     
+    const PLACEHOLDER_TEXT = '回复中.....';
     const assistantMsgId = String(Date.now() + 1);
     addMessage({
       id: assistantMsgId,
       role: 'assistant',
-      content: '',
+      content: PLACEHOLDER_TEXT,
       ts: Date.now()
     });
 
@@ -331,7 +332,11 @@ const AIChatModal: React.FC<{
           },
           customPrompt: modelConfig.customPrompt
         },
-        (chunk) => setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: m.content + chunk } : m))
+        (chunk) => setMessages(prev => prev.map(m => {
+          if (m.id !== assistantMsgId) return m;
+          const isPlaceholder = m.content === PLACEHOLDER_TEXT;
+          return { ...m, content: isPlaceholder ? chunk : m.content + chunk };
+        }))
       );
 
       const duration = Date.now() - startTime;
