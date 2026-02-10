@@ -99,7 +99,7 @@
     "sharedPackages": {
       "@amphi/pipeline-components-manager": {
         "singleton": true,
-        "bundle": false
+        "bundled": false
       }
     }
   },

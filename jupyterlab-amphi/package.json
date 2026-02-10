@@ -62,6 +62,7 @@
         "prettier:check": "jlpm prettier:base --check",
         "prettier": "jlpm prettier:base --write --list-different",
         "quickstart": "npm run setup:py && jlpm && jlpm deduplicate && jlpm clean:all && jlpm lint && jlpm build:prod && jlpm dist && jlpm docs && jlpm test",
+        "install:extension": "jlpm build:prod",
         "setup:py": "python -m pip install -e \".[dev,lint,test,docs]\"",
         "test:py": "pytest",
         "test": "jlpm test:py"
