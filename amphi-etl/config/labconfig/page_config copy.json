@@ -1,0 +1,25 @@
+{
+    "disabledExtensions": {
+      "@jupyterlab/notebook-extension": false,
+      "@jupyterlab/launcher-extension": false,
+      "@jupyterlab/running-extension": false,
+      "@jupyterlab/toc-extension": false,
+      "@jupyterlab/help-extension": false,
+      "@jupyterlab/debugger-extension": false,
+      "@jupyterlab/application-extension:property-inspector": false,
+      "@jupyterlab/inspector-extension": false,
+      "@jupyterlab/application-extension:about": false,
+      "@jupyterlab/theme-dark-extension": false,
+      "@jupyterlab/theme-light-extension": false, 
+      "@jupyterlab/extensionmanager-extension": false,
+      "@jupyterlab/application-extension:logo": false,
+      "@jupyterlab/metadataform-extension:metadataforms": false,
+      "@jupyterlab/celltags-extension:plugin": false,
+      "@jupyterlab/tooltip-extension:notebooks": false,
+      "@jupyterlab/workspaces-extension:sidebar": false,
+      "@jupyterlab/apputils-extension:announcements": true,
+      "@jupyterlab/console-extension": false,
+      "@jupyterlab/theme-dark-high-contrast-extension": false,
+      "@jupyterlab/logconsole-extension:plugin": true
+    }
+}
