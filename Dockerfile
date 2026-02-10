@@ -2,8 +2,11 @@
 # FROM node:20 AS builder
 FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/node:20.20.0 AS builder
 
-# Enable Corepack so yarn is available (node:20 has it but disabled by default)
-RUN corepack enable
+# Enable Corepack so yarn is available; jlpm 随 JupyterLab 提供，builder 中无 Python，用 yarn 代替
+RUN corepack enable && ln -sf "$(which yarn)" /usr/local/bin/jlpm
+
+# yarn/npm 使用国内源（npmmirror）加速
+ENV npm_config_registry=https://registry.npmmirror.com/
 
 WORKDIR /app
 
@@ -14,7 +17,6 @@ COPY amphi-scheduler/ amphi-scheduler/
 
 # Build jupyterlab-amphi
 WORKDIR /app/jupyterlab-amphi
-# Install dependencies and build
 RUN yarn install && yarn run build:prod
 
 # Build amphi-etl frontend assets (themes, ui-component)
