@@ -1,0 +1,23 @@
+# 避免把本地 node_modules 打进构建上下文（含 workspace 符号链接，会导致 invalid file request）
+**/node_modules
+**/.yarn/cache
+**/.yarn/unplugged
+**/.pnp.*
+
+# 通用忽略
+.git
+.gitignore
+*.md
+.env
+.env.*
+!.env.example
+**/__pycache__
+**/*.pyc
+**/.cache
+**/dist
+**/build
+**/.turbo
+**/.next
+**/coverage
+**/.nyc_output
+**/*.log
