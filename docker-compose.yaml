@@ -2,7 +2,7 @@ services:
   jupyter:
     build:
       context: .
-      dockerfile: Dockerfile.new
+      dockerfile: Dockerfile
     image: amphi-jupyter
     container_name: amphi-jupyter
     volumes:
