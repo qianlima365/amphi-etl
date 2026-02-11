@@ -44,14 +44,11 @@ const OPTIMIZE_TIMEOUT = 8000; // 8 seconds
 const GENERATE_TIMEOUT = 30000; // 30 seconds
 const RENDER_TIMEOUT = 15000; // 15 seconds
 
-// Get or create user ID
+// 测试阶段固定 userId，避免每次部署/清缓存后变化；正式环境可改回从 localStorage 读取或接入真实用户
+const AI_ASSISTANT_TEST_USER_ID = 'user-9phynlpl8n';
+
 function getUserId(): string {
-  let userId = localStorage.getItem('ai-assistant-user-id');
-  if (!userId) {
-    userId = 'user-' + Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('ai-assistant-user-id', userId);
-  }
-  return userId;
+  return AI_ASSISTANT_TEST_USER_ID;
 }
 
 /**
