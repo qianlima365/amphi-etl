@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.new
+    image: amphi-jupyter
+    container_name: amphi-jupyter
     volumes:
       - amphi-workspace:/workspace
     # Ports are not exposed to host directly, only via nginx
@@ -17,6 +19,8 @@ services:
     build:
       context: ./ai-service
       dockerfile: Dockerfile
+    image: amphi-ai-service
+    container_name: amphi-ai-service
     environment:
       - PORT=3001
       - NEO4J_URI=bolt://neo4j:7687
@@ -31,11 +35,14 @@ services:
     build:
       context: ./ontology-admin
       dockerfile: Dockerfile
+    image: amphi-ontology-admin
+    container_name: amphi-ontology-admin
     depends_on:
       - ai-service
 
   neo4j:
     image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/neo4j:5.26.7
+    container_name: amphi-neo4j
     environment:
       - NEO4J_AUTH=neo4j/password
       - NEO4J_PLUGINS=["apoc"]
@@ -44,6 +51,7 @@ services:
 
   nginx:
     image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/nginx:alpine3.20
+    container_name: amphi-nginx
     ports:
       - "80:80"
     volumes:
