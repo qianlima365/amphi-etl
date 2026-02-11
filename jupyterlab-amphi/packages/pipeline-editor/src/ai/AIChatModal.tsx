@@ -825,6 +825,7 @@ const AIChatModal: React.FC<{
                       <div>
                         <div style={{ marginBottom: 4, fontSize: 12, color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }}>模型厂商</div>
                         <Select
+                          getPopupContainer={triggerNode => triggerNode.parentNode}
                           value={modelConfig.providerId}
                           onChange={v => {
                             setTestResult(null);
@@ -856,6 +857,7 @@ const AIChatModal: React.FC<{
                       <div>
                         <div style={{ marginBottom: 4, fontSize: 12, color: isNeonTheme ? 'var(--neon-text-secondary, #e2e4ea)' : 'inherit' }}>模型</div>
                         <Select
+                          getPopupContainer={triggerNode => triggerNode.parentNode}
                           value={modelConfig.model}
                           onChange={v => setModelConfig(prev => ({ ...prev, model: v }))}
                           style={{ width: '100%' }}
