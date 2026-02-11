@@ -106,6 +106,7 @@ const FloatingButton: React.FC<{
         justifyContent: 'center',
         cursor: 'pointer',
         zIndex: 10000,
+        pointerEvents: 'auto', // Re-enable pointer events for the button
         transition: 'all 0.3s ease'
       }}
     >
@@ -161,6 +162,15 @@ export function mountAIAssistant(): HTMLElement | null {
   
   el = document.createElement('div');
   el.id = 'ai-assistant-container';
+  // Fix: Ensure the container does not block the UI
+  el.style.position = 'fixed';
+  el.style.top = '0';
+  el.style.left = '0';
+  el.style.width = '0';
+  el.style.height = '0';
+  el.style.pointerEvents = 'none'; // Allow clicks to pass through
+  el.style.zIndex = '2000'; // High enough to show button/modal but managed
+  
   document.body.appendChild(el);
   const root = createRoot(el);
   root.render(<AIAssistantIcon />);

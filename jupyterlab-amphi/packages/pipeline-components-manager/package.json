@@ -64,9 +64,8 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
-    "react-flow-renderer": "^10.3.17",
     "react-select": "^5.8.0",
-    "reactflow": "11.7.2",
+    "reactflow": "^11.11.4",
     "styled-components": "^6.1.8",
     "typescript": "~5.2.2"
   },

@@ -1144,6 +1144,7 @@ const AIChatModal: React.FC<{
             <div
               className={isNeonTheme ? 'ai-chat-settings-panel ai-chat-settings-panel--neon' : 'ai-chat-settings-panel'}
               style={{
+                pointerEvents: 'auto',
                 position: 'fixed',
                 right: PANEL_WIDTH,
                 top: 0,
@@ -1189,6 +1190,7 @@ const AIChatModal: React.FC<{
           <div
             className="ai-chat-panel"
             style={{
+              pointerEvents: 'auto',
               position: 'fixed',
               right: 0,
               top: 0,
