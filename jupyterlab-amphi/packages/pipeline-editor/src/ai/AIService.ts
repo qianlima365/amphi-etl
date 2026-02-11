@@ -12,33 +12,39 @@ import {
   UserApiKeyConfig
 } from './types';
 
-// AI 服务地址
-// - 可通过页面 data 属性 data-ai-service-url 覆盖（如部署时同源代理或自定义端口）
-// - localhost/127.0.0.1 或局域网 IP：直接请求 AI 服务（默认 3001），不依赖 Jupyter 代理
-// - 其他域名：使用同源 /ai，需在服务端配置将 /ai、/agent 代理到 AI 服务
-const DEFAULT_AI_PORT = process.env.AI_SERVICE_PORT || '3000';
-const AI_SERVICE_URL_PREFIX = process.env.AI_SERVICE_URL_PREFIX || '/aiservice';
-
-function isPrivateIP(host: string): boolean {
-  return (
-    host.startsWith('10.') ||
-    host.startsWith('192.168.') ||
-    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
-    host === 'localhost' ||
-    host === '127.0.0.1'
-  );
-}
+// 简化的 API 地址获取逻辑
+// 优先级：
+// 1. localStorage 'AI_SERVICE_URL' (调试神器，随时可在控制台修改)
+// 2. 本地开发环境自动判定 (端口 8888/8889 -> 直连 3000)
+// 3. 默认相对路径 '/ai' (Docker/生产环境，走 Nginx 代理)
 
 function getApiBase(): string {
-  const host = window.location.hostname;
-  const fromData = document.documentElement.getAttribute('data-ai-service-url');
-  if (fromData) return fromData.replace(/\/$/, '') + AI_SERVICE_URL_PREFIX;
-  // 本地或局域网访问：直接连 AI 服务，避免 Jupyter 未配置代理时出现 403
-  if (isPrivateIP(host)) {
-    return `http://${host}:${DEFAULT_AI_PORT}${AI_SERVICE_URL_PREFIX}`;
+  // 1. 允许通过浏览器控制台手动覆盖: localStorage.setItem('AI_SERVICE_URL', '...')
+  const debugUrl = localStorage.getItem('AI_SERVICE_URL');
+  if (debugUrl) {
+    console.log('Using AI Service URL from localStorage:', debugUrl);
+    return debugUrl.replace(/\/$/, '');
   }
-  // 其他域名（如正式环境）：假定同源已配置代理
-  return AI_SERVICE_URL_PREFIX;
+
+  const host = window.location.hostname;
+  const port = window.location.port;
+
+  // 2. 本地开发环境自动检测
+  // 如果你在本地运行 Jupyter (通常是 8888 端口) 且没有 Nginx 代理，
+  // 我们假设 AI 服务运行在默认的 3000 端口。
+  const isLocalDev = (
+    (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.17.')) &&
+    (port === '8888' || port === '8889')
+  );
+
+  if (isLocalDev) {
+    // 本地开发直连
+    return `http://${host}:3000/ai`;
+  }
+
+  // 3. Docker / 生产环境 / Nginx
+  // 默认使用相对路径，由 Nginx 负责转发到后端
+  return '/ai';
 }
 const API_BASE = getApiBase();
 const OPTIMIZE_TIMEOUT = 8000; // 8 seconds
