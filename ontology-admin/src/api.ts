@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_ONTOLOGY_API || '';
+const BASE = window.env?.VITE_ONTOLOGY_API || import.meta.env.VITE_ONTOLOGY_API || '';
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`);

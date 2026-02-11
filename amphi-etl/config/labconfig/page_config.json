@@ -1,5 +1,6 @@
 {
     "disabledExtensions": {
-      "@jupyterlab/logconsole-extension:plugin": true
+      "@jupyterlab/logconsole-extension:plugin": true,
+      "@jupyterlab/launcher-extension:plugin": true
     }
 }

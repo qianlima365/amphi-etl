@@ -16,7 +16,8 @@ import {
 // - 可通过页面 data 属性 data-ai-service-url 覆盖（如部署时同源代理或自定义端口）
 // - localhost/127.0.0.1 或局域网 IP：直接请求 AI 服务（默认 3001），不依赖 Jupyter 代理
 // - 其他域名：使用同源 /ai，需在服务端配置将 /ai、/agent 代理到 AI 服务
-const DEFAULT_AI_PORT = '3000';
+const DEFAULT_AI_PORT = process.env.AI_SERVICE_PORT || '3000';
+const AI_SERVICE_URL_PREFIX = process.env.AI_SERVICE_URL_PREFIX || '/aiservice';
 
 function isPrivateIP(host: string): boolean {
   return (
@@ -31,13 +32,13 @@ function isPrivateIP(host: string): boolean {
 function getApiBase(): string {
   const host = window.location.hostname;
   const fromData = document.documentElement.getAttribute('data-ai-service-url');
-  if (fromData) return fromData.replace(/\/$/, '') + '/ai';
+  if (fromData) return fromData.replace(/\/$/, '') + AI_SERVICE_URL_PREFIX;
   // 本地或局域网访问：直接连 AI 服务，避免 Jupyter 未配置代理时出现 403
   if (isPrivateIP(host)) {
-    return `http://${host}:${DEFAULT_AI_PORT}/ai`;
+    return `http://${host}:${DEFAULT_AI_PORT}${AI_SERVICE_URL_PREFIX}`;
   }
   // 其他域名（如正式环境）：假定同源已配置代理
-  return '/ai';
+  return AI_SERVICE_URL_PREFIX;
 }
 const API_BASE = getApiBase();
 const OPTIMIZE_TIMEOUT = 8000; // 8 seconds

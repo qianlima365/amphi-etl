@@ -59,5 +59,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3000', (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
 
-# 14. 使用exec形式启动，避免shell层（便于信号传递）
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "3000"]
+# 14. 使用shell形式启动，以便在启动前生成运行时配置
+CMD ["/bin/sh", "-c", "echo \"window.env = { VITE_ONTOLOGY_API: '${VITE_ONTOLOGY_API}' };\" > ./dist/env-config.js && npm run preview -- --host 0.0.0.0 --port 3000"]

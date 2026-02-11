@@ -7,3 +7,10 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+interface Window {
+  env?: {
+    VITE_ONTOLOGY_API?: string;
+  };
+}
+

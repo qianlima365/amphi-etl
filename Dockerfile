@@ -90,4 +90,4 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # 保持原有目录和启动指令
 RUN mkdir -p /workspace
 EXPOSE 8888
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "-w /workspace", "--allow-lan", "--allow-embed", "--no-auth"]
+CMD ["python", "-m", "amphi.main", "start", "-w", "/workspace", "-p", "8888", "--allow-lan", "--allow-embed", "--no-auth", "--allow-root"]
