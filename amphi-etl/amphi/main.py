@@ -10,8 +10,17 @@ _JUPYTER_EMBED_HEADERS = '''
 c.ServerApp.tornado_settings = {
     "headers": {
         "Content-Security-Policy": "frame-ancestors 'self' *",
+    },
+    "cookie_options": {
+        "SameSite": "None",
+        "Secure": True
     }
 }
+c.ServerApp.disable_check_xsrf = True
+c.MappingKernelManager.cull_idle_timeout = 0
+c.MappingKernelManager.cull_connected = False
+c.MappingKernelManager.cull_interval = 300
+c.IdentityProvider.token = ''
 '''
 
 # Jupyter config: no token, no password - direct access (use only in trusted environments)
