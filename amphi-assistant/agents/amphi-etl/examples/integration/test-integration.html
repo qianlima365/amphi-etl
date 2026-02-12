@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETL Agent 集成测试</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .test-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    .test-section h3 {
+      margin-top: 0;
+      color: #007bff;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      border-radius: 6px;
+      border-left: 4px solid #007bff;
+      font-family: monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .result.success {
+      border-left-color: #28a745;
+    }
+    .result.error {
+      border-left-color: #dc3545;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .status.ok {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status.fail {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .hint {
+      margin-top: 10px;
+      padding: 12px;
+      background: #fff3cd;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #856404;
+    }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 ETL Agent 集成测试工具</h1>
+    <p class="subtitle">测试你的集成配置是否正确</p>
+
+    <!-- 配置 -->
+    <div class="test-section">
+      <h3>1. API 配置</h3>
+      <input type="text" id="apiUrl" placeholder="API 地址" value="http://localhost:3001/api/chat">
+      <p class="hint">
+        如果直接访问 ETL Agent API（跨域），需要启动代理服务：<br>
+        <code>node express-proxy.js</code>
+      </p>
+    </div>
+
+    <!-- 连接测试 -->
+    <div class="test-section">
+      <h3>2. 连接测试</h3>
+      <button onclick="testConnection()">测试连接</button>
+      <div id="connectionResult"></div>
+    </div>
+
+    <!-- 创建会话 -->
+    <div class="test-section">
+      <h3>3. 创建会话</h3>
+      <input type="text" id="userId" placeholder="用户ID（可选）" value="test-user">
+      <button onclick="createSession()">创建会话</button>
+      <div id="sessionResult"></div>
+    </div>
+
+    <!-- 发送消息 -->
+    <div class="test-section">
+      <h3>4. 发送消息</h3>
+      <input type="text" id="sessionId" placeholder="会话ID（先创建会话）" readonly>
+      <input type="text" id="message" placeholder="输入消息，例如：把CSV导入MySQL">
+      <button onclick="sendMessage()" id="sendBtn" disabled>发送消息</button>
+      <div id="messageResult"></div>
+    </div>
+
+    <!-- 完整流程测试 -->
+    <div class="test-section">
+      <h3>5. 完整流程测试</h3>
+      <button onclick="runFullTest()">运行完整测试</button>
+      <div id="fullTestResult"></div>
+    </div>
+  </div>
+
+  <script>
+    // 工具函数
+    function showResult(elementId, content, isError = false) {
+      const el = document.getElementById(elementId);
+      el.className = 'result ' + (isError ? 'error' : 'success');
+      el.textContent = content;
+    }
+
+    function clearResult(elementId) {
+      document.getElementById(elementId).textContent = '';
+    }
+
+    // 1. 测试连接
+    async function testConnection() {
+      const apiUrl = document.getElementById('apiUrl').value.trim();
+      clearResult('connectionResult');
+
+      try {
+        const response = await fetch(`${apiUrl}/session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: 'test' }),
+        });
+
+        if (response.ok) {
+          showResult('connectionResult', '✅ 连接成功！API 服务正常运行');
+        } else {
+          showResult('connectionResult', `❌ 连接失败: HTTP ${response.status}`, true);
+        }
+      } catch (error) {
+        showResult('connectionResult', `❌ 连接失败: ${error.message}\n\n请检查：\n1. API 地址是否正确\n2. 代理服务是否已启动\n3. ETL Agent API 是否已启动`, true);
+      }
+    }
+
+    // 2. 创建会话
+    async function createSession() {
+      const apiUrl = document.getElementById('apiUrl').value.trim();
+      const userId = document.getElementById('userId').value.trim() || 'test-user';
+      clearResult('sessionResult');
+
+      try {
+        const response = await fetch(`${apiUrl}/session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('sessionId').value = data.sessionId;
+          document.getElementById('sendBtn').disabled = false;
+          showResult('sessionResult', `✅ 会话创建成功\n会话ID: ${data.sessionId}`);
+        } else {
+          showResult('sessionResult', `❌ 创建失败: ${data.error}`, true);
+        }
+      } catch (error) {
+        showResult('sessionResult', `❌ 错误: ${error.message}`, true);
+      }
+    }
+
+    // 3. 发送消息
+    async function sendMessage() {
+      const apiUrl = document.getElementById('apiUrl').value.trim();
+      const sessionId = document.getElementById('sessionId').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      if (!sessionId) {
+        showResult('messageResult', '❌ 请先创建会话', true);
+        return;
+      }
+
+      if (!message) {
+        showResult('messageResult', '❌ 请输入消息', true);
+        return;
+      }
+
+      clearResult('messageResult');
+      document.getElementById('sendBtn').disabled = true;
+      document.getElementById('sendBtn').textContent = '发送中...';
+
+      try {
+        const response = await fetch(`${apiUrl}/message`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, message, userId: 'test-user' }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showResult('messageResult', 
+            `✅ 消息发送成功\n\n` +
+            `阶段: ${data.data.phase}\n` +
+            `是否完成: ${data.data.isComplete}\n` +
+            `响应:\n${data.data.response}`
+          );
+        } else {
+          showResult('messageResult', `❌ 发送失败: ${data.error}`, true);
+        }
+      } catch (error) {
+        showResult('messageResult', `❌ 错误: ${error.message}`, true);
+      } finally {
+        document.getElementById('sendBtn').disabled = false;
+        document.getElementById('sendBtn').textContent = '发送消息';
+      }
+    }
+
+    // 4. 完整流程测试
+    async function runFullTest() {
+      const results = [];
+      const apiUrl = document.getElementById('apiUrl').value.trim();
+      const userId = 'full-test-user';
+
+      results.push('🚀 开始完整流程测试...\n');
+      updateFullTestResult(results.join('\n'));
+
+      // Step 1: 创建会话
+      try {
+        results.push('1️⃣ 创建会话...');
+        updateFullTestResult(results.join('\n'));
+
+        const sessionRes = await fetch(`${apiUrl}/session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId }),
+        });
+        const sessionData = await sessionRes.json();
+
+        if (!sessionData.success) {
+          throw new Error(sessionData.error);
+        }
+
+        const sessionId = sessionData.sessionId;
+        results.push(`   ✅ 会话创建成功: ${sessionId.slice(0, 8)}...\n`);
+        updateFullTestResult(results.join('\n'));
+
+        // Step 2: 发送需求
+        results.push('2️⃣ 发送需求: "把CSV导入MySQL"...');
+        updateFullTestResult(results.join('\n'));
+
+        const msgRes = await fetch(`${apiUrl}/message`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            message: '把CSV导入MySQL',
+            userId,
+          }),
+        });
+        const msgData = await msgRes.json();
+
+        if (!msgData.success) {
+          throw new Error(msgData.error);
+        }
+
+        results.push(`   ✅ 收到响应`);
+        results.push(`   阶段: ${msgData.data.phase}`);
+        results.push(`   响应: ${msgData.data.response.slice(0, 100)}...\n`);
+        updateFullTestResult(results.join('\n'));
+
+        // Step 3: 提供参数
+        results.push('3️⃣ 提供参数...');
+        updateFullTestResult(results.join('\n'));
+
+        const paramRes = await fetch(`${apiUrl}/message`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            message: '主机 localhost，端口 3306',
+            userId,
+          }),
+        });
+        const paramData = await paramRes.json();
+
+        results.push(`   ✅ 参数已记录`);
+        results.push(`   阶段: ${paramData.data.phase}\n`);
+        updateFullTestResult(results.join('\n'));
+
+        // Step 4: 确认生成
+        results.push('4️⃣ 确认生成 Pipeline...');
+        updateFullTestResult(results.join('\n'));
+
+        const confirmRes = await fetch(`${apiUrl}/message`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            message: '确认',
+            userId,
+          }),
+        });
+        const confirmData = await confirmRes.json();
+
+        results.push(`   ✅ 生成完成`);
+        results.push(`   阶段: ${confirmData.data.phase}`);
+        if (confirmData.data.pipelineFile) {
+          results.push(`   Pipeline文件: ${confirmData.data.pipelineFile}`);
+        }
+
+        results.push('\n🎉 完整测试通过！');
+        updateFullTestResult(results.join('\n'), false);
+
+      } catch (error) {
+        results.push(`\n❌ 测试失败: ${error.message}`);
+        updateFullTestResult(results.join('\n'), true);
+      }
+    }
+
+    function updateFullTestResult(content, isError = false) {
+      showResult('fullTestResult', content, isError);
+    }
+  </script>
+</body>
+</html>

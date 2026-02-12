@@ -1,0 +1,267 @@
+# ============================================
+# AI Agent Framework Docker Compose
+# 完整部署配置（含所有依赖服务）
+# ============================================
+
+version: '3.8'
+
+services:
+  # ============================================
+  # 主应用服务
+  # ============================================
+  agent-framework:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: agent-framework
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      # Redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_DB=0
+      # PostgreSQL
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-agent}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-agent_pass}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE:-agent_memory}
+      # ChromaDB
+      - VECTOR_STORE_TYPE=chroma
+      - CHROMA_URL=http://chromadb:8000
+      # Neo4j
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=${NEO4J_USER:-neo4j}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-password}
+      # Kafka
+      - KAFKA_BROKERS=kafka:9092
+      - KAFKA_CLIENT_ID=agent-framework
+      - KAFKA_GROUP_ID=agent-cluster
+      # LLM
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o}
+      - JWT_SECRET=${JWT_SECRET}
+      - API_KEY_SALT=${API_KEY_SALT}
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      chromadb:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - agent-network
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================
+  # Redis - 短期记忆 / 缓存 / 消息队列
+  # ============================================
+  redis:
+    image: registry.cn-hangzhou.aliyuncs.com/acs-sample/redis:7-alpine
+    container_name: agent-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    command: >
+      sh -c "
+        if [ -n \"$$REDIS_PASSWORD\" ]; then
+          redis-server --requirepass $$REDIS_PASSWORD --appendonly yes
+        else
+          redis-server --appendonly yes
+        fi
+      "
+    volumes:
+      - redis-data:/data
+    networks:
+      - agent-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ============================================
+  # PostgreSQL - 长期记忆 / 关系数据
+  # ============================================
+  postgres:
+    image: registry.cn-hangzhou.aliyuncs.com/acs-sample/postgres:15-alpine
+    container_name: agent-postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-agent}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-agent_pass}
+      - POSTGRES_DB=${POSTGRES_DATABASE:-agent_memory}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - agent-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # ChromaDB - 向量存储（知识记忆）
+  # ============================================
+  chromadb:
+    image: registry.cn-hangzhou.aliyuncs.com/g6/kimi/chroma:0.5.20
+    container_name: agent-chromadb
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma-data:/chroma/chroma
+    networks:
+      - agent-network
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # Neo4j - 知识图谱 / 本体论
+  # ============================================
+  neo4j:
+    image: registry.cn-hangzhou.aliyuncs.com/g6/kimi/neo4j:5.25-community
+    container_name: agent-neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-password}
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_dbms_memory_heap_initial__size=512m
+      - NEO4J_dbms_memory_heap_max__size=2G
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    networks:
+      - agent-network
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "${NEO4J_USER:-neo4j}", "-p", "${NEO4J_PASSWORD:-password}", "RETURN 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # ============================================
+  # Kafka - 消息队列 / 协作通信
+  # ============================================
+  zookeeper:
+    image: registry.cn-hangzhou.aliyuncs.com/g6/kimi/zookeeper:3.8
+    container_name: agent-zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
+    networks:
+      - agent-network
+    healthcheck:
+      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181", "|", "grep", "imok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: registry.cn-hangzhou.aliyuncs.com/g6/kimi/kafka:7.5
+    container_name: agent-kafka
+    restart: unless-stopped
+    ports:
+      - "${KAFKA_PORT:-9092}:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    networks:
+      - agent-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ============================================
+  # Kafka UI - 可选的Kafka管理界面
+  # ============================================
+  kafka-ui:
+    image: registry.cn-hangzhou.aliyuncs.com/g6/kimi/kafka-ui:latest
+    container_name: agent-kafka-ui
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+    depends_on:
+      - kafka
+    networks:
+      - agent-network
+
+# ============================================
+# 网络配置
+# ============================================
+networks:
+  agent-network:
+    driver: bridge
+
+# ============================================
+# 数据卷配置
+# ============================================
+volumes:
+  redis-data:
+    driver: local
+  postgres-data:
+    driver: local
+  chroma-data:
+    driver: local
+  neo4j-data:
+    driver: local
+  neo4j-logs:
+    driver: local
+  zookeeper-data:
+    driver: local
+  zookeeper-logs:
+    driver: local
+  kafka-data:
+    driver: local

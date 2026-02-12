@@ -1,0 +1,4 @@
+{
+  "workspaceDir": "./output",
+  "_comment": "工作空间目录，用于保存生成的 Pipeline 文件；可通过环境变量 ETL_WORKSPACE_DIR 覆盖"
+}

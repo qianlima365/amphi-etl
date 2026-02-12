@@ -1,0 +1,147 @@
+# ============================================
+# AI Agent Framework 开发环境 Docker Compose
+# 仅包含依赖服务，应用以本地方式运行
+# ============================================
+services:
+  # Redis - 短期记忆 / 缓存
+  redis:
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/redis:7.4.7
+    container_name: agent-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-agent_dev_pass}
+    command: >
+      sh -c "
+        if [ -n \"$$REDIS_PASSWORD\" ]; then
+          redis-server --requirepass $$REDIS_PASSWORD
+        else
+          redis-server
+        fi
+      "
+    volumes:
+      - redis-dev-data:/data
+    networks:
+      - agent-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $$REDIS_PASSWORD ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # PostgreSQL - 长期记忆
+  postgres:
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/postgres:15-alpine
+    container_name: agent-postgres-dev
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=agent
+      - POSTGRES_PASSWORD=agent_pass
+      - POSTGRES_DB=agent_memory
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    networks:
+      - agent-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agent -d agent_memory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ChromaDB - 向量存储
+  chromadb:
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/ghcr.io/chroma-core/chroma:0.5.20
+    container_name: agent-chromadb-dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma-dev-data:/chroma/chroma
+    networks:
+      - agent-dev-network
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Neo4j - 知识图谱
+  # neo4j:
+  #   image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/neo4j:latest
+  #   container_name: agent-neo4j-dev
+  #   restart: unless-stopped
+  #   ports:
+  #     - "7474:7474"
+  #     - "7687:7687"
+  #   environment:
+  #     - NEO4J_AUTH=neo4j/password
+  #     - NEO4J_PLUGINS=["apoc"]
+  #   volumes:
+  #     - neo4j-dev-data:/data
+  #   networks:
+  #     - agent-dev-network
+  #   healthcheck:
+  #     test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "password", "RETURN 1"]
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 10
+  #     start_period: 60s
+
+  # Zookeeper - Kafka依赖
+  zookeeper:
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/zookeeper:3.8.4
+    container_name: agent-zookeeper-dev
+    restart: unless-stopped
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - agent-dev-network
+    healthcheck:
+      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181", "|", "grep", "imok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka - 消息队列
+  kafka:
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/confluentinc/cp-kafka:7.9.2
+    container_name: agent-kafka-dev
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    networks:
+      - agent-dev-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  agent-dev-network:
+    driver: bridge
+
+volumes:
+  redis-dev-data:
+  postgres-dev-data:
+  chroma-dev-data:
+  neo4j-dev-data:

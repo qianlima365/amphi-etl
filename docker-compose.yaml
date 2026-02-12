@@ -13,6 +13,7 @@ services:
     environment:
       - JUPYTER_TOKEN=amphi
     # command: ["python", "-m", "amphi.main", "start", "-w", "/workspace", "-p", "8888", "--allow-lan", "--allow-embed", "--no-auth"]
+    restart: always
     depends_on:
       - ai-service
     networks:
@@ -32,6 +33,7 @@ services:
       - CORS_ORIGIN=*
     volumes:
       - sqlite-data:/app/data
+    restart: always
     depends_on:
       - neo4j
     networks:
@@ -47,6 +49,7 @@ services:
       # 设置API基础URL为空，使用相对路径
       # 前端会通过 /ontology/ 访问API（由nginx代理到ai-service）
       - VITE_ONTOLOGY_API=
+    restart: always
     depends_on:
       - ai-service
     networks:
@@ -60,6 +63,7 @@ services:
       - NEO4J_PLUGINS=["apoc"]
     volumes:
       - neo4j_data:/data
+    restart: always
     networks:
       - amphi-network
 
@@ -67,13 +71,14 @@ services:
     image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/nginx:alpine3.20
     container_name: amphi-nginx
     ports:
-      - "80:80"
+      - "81:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - jupyter
       - ai-service
       - ontology-admin
+    restart: always
     networks:
       - amphi-network
 

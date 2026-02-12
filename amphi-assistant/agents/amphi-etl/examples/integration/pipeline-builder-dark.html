@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Builder - ETL Assistant</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --bg-hover: #1c2128;
+      --border-color: #30363d;
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --accent-blue: #58a6ff;
+      --accent-green: #238636;
+      --accent-purple: #8957e5;
+      --accent-orange: #f78166;
+      --sidebar-width: 64px;
+      --right-sidebar-width: 48px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 主布局 */
+    .app-container {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* 左侧导航 - 修复问题1：图标居中 */
+    .left-sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+    }
+
+    .sidebar-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .nav-item {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    /* 修复：未选中图标使用更亮的颜色 */
+    .nav-item {
+      color: var(--text-secondary);
+      font-size: 22px;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    /* 修复：选中状态图标完美居中 */
+    .nav-item.active {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent-blue);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 24px;
+      background: var(--accent-blue);
+      border-radius: 0 3px 3px 0;
+    }
+
+    /* 分隔线 */
+    .nav-divider {
+      width: 32px;
+      height: 1px;
+      background: var(--border-color);
+      margin: 12px 0;
+    }
+
+    /* 主内容区 */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* 顶部栏 */
+    .top-bar {
+      height: 48px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .breadcrumb span {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--text-muted);
+    }
+
+    .btn-primary {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2ea043;
+    }
+
+    /* 工作区 */
+    .workspace {
+      flex: 1;
+      display: flex;
+      position: relative;
+      background: var(--bg-primary);
+    }
+
+    /* 画布 */
+    .canvas {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: 
+        radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+      background-size: 20px 20px;
+    }
+
+    /* 右侧工具栏 - 修复问题3：图标更清晰 */
+    .right-sidebar {
+      width: var(--right-sidebar-width);
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+    }
+
+    .right-sidebar .nav-item {
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      color: var(--text-muted); /* 未选中更清晰 */
+      margin-bottom: 2px;
+    }
+
+    .right-sidebar .nav-item:hover {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+
+    .right-sidebar .nav-item.active {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent-blue);
+    }
+
+    /* 组件弹窗 - 修复问题2：输入框字体白色 */
+    .component-panel {
+      position: absolute;
+      right: 60px;
+      top: 16px;
+      width: 380px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-header .icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .panel-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 18px;
+    }
+
+    .panel-close:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .panel-body {
+      padding: 20px;
+    }
+
+    /* 表单样式 */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    /* Tab 切换 */
+    .tab-group {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      padding: 6px 12px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+    }
+
+    .tab.active {
+      background: rgba(88, 166, 255, 0.15);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    /* 修复问题2：输入框字体白色 */
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-primary); /* 白色字体 */
+      transition: all 0.2s;
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+    }
+
+    /* 带图标的输入框 */
+    .input-with-icon {
+      position: relative;
+    }
+
+    .input-with-icon .form-input {
+      padding-right: 40px;
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      background: var(--accent-blue);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Tag 输入 */
+    .tag-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      min-height: 42px;
+    }
+
+    .tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .tag-remove {
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .tag-remove:hover {
+      color: var(--accent-orange);
+    }
+
+    /* 底部操作 */
+    .panel-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* 悬浮助手按钮 */
+    .ai-assistant-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 70px;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-blue) 100%);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(137, 87, 229, 0.4);
+      transition: all 0.3s;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ai-assistant-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 30px rgba(137, 87, 229, 0.6);
+    }
+
+    /* 聊天窗口 */
+    .chat-panel {
+      position: fixed;
+      bottom: 80px;
+      right: 70px;
+      width: 360px;
+      height: 500px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      display: none;
+      flex-direction: column;
+      z-index: 1001;
+      overflow: hidden;
+    }
+
+    .chat-panel.active {
+      display: flex;
+    }
+
+    .chat-header {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .chat-header h4 {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-message {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .chat-message.user {
+      align-self: flex-end;
+      background: var(--accent-blue);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-message.bot {
+      align-self: flex-start;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .chat-input-area {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .chat-send {
+      padding: 10px 16px;
+      background: var(--accent-blue);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* 滚动条 */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 左侧导航 -->
+    <aside class="left-sidebar">
+      <div class="sidebar-logo">⚡</div>
+      
+      <div class="nav-item active" title="文件">📁</div>
+      <div class="nav-item" title="终端">💻</div>
+      <div class="nav-item" title="Git">🔀</div>
+      
+      <div class="nav-divider"></div>
+      
+      <div class="nav-item" title="扩展">🧩</div>
+      <div class="nav-item" title="设置">⚙️</div>
+      <div class="nav-item" title="账户">👤</div>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+      <!-- 顶部栏 -->
+      <header class="top-bar">
+        <div class="breadcrumb">
+          📁 <span>Pipeline Build</span> / <span style="color: var(--text-secondary);">CSV File Input</span>
+        </div>
+        <div class="top-actions">
+          <button class="btn">撤销</button>
+          <button class="btn">重做</button>
+          <button class="btn btn-primary">💾 保存</button>
+        </div>
+      </header>
+
+      <!-- 工作区 -->
+      <div class="workspace">
+        <div class="canvas">
+          <!-- 画布内容 -->
+        </div>
+
+        <!-- 右侧工具栏 -->
+        <aside class="right-sidebar">
+          <div class="nav-item active" title="组件">🔧</div>
+          <div class="nav-item" title="属性">📋</div>
+          <div class="nav-item" title="数据">📊</div>
+          <div class="nav-item" title="预览">👁️</div>
+        </aside>
+
+        <!-- 组件配置面板 -->
+        <div class="component-panel">
+          <div class="panel-header">
+            <h3>
+              <span class="icon">📄</span>
+              CSV File Input
+            </h3>
+            <div class="panel-close">×</div>
+          </div>
+          
+          <div class="panel-body">
+            <!-- File Location -->
+            <div class="form-group">
+              <label class="form-label">File Location</label>
+              <div class="tab-group">
+                <div class="tab active">Local</div>
+                <div class="tab">HTTP</div>
+                <div class="tab">S3</div>
+                <div class="tab">FTP</div>
+              </div>
+            </div>
+
+            <!-- File path -->
+            <div class="form-group">
+              <label class="form-label">File path</label>
+              <div class="input-with-icon">
+                <input type="text" class="form-input" placeholder="输入文件路径...">
+                <div class="input-icon">🔍</div>
+              </div>
+            </div>
+
+            <!-- Separator -->
+            <div class="form-group">
+              <label class="form-label">Separator</label>
+              <input type="text" class="form-input" value="comma (,)" placeholder="输入分隔符...">
+            </div>
+
+            <!-- Encoding -->
+            <div class="form-group">
+              <label class="form-label">Encoding</label>
+              <input type="text" class="form-input" value="latin-1" placeholder="输入编码...">
+            </div>
+
+            <!-- Rows number -->
+            <div class="form-group">
+              <label class="form-label">Rows number</label>
+              <input type="number" class="form-input" placeholder="输入行数...">
+            </div>
+
+            <!-- Column names -->
+            <div class="form-group">
+              <label class="form-label">Column names</label>
+              <div class="tag-input">
+                <span class="tag">
+                  col_1
+                  <span class="tag-remove">×</span>
+                </span>
+                <span class="tag">
+                  col_2
+                  <span class="tag-remove">×</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Wrapper Character -->
+            <div class="form-group">
+              <label class="form-label">Wrapper Character</label>
+              <input type="text" class="form-input" value='"' placeholder="输入包装字符...">
+            </div>
+
+            <!-- Escaped character -->
+            <div class="form-group">
+              <label class="form-label">Escaped character</label>
+              <input type="text" class="form-input" value="\" placeholder="输入转义字符...">
+            </div>
+          </div>
+
+          <div class="panel-footer">
+            <button class="btn">取消</button>
+            <button class="btn btn-primary">应用</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- AI 助手按钮 -->
+  <button class="ai-assistant-btn" onclick="toggleChat()">🤖</button>
+
+  <!-- 聊天面板 -->
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <h4>🤖 ETL 智能助手</h4>
+    </div>
+    <div class="chat-messages">
+      <div class="chat-message bot">你好！我是 ETL 助手，帮你快速生成 Pipeline。</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" placeholder="输入需求...">
+      <button class="chat-send">发送</button>
+    </div>
+  </div>
+
+  <script>
+    function toggleChat() {
+      document.getElementById('chatPanel').classList.toggle('active');
+    }
+
+    // Tab 切换
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // 导航切换
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const siblings = this.parentElement.querySelectorAll('.nav-item');
+        siblings.forEach(s => s.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
