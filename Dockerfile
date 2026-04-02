@@ -85,7 +85,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 WORKDIR /app/amphi-etl
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --no-cache-dir --quiet .
+    pip install --no-cache-dir --quiet ".[db,i18n]"
 
 # 保持原有目录和启动指令
 RUN mkdir -p /workspace
